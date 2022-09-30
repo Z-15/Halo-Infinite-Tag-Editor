@@ -1,0 +1,19 @@
+<UserControl x:Class="InfiniteRuntimeTagViewer.Interface.Controls.CommentBlock"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:InfiniteRuntimeTagViewer.Interface.Controls"
+             mc:Ignorable="d" >
+    <Control.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Theme/z_dark.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Control.Resources>
+    <Grid  Margin="5" Height="25" HorizontalAlignment="Stretch">
+        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="{StaticResource RedTrimBackground}" Stroke="{StaticResource RedTrimBorder}" StrokeThickness="1"/>
+        <TextBlock x:Name="comment" Style="{DynamicResource Z_TextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Grid>
+</UserControl>

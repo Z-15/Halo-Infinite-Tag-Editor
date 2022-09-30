@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="InfiniteRuntimeTagViewer.Interface.Controls.EnumBlock"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:InfiniteRuntimeTagViewer.Interface.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="25">
+    <Control.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Theme/z_dark.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Control.Resources>
+    <Grid x:Name="parent_element" Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto" MinWidth="150"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="value_name" VerticalAlignment="Center" Margin="5,0,0,0" Style="{DynamicResource Z_TextBlockStyle}"/>
+        <Rectangle Grid.Column="1" Fill="#353535" Height="1" Margin="10,0,10,0"/>
+        <ComboBox x:Name="enums" Grid.Column="2" FontFamily="Arabic Transparent" FontSize="13" VerticalContentAlignment="Center"/>
+    </Grid>
+</UserControl>
