@@ -22,6 +22,7 @@ Halo Infinite Tag Editor allows you to modify the tag files located within modul
   3. Click import tag and select the desired file.
   4. Click save tag to save the imported tag to the module.
  
+ Note: **ALWAYS MAKE BACKUPS OF YOUR MODULES!**
 # Current Features and Issues
 
 **Features:**
