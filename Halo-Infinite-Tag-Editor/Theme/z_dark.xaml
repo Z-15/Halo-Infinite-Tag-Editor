@@ -322,11 +322,11 @@
 
     <!--Menu-->
     <Style x:Key="Z_MenuStyle" TargetType="{x:Type Menu}">
-        <Setter Property="Background" Value="{StaticResource titleBackground}"/>
-        <Setter Property="FontFamily" Value="Calibri"/>
-        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="FontFamily" Value="Arabic Transparent"/>
+        <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontStyle" Value="Normal"/>
-        <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="Foreground" Value="{StaticResource defaultTextColor}"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -340,7 +340,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <SolidColorBrush x:Key="Menu.Disabled.Foreground" Color="#FF707070"/>
+    <SolidColorBrush x:Key="Menu.Disabled.Foreground" Color="Transparent"/>
     <SolidColorBrush x:Key="MenuItem.Highlight.Disabled.Background" Color="#0A000000"/>
     <SolidColorBrush x:Key="MenuItem.Highlight.Disabled.Border" Color="#21000000"/>
     <SolidColorBrush x:Key="Menu.Static.Separator" Color="Transparent"/>
@@ -428,8 +428,8 @@
                 <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
             </Trigger>
             <Trigger Property="IsHighlighted" Value="True">
-                <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource HighlightBackground}"/>
-                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource HighlightBorder}"/>
+                <Setter Property="Background" TargetName="templateRoot" Value="#303030"/>
+                <Setter Property="BorderBrush" TargetName="templateRoot" Value="#303030"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource Menu.Disabled.Foreground}"/>
@@ -482,8 +482,8 @@
                 <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
             </Trigger>
             <Trigger Property="IsHighlighted" Value="True">
-                <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource HighlightBackground}"/>
-                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource HighlightBorder}"/>
+                <Setter Property="Background" TargetName="templateRoot" Value="#303030"/>
+                <Setter Property="BorderBrush" TargetName="templateRoot" Value="#303030"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource Menu.Disabled.Foreground}"/>
@@ -523,8 +523,8 @@
                 <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
             </Trigger>
             <Trigger Property="IsHighlighted" Value="True">
-                <Setter Property="Background" TargetName="templateRoot" Value="#505050"/>
-                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource HighlightBorder}"/>
+                <Setter Property="Background" TargetName="templateRoot" Value="#303030"/>
+                <Setter Property="BorderBrush" TargetName="templateRoot" Value="#303030"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource Menu.Disabled.Foreground}"/>

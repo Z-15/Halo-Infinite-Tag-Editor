@@ -34,14 +34,31 @@
         </Grid.RowDefinitions>
         <!--Top Tool Bar-->
         <Grid Background="#151515">
-            <TextBlock Text="Halo Infinite Tag Editor" Style="{DynamicResource Z_TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+            <Menu HorizontalAlignment="Left" Style="{DynamicResource Z_MenuStyle}" Margin="5,0,0,0">
+                <MenuItem Header="Module" Style="{DynamicResource Z_MenuItemStyle}" Margin="5,0,0,0">
+                    <MenuItem Header="Open" Click="OpenModuleClick" ToolTip="Open a specific module"/>
+                    <MenuItem Header="Save" Click="SaveTagClick" ToolTip="Save tag changes to the module"/>
+                    <MenuItem Header="Backup" Click="BackupModuleClick" ToolTip="Backup the current module"/>
+                    <MenuItem Header="Close" Click="CloseModuleClick" ToolTip="Close the current module"/>
+                </MenuItem>
+                <MenuItem Header="Tag" Style="{DynamicResource Z_MenuItemStyle}" Margin="5,0,0,0">
+                    <MenuItem Header="Open" Click="OpenTagClick" ToolTip="Open a tag file"/>
+                    <MenuItem Header="Import" Click="ImportTagClick" ToolTip="Overwrite current tag with file"/>
+                    <MenuItem Header="Export" Click="ExportTagClick" ToolTip="Export currently loaded tag"/>
+                    <MenuItem Header="Close" Click="CloseTagClick" ToolTip="Close current tag"/>
+                </MenuItem>
+                <MenuItem Header="Tools" Style="{DynamicResource Z_MenuItemStyle}" Margin="5,0,0,0">
+                    <MenuItem Header="Dump Tag Info" Click="DumpTagInfoClick" ToolTip="Dumps tag info from modules in path"/>
+                </MenuItem>
+            </Menu>
+            <TextBlock Text="Halo Infinite Tag Editor" Style="{DynamicResource Z_TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Style="{StaticResource MinimizeButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize" Command="{x:Static SystemCommands.MinimizeWindowCommand}" />
                 <Button x:Name="RestoreButton" Visibility="Collapsed" Style="{StaticResource RestoreButtonStyle}" Command="{x:Static SystemCommands.RestoreWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Restore"/>
                 <Button x:Name="MaximizeButton" Visibility="Visible" Style="{StaticResource MaximizeButtonStyle}" Command="{x:Static SystemCommands.MaximizeWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Maximize" />
                 <Button Style="{StaticResource CloseButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close" Command="{x:Static SystemCommands.CloseWindowCommand}"/>
             </StackPanel>
-            <Rectangle Fill="Transparent" StrokeThickness="0" MouseDown="Move_Window" Margin="0,0,132,0"/>
+            <Rectangle Fill="Transparent" StrokeThickness="0" MouseDown="Move_Window" Margin="160,0,132,0"/>
         </Grid>
         <!--MainBody-->
         <Grid Grid.Row="1" Background="#252525">
@@ -88,7 +105,6 @@
                         <RowDefinition Height="20"/>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
                     <!--Title Bar-->
                     <Grid Background="#202020">
@@ -105,17 +121,6 @@
                     </Grid>
                     <!--Tags Tree View-->
                     <TreeView x:Name="TagsTree" Grid.Row="2" Style="{DynamicResource TreeViewStyle}" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"/>
-                    <!--Tag Tree Buttons-->
-                    <Grid Grid.Row="3" Background="#202020">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Button Content="Open Module" Height="20" Margin="5,0,2.5,0" Click="OpenModuleClick" ToolTip="Open a specific module"/>
-                        <Button Content="Close Module" Grid.Column="1" Height="20" Margin="2.5,0,2.5,0" Click="CloseModuleClick" ToolTip="Close the current module"/>
-                        <Button Content="Backup Module" Grid.Column="2" Height="20" Margin="2.5,0,5,0" Click="BackupModuleClick" ToolTip="Backup the current module"/>
-                    </Grid>
                 </Grid>
             </Grid>
             <!--GridSplitter-->
@@ -126,7 +131,6 @@
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="30"/>
                 </Grid.RowDefinitions>
                 <!--TagInfo-->
                 <Grid Background="#202020" HorizontalAlignment="Stretch">
@@ -162,16 +166,6 @@
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel x:Name="TagViewer" CanHorizontallyScroll="True" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"/>
                 </ScrollViewer>
-                <!--TagButtons-->
-                <Grid Background="#202020" Grid.Row="3">
-                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="5,0,0,0">
-                        <Button Content="Open Tag" Grid.Column="2" Height="20" Width="100" Margin="2.5,0,5,0" Click="OpenTagClick" ToolTip="Open a tag file"/>
-                        <Button Content="Save Tag" Grid.Column="2" Height="20" Width="100" Margin="2.5,0,5,0" Click="SaveTagClick" ToolTip="Save tag changes to the module"/>
-                        <Button Content="Import Tag" Grid.Column="2" Height="20" Width="100" Margin="2.5,0,5,0" Click="ImportTagClick" ToolTip="Overwrite current tag with file"/>
-                        <Button Content="Export Tag" Grid.Column="2" Height="20" Width="100" Margin="2.5,0,5,0" Click="ExportTagClick" ToolTip="Export currently loaded tag"/>
-                        <Button Content="Close Tag" Grid.Column="2" Height="20" Width="100" Margin="2.5,0,5,0" Click="CloseTagClick" ToolTip="Close current tag"/>
-                    </StackPanel>
-                </Grid>
             </Grid>
         </Grid>
         <!--StatusBar-->

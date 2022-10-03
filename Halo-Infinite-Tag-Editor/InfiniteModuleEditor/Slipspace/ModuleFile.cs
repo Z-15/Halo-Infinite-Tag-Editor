@@ -38,6 +38,7 @@ namespace InfiniteModuleEditor
 
         [FieldOffset(32)]
         public uint TotalCompressedSize;
+
         [FieldOffset(36)]
         public uint TotalUncompressedSize;
 

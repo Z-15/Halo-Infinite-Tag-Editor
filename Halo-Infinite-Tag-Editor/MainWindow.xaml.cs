@@ -38,13 +38,20 @@ namespace Halo_Infinite_Tag_Editor
         // Everything used from other projects will be placed in their own seperate folders, unless it's impossible
         // or more difficult to do so.
 
+        // Used to reference in other classes.
         public static MainWindow? instance;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // Set instance to this window.
             instance = this;
+
+            // Don't know how settings work yet, this will be updated in the future.
             deployPath = AppSettings.Default.DeployPath;
 
+            // Tries to find module files in the given path.
             if (FindModuleFiles())
             {
                 CreateModuleTree(null, baseFolder);
@@ -53,8 +60,10 @@ namespace Halo_Infinite_Tag_Editor
             {
                 StatusOut("No module files were found in given path...");
             }
+
+            // Read and store info from the text files in the Files directory.
             InhaleTagGroup();
-            inhale_tagnames();
+            InhaleTagNames();
         }
 
         #region Window Controls
@@ -106,6 +115,7 @@ namespace Halo_Infinite_Tag_Editor
         #region Module List
         private string deployPath = "";
         private Folder baseFolder = new Folder();
+        public List<string> modulePaths = new List<string>();
         
         public class Folder
         {
@@ -124,6 +134,7 @@ namespace Halo_Infinite_Tag_Editor
                     {
                         if (file.EndsWith("module") && !filePaths.Contains(file))
                         {
+                            instance.modulePaths.Add(file);
                             files.Add(file.Split('\\').Last());
                             filePaths.Add(file);
                         }
@@ -477,7 +488,7 @@ namespace Halo_Infinite_Tag_Editor
             if (fileStreamOpen)
             {
                 TagData tagData = (TagData)tv.Tag;
-                tagFileName = tagData.Tag.Split("\0")[0];
+                tagFileName = tagData.Tag.Replace("\0", String.Empty);
                 tagStream = ModuleEditor.GetTag(module, moduleStream, tagFileName);
                 module.ModuleFiles.TryGetValue(module.ModuleFiles.Keys.ToList().Find(x => x.Contains(tagFileName)), out moduleFile);
                 moduleFile.Tag = ModuleEditor.ReadTag(tagStream, tagFileName.Substring(tagFileName.LastIndexOf("\\") + 1, tagFileName.Length - tagFileName.LastIndexOf("\\") - 2), moduleFile);
@@ -608,7 +619,7 @@ namespace Halo_Infinite_Tag_Editor
             if (tagOpen)
             {
                 SaveFileDialog sfd = new SaveFileDialog();
-                sfd.FileName = tagFileName.Substring(tagFileName.LastIndexOf("\\") + 1, tagFileName.Length - tagFileName.LastIndexOf("\\") - 2);
+                sfd.FileName = tagFileName.Split("\\").Last();
 
                 if (sfd.ShowDialog() == true)
                 {
@@ -1373,9 +1384,14 @@ namespace Halo_Infinite_Tag_Editor
 
         public string IDToTagName(string value)
         {
-            _ = InhaledTagnames.TryGetValue(value, value: out string? potentialName);
-
-            return potentialName ??= "ObjectID: " + value;
+            if (InhaledTagnames.ContainsKey(value))
+            {
+                return InhaledTagnames[value].Path;
+            }
+            else
+            {
+                return "ObjectID: " + value;
+            }
         }
 
         public static string ReverseString(string myStr)
@@ -1542,7 +1558,14 @@ namespace Halo_Infinite_Tag_Editor
 
         #region Dictionaries
         private Dictionary<string, string> tagGroups = new Dictionary<string, string>();
-        private Dictionary<string, string> InhaledTagnames = new Dictionary<string, string>();
+        private Dictionary<string, TagInfo> InhaledTagnames = new Dictionary<string, TagInfo>();
+
+        public class TagInfo
+        {
+            public string Path = "";
+            public string TagID = "";
+            public string AssetID = "";
+        }
 
         private void InhaleTagGroup()
         {
@@ -1561,7 +1584,7 @@ namespace Halo_Infinite_Tag_Editor
             }
         }
 
-        public void inhale_tagnames()
+        public void InhaleTagNames()
         {
             string filename = Directory.GetCurrentDirectory() + @"\files\tagnames.txt";
             IEnumerable<string>? lines = System.IO.File.ReadLines(filename);
@@ -1570,25 +1593,37 @@ namespace Halo_Infinite_Tag_Editor
                 string[] hexString = line.Split(" : ");
                 if (!InhaledTagnames.ContainsKey(hexString[0]))
                 {
-                    InhaledTagnames.Add(hexString[0], hexString[1]);
+                    TagInfo ti = new();
+                    ti.TagID = hexString[0];
+                    ti.AssetID = hexString[1];
+                    ti.Path = hexString[2];
+                    InhaledTagnames.Add(hexString[0], ti);
                 }
             }
+            Debug.WriteLine("");
         }
         #endregion
 
         #region Tag References
-        // So, I'm struggling to get this working. Here are my notes on this subject.
-        //
-        // Tag Refs are 28 bytes in length.
-        //
-        // The first 8 bytes consist of 0xBC's. (1-8)
-        // The next 8 bytes are two of the same Tag ID for the tag being referenced. (9-16)
-        // The next 4 bytes are unknown to me. (17-20)
-        // The next 4 bytes are for the tags type/group. (21-24)
-        // The last 4 bytes are more 0xBC's (24-28)
+        // Notes:
         // 
-        // Anytime I try clearing one, it breaks the game. Adding one seems to be somewhat ok though.
-        // Unsure why this is, if anyone has an idea please let me know.
+        // There are two parts to tag references.
+        // The tag reference index:
+        //      1. Bytes [0-3] - Tag Type
+        //      2. Bytes [4-7] - Tag path start in tag path index
+        //      3. Bytes [8-15] - Asset ID
+        //      4. Bytes [16-19] - Tag ID
+        //      5. Bytes [20-24] - 0xFF
+        //
+        // The Tag Ref Itself:
+        //      1. Bytes [0-7] - 0xBC
+        //      2. Bytes [8-11] - Tag ID
+        //      3. Bytes [12-19] - Asset ID
+        //      4. Bytes [20-23] - Tag Type
+        //      5. Bytes [24-27] - 0xBC
+        //
+        // Asset ID can be found when loading in a module, however it needs to be output to the tag ID file.
+        // I'm going to make a new dump and tag list loading system to account for this.
 
         private void TagRefClearClick(object sender, RoutedEventArgs e)
         {
@@ -1664,6 +1699,55 @@ namespace Halo_Infinite_Tag_Editor
             }
 
             return newValue;
+        }
+        #endregion
+
+        #region Tools
+        private List<string> tagDumpInfos = new List<string>();
+
+        private async void DumpTagInfoClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                StatusOut("Dumping tag info...");
+
+                foreach (string path in modulePaths)
+                {
+                    FileStream ms = new FileStream(path, FileMode.Open, FileAccess.Read);
+
+                    Task dumpTags = new Task(() =>
+                    {
+                        Module m = ModuleEditor.ReadModule(ms);
+                        foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
+                        {
+                            string TagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
+                            string AssetID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.AssetId));
+                            string TagPath = mf.Key;
+
+                            tagDumpInfos.Add(TagID + " : " + AssetID + " : " + TagPath.Replace("\0", String.Empty));
+                        }
+                    });
+                    dumpTags.Start();
+                    await dumpTags;
+                    dumpTags.Dispose();
+                }
+
+                tagDumpInfos.Sort();
+                SaveFileDialog sfd = new();
+                sfd.Filter = "Text File (*.txt)|*.txt";
+                sfd.FileName = "tagnames.txt";
+                if (sfd.ShowDialog() == true)
+                {
+                    File.WriteAllLines(sfd.FileName, tagDumpInfos.ToArray());
+                }
+
+                tagDumpInfos.Clear();
+                StatusOut("Tag info dumped!");
+            }
+            catch
+            {
+                StatusOut("Failed to dump tag info!");
+            }
         }
         #endregion
     }
