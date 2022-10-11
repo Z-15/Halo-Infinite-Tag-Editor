@@ -1453,4 +1453,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interface\" />
+  </ItemGroup>
+
 </Project>

@@ -58,7 +58,7 @@
                 <Button x:Name="MaximizeButton" Visibility="Visible" Style="{StaticResource MaximizeButtonStyle}" Command="{x:Static SystemCommands.MaximizeWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Maximize" />
                 <Button Style="{StaticResource CloseButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close" Command="{x:Static SystemCommands.CloseWindowCommand}"/>
             </StackPanel>
-            <Rectangle Fill="Transparent" StrokeThickness="0" MouseDown="Move_Window" Margin="160,0,132,0"/>
+            <Rectangle Fill="Transparent" StrokeThickness="0" MouseDown="Move_Window" Margin="200,0,132,0"/>
         </Grid>
         <!--MainBody-->
         <Grid Grid.Row="1" Background="#252525">

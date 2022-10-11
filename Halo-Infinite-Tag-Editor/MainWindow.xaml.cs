@@ -375,7 +375,11 @@ namespace Halo_Infinite_Tag_Editor
             {
                 fileStreamOpen = false;
                 moduleOpen = false;
-                moduleStream.Close();
+
+                if (moduleStream != null)
+                    moduleStream.Close();
+
+                moduleStream = null;
                 module = null;
 
                 foreach (TagFolder tf in tagFolders.Values)
@@ -385,6 +389,7 @@ namespace Halo_Infinite_Tag_Editor
                     tf.tags = null;
                 }
                 tagFolders.Clear();
+                tagFolders = new SortedList<string, TagFolder>();
             }
             
             GC.Collect();
@@ -670,8 +675,14 @@ namespace Halo_Infinite_Tag_Editor
                 DataOffsetBlock.Text = "";
                 TagViewer.Children.Clear();
                 tagViewerControls.Clear();
-                dataOffset = 0;
+                tagViewerControls = new();
                 tagValueData.Clear();
+                tagValueData = new();
+                curDataBlockInd = 1;
+                dataOffset = 0;
+                tagStream = null;
+                tagFileStream = null;
+                moduleFile = null;
             }
         }
         #endregion
@@ -1261,16 +1272,17 @@ namespace Halo_Infinite_Tag_Editor
                                     byte[] tagGroupData = GetDataFromFile(4, entry.Value.MemoryAddress + 20);
                                     string tagGroup = "Null";
 
+                                    TagInfo ti = GetTagInfo(tagId);
+                                    string toolTip = "Tag ID: " + ti.TagID + "; Asset ID: " + ti.AssetID;
                                     if (Convert.ToHexString(tagGroupData) != "FFFFFFFF")
                                         tagGroup = ReverseString(Encoding.UTF8.GetString(tagGroupData));
 
                                     TagRefBlockFile? vb = new();
+                                    vb.ToolTip = toolTip;
                                     vb.value_name.Text = entry.Value.N;
                                     vb.tag_button.Content = tagName;
                                     vb.taggroup.Text = tagGroup;
                                     vb.taggroup.IsReadOnly = true;
-                                    vb.ClearButton.Click += TagRefClearClick;
-                                    vb.ClearButton.Tag = entry.Value.AbsoluteTagOffset;
                                     tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                                     parentpanel.Children.Add(vb);
                                 }
@@ -1384,9 +1396,9 @@ namespace Halo_Infinite_Tag_Editor
 
         public string IDToTagName(string value)
         {
-            if (InhaledTagnames.ContainsKey(value))
+            if (inhaledTags.ContainsKey(value))
             {
-                return InhaledTagnames[value].Path;
+                return inhaledTags[value].Path;
             }
             else
             {
@@ -1399,6 +1411,22 @@ namespace Halo_Infinite_Tag_Editor
             char[] myArr = myStr.ToCharArray();
             Array.Reverse(myArr);
             return new string(myArr);
+        }
+
+        private TagInfo GetTagInfo(string tagID)
+        {
+            TagInfo result = new TagInfo();
+
+            if (inhaledTags.ContainsKey(tagID))
+                result = inhaledTags[tagID];
+            else
+            {
+                result.TagID = tagID;
+                result.AssetID = "Unknown";
+                result.Path = "Unknown";
+            }    
+
+            return result;
         }
         #endregion
 
@@ -1558,7 +1586,7 @@ namespace Halo_Infinite_Tag_Editor
 
         #region Dictionaries
         private Dictionary<string, string> tagGroups = new Dictionary<string, string>();
-        private Dictionary<string, TagInfo> InhaledTagnames = new Dictionary<string, TagInfo>();
+        private Dictionary<string, TagInfo> inhaledTags = new Dictionary<string, TagInfo>();
 
         public class TagInfo
         {
@@ -1591,13 +1619,13 @@ namespace Halo_Infinite_Tag_Editor
             foreach (string? line in lines)
             {
                 string[] hexString = line.Split(" : ");
-                if (!InhaledTagnames.ContainsKey(hexString[0]))
+                if (!inhaledTags.ContainsKey(hexString[0]))
                 {
                     TagInfo ti = new();
                     ti.TagID = hexString[0];
                     ti.AssetID = hexString[1];
                     ti.Path = hexString[2];
-                    InhaledTagnames.Add(hexString[0], ti);
+                    inhaledTags.Add(hexString[0], ti);
                 }
             }
             Debug.WriteLine("");
@@ -1624,82 +1652,9 @@ namespace Halo_Infinite_Tag_Editor
         //
         // Asset ID can be found when loading in a module, however it needs to be output to the tag ID file.
         // I'm going to make a new dump and tag list loading system to account for this.
-
-        private void TagRefClearClick(object sender, RoutedEventArgs e)
-        {
-            Button tb = (Button)sender;
-            TagValueData tvd = tagValueData[(string)tb.Tag];
-            TagRefBlockFile tr = (TagRefBlockFile)tagViewerControls[(string)tb.Tag];
-            byte[] data = GetDataFromFile((int)tvd.Size, tvd.Offset);
-            long totalOffset = Convert.ToInt64(tvd.Offset) + moduleFile.Tag.Header.HeaderSize;
-            byte[] value = CreateTagRef(null, null);
-
-            if (tagStream != null)
-            {
-                tagStream.Position = totalOffset;
-                tagStream.Write(value);
-            }
-            else if (tagFileStream != null)
-            {
-                tagFileStream.Position = totalOffset;
-                tagFileStream.Write(value);
-            }
-
-            tr.tag_button.Content = "ObjectID: FFFFFFFF";
-            tr.taggroup.Text = "Null";
-        }
-
-        private byte[] CreateTagRef(string? tagID, string? tagType)
-        {
-            byte[] newValue = new byte[28];
-
-            for (int i = 0; i < 8; i++)
-            {
-                newValue[i] = 0xBC;
-            }
-
-            if (tagID != null)
-            {
-                byte[] tagIDBytes = Convert.FromHexString(tagID);
-                for (int i = 0; i < 4; i++)
-                {
-                    newValue[i + 8] = tagIDBytes[i];
-                    newValue[i + 12] = tagIDBytes[i];
-                }
-            }
-            else
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    newValue[i + 8] = 0xFF;
-                }
-            }
-
-            if (tagType != null)
-            {
-                string tagTypeRev = ReverseString(tagType);
-                byte[] tagTypeBytes = Encoding.ASCII.GetBytes(tagTypeRev);
-
-                for (int i = 0; i < 4; i++)
-                {
-                    newValue[i + 20] = tagTypeBytes[i];
-                }
-            }
-            else
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    newValue[i + 20] = 0xFF;
-                }
-            }
-
-            for (int i = 0; i < 4; i++)
-            {
-                newValue[i + 24] = 0xBC;
-            }
-
-            return newValue;
-        }
+        // 
+        // Something really weird with all of this, it doesn't work all the time for some reason.
+        // Sometimes you can change the tag reference, sometimes you can't. I'm not sure why.
         #endregion
 
         #region Tools
