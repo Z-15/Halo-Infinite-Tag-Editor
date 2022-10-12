@@ -346,15 +346,19 @@ namespace InfiniteModuleEditor
 
         public static bool WriteTag(ModuleFile ModuleFile, MemoryStream TagStream, FileStream ModuleStream)
         {
-            int currentOffset = 0;
             for(int i = 0; i < ModuleFile.Blocks.Count; i++)
             {
                 byte[] modifiedBlock = new byte[ModuleFile.Blocks[i].BlockData.UncompressedSize];
 
-                TagStream.Seek(currentOffset, SeekOrigin.Begin);
+                TagStream.Seek(ModuleFile.Blocks[i].BlockData.UncompressedOffset, SeekOrigin.Begin);
                 TagStream.Read(modifiedBlock, 0, modifiedBlock.Length);
 
                 byte[] compressedBlock = Oodle.Compress(modifiedBlock, modifiedBlock.Length, OodleFormat.Kraken, OodleCompressionLevel.Optimal5);
+
+                if (modifiedBlock.Length == ModuleFile.Blocks[i].BlockData.CompressedSize)
+                {
+                    compressedBlock = compressedBlock.Skip(2).ToArray();
+                }
 
                 if (compressedBlock.Length <= ModuleFile.Blocks[i].BlockData.CompressedSize)
                 {
@@ -362,9 +366,6 @@ namespace InfiniteModuleEditor
                     ModuleStream.Write(compressedBlock, 0, compressedBlock.Length);
                 }
                 else return false;
-
-                if (i < ModuleFile.Blocks.Count - 1)
-                    currentOffset += (int)ModuleFile.Blocks[i + 1].BlockData.UncompressedOffset;
             }
 
             return true;            
