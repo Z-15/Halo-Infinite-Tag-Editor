@@ -19,6 +19,7 @@ namespace InfiniteRuntimeTagViewer.Interface.Controls
 		public Dictionary<int, bool> childDataBlock = new();
 		public int dataBlockInd = 0;
 		public int size = 0;
+		public List<string> controlKeys = new List<string>();
 
 		public TagBlock(IRTV_TagStruct tagStruct)
 		{

@@ -195,6 +195,11 @@ namespace InfiniteModuleEditor
                 TagDependencyHandle.Free();
             }
 
+            if (ShortTagName.EndsWith(".biped"))
+            {
+                TagStream.Position += 128;
+            }
+
             for (long l = 0; l < tag.Header.DataBlockCount; l++)
             {
                 byte[] DataBlockBytes = new byte[Marshal.SizeOf(tag.DataBlockArray[l])];
@@ -235,22 +240,8 @@ namespace InfiniteModuleEditor
             TagStream.Read(tag.StringTable, 0, (int)tag.Header.StringTableSize); //better hope this never goes beyond sizeof(int)
             TagStream.Seek(tag.Header.ZoneSetDataSize, SeekOrigin.Current); //Data starts here after the "StringID" section which is probably something else
 
-            //hacky fix for biped tags and similar to skip over unknown data that is considered part of the tag for some reason
-            int CurrentOffset = (int)TagStream.Position;
-            int TagDataOffset = (int)TagStream.Position;
-            byte[] TempBuffer = new byte[4];
-            TagStream.Read(TempBuffer, 0, 4);
-
-            while (BitConverter.ToInt32(TempBuffer, 0) != ModuleFile.FileEntry.GlobalTagId)
-            {
-                TagStream.Read(TempBuffer, 0, 4);
-            }
-
-            TagStream.Seek(-12, SeekOrigin.Current);
-            TagDataOffset = (int)TagStream.Position - TagDataOffset;
-            tag.TrueDataOffset = TagDataOffset;
-            TagStream.Seek(CurrentOffset, SeekOrigin.Begin);
-
+            tag.TrueDataOffset = (int)(tag.Header.HeaderSize + tag.DataBlockArray[0].Offset);
+            TagStream.Seek(tag.TrueDataOffset, SeekOrigin.Begin);
             tag.TagData = new byte[tag.Header.DataSize];
             TagStream.Read(tag.TagData, 0, (int)tag.Header.DataSize);
 
@@ -359,9 +350,10 @@ namespace InfiniteModuleEditor
             for(int i = 0; i < ModuleFile.Blocks.Count; i++)
             {
                 byte[] modifiedBlock = new byte[ModuleFile.Blocks[i].BlockData.UncompressedSize];
+
                 TagStream.Seek(currentOffset, SeekOrigin.Begin);
-                TagStream.Read(modifiedBlock, 0, (int)ModuleFile.Blocks[i].BlockData.UncompressedSize);
-                currentOffset += (int)ModuleFile.Blocks[i].BlockData.UncompressedSize;
+                TagStream.Read(modifiedBlock, 0, modifiedBlock.Length);
+
                 byte[] compressedBlock = Oodle.Compress(modifiedBlock, modifiedBlock.Length, OodleFormat.Kraken, OodleCompressionLevel.Optimal5);
 
                 if (compressedBlock.Length <= ModuleFile.Blocks[i].BlockData.CompressedSize)
@@ -370,6 +362,9 @@ namespace InfiniteModuleEditor
                     ModuleStream.Write(compressedBlock, 0, compressedBlock.Length);
                 }
                 else return false;
+
+                if (i < ModuleFile.Blocks.Count - 1)
+                    currentOffset += (int)ModuleFile.Blocks[i + 1].BlockData.UncompressedOffset;
             }
 
             return true;            

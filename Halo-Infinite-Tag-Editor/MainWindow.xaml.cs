@@ -495,8 +495,9 @@ namespace Halo_Infinite_Tag_Editor
                 TagData tagData = (TagData)tv.Tag;
                 tagFileName = tagData.Tag.Replace("\0", String.Empty);
                 tagStream = ModuleEditor.GetTag(module, moduleStream, tagFileName);
+                moduleFile = new ModuleFile();
                 module.ModuleFiles.TryGetValue(module.ModuleFiles.Keys.ToList().Find(x => x.Contains(tagFileName)), out moduleFile);
-                moduleFile.Tag = ModuleEditor.ReadTag(tagStream, tagFileName.Substring(tagFileName.LastIndexOf("\\") + 1, tagFileName.Length - tagFileName.LastIndexOf("\\") - 2), moduleFile);
+                moduleFile.Tag = ModuleEditor.ReadTag(tagStream, tagFileName.Replace("\0", String.Empty), moduleFile);
                 moduleFile.Tag.Name = tagFileName;
                 moduleFile.Tag.ShortName = tagFileName.Split("\\").Last();
 
@@ -679,7 +680,6 @@ namespace Halo_Infinite_Tag_Editor
                 tagValueData.Clear();
                 tagValueData = new();
                 curDataBlockInd = 1;
-                dataOffset = 0;
                 tagStream = null;
                 tagFileStream = null;
                 moduleFile = null;
@@ -692,6 +692,7 @@ namespace Halo_Infinite_Tag_Editor
         {
             public string Name = "";
             public string? Type;
+            public string? ControlType;
             public long Offset = 0;
             public string? OffsetChain;
             public byte[]? Value;
@@ -703,15 +704,14 @@ namespace Halo_Infinite_Tag_Editor
         private Dictionary<string, TagValueData> tagValueData = new();
         private Dictionary<string, Control> tagViewerControls = new();
         private int curDataBlockInd = 1;
-        private int dataOffset = 0;
 
         private async void BuildTagViewer()
         {
             try
             {
+                string curTagGroup = moduleFile.Tag.ShortName.Split(".")[1];
                 curDataBlockInd = 1;
 
-                string curTagGroup = moduleFile.Tag.ShortName.Split(".")[1];
                 if (tagGroups.ContainsKey(curTagGroup.Trim()))
                 {
                     StatusOut("Retrieving tag data...");
@@ -739,7 +739,7 @@ namespace Halo_Infinite_Tag_Editor
                     loadTag.Dispose();
                     
                     StatusOut("Building tag viewer...");
-                    CreateTagControls(tagStruct, 0, tagDefinitions, tagStruct.TagData, TagViewer, curTagID + ":");
+                    CreateTagControls(tagStruct, 0, tagDefinitions, tagStruct.TagData, TagViewer, curTagID + ":", null, false);
                     StatusOut("Opened tag from module: " + tagFileName.Split("\\").Last());
 
                     GC.Collect();
@@ -770,6 +770,7 @@ namespace Halo_Infinite_Tag_Editor
                     TagValueData curTagData = new()
                     {
                         Name = name,
+                        ControlType = entry.Value.T,
                         Type = entry.Value.T,
                         OffsetChain = entry.Value.AbsoluteTagOffset,
                         Offset = entry.Value.MemoryAddress,
@@ -795,7 +796,7 @@ namespace Halo_Infinite_Tag_Editor
 
                                 for (int i = 0; i < childCount; i++)
                                 {
-                                    long newAddress = (long)moduleFile.Tag.DataBlockArray[(int)curTagData.DataBlockIndex].Offset + (entry.Value.S * i);
+                                    long newAddress = (long)moduleFile.Tag.DataBlockArray[curTagData.DataBlockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
                                     GetTagValueData(entry.Value.B, newAddress , newAddress + entry.Value.S * i, curTagData.OffsetChain);
                                 }
                             }
@@ -826,7 +827,7 @@ namespace Halo_Infinite_Tag_Editor
             }
         }
 
-        private void CreateTagControls(IRTV_TagStruct tagStruct, long startingTagOffset, Dictionary<long, TagLayouts.C> tagDefinitions, long address, StackPanel parentpanel, string offsetChain)
+        private void CreateTagControls(IRTV_TagStruct tagStruct, long startingTagOffset, Dictionary<long, TagLayouts.C> tagDefinitions, long address, StackPanel parentpanel, string offsetChain, TagBlock? tb, bool isTagBlock)
         {
             KeyValuePair<long, TagLayouts.C> prevEntry = new();
 
@@ -843,11 +844,11 @@ namespace Halo_Infinite_Tag_Editor
 
                     try
                     {
-                        if (!tvd.Name.ToLower().Contains("generated_pad") && !tvd.Name.ToLower().Contains("function"))
+                        if (!tvd.Name.ToLower().Contains("generated_pad"))
                         {
-                            if (tvd.Type == "Comment")
+                            if (tvd.ControlType == "Comment")
                             {
-                                if (prevEntry.Value != null && prevEntry.Value.N != null)
+                                if (prevEntry.Value != null && prevEntry.Value.N != null && tvd.Name.ToLower().Trim() != "function")
                                 {
                                     string prevName = prevEntry.Value.N;
                                     string prevType = prevEntry.Value.T;
@@ -883,7 +884,7 @@ namespace Halo_Infinite_Tag_Editor
                                     tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb0);
                                 }
                             }
-                            else if (tvd.Type == "Byte")
+                            else if (tvd.ControlType == "Byte")
                             {
                                 TagValueBlock? vb = new();
                                 vb.value_name.Text = tvd.Name;
@@ -895,7 +896,7 @@ namespace Halo_Infinite_Tag_Editor
 
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                             }
-                            else if (tvd.Type == "2Byte")
+                            else if (tvd.ControlType == "2Byte")
                             {
                                 TagValueBlock? vb = new();
                                 vb.value_name.Text = tvd.Name;
@@ -907,7 +908,7 @@ namespace Halo_Infinite_Tag_Editor
 
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                             }
-                            else if (tvd.Type == "4Byte")
+                            else if (tvd.ControlType == "4Byte")
                             {
                                 TagValueBlock? vb = new();
                                 vb.value_name.Text = tvd.Name;
@@ -919,7 +920,7 @@ namespace Halo_Infinite_Tag_Editor
 
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                             }
-                            else if (tvd.Type == "Float")
+                            else if (tvd.ControlType == "Float")
                             {
                                 TagValueBlock? vb = new();
                                 vb.value_name.Text = tvd.Name;
@@ -931,7 +932,7 @@ namespace Halo_Infinite_Tag_Editor
 
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                             }
-                            else if (tvd.Type == "Pointer")
+                            else if (tvd.ControlType == "Pointer")
                             {
                                 TagValueBlock? vb = new();
                                 vb.value_name.Text = tvd.Name;
@@ -943,7 +944,7 @@ namespace Halo_Infinite_Tag_Editor
 
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                             }
-                            else if (tvd.Type == "mmr3Hash")
+                            else if (tvd.ControlType == "mmr3Hash")
                             {
                                 TagValueBlock? vb = new();
                                 vb.value_name.Text = tvd.Name;
@@ -955,7 +956,7 @@ namespace Halo_Infinite_Tag_Editor
 
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                             }
-                            else if (tvd.Type == "String")
+                            else if (tvd.ControlType == "String")
                             {
                                 TagValueBlock? vb = new();
                                 vb.value_name.Text = tvd.Name;
@@ -967,7 +968,7 @@ namespace Halo_Infinite_Tag_Editor
 
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                             }
-                            else if (tvd.Type == "EnumGroup")
+                            else if (tvd.ControlType == "EnumGroup")
                             {
                                 if (!(entry.Value is TagLayouts.EnumGroup))
                                     continue;
@@ -1012,7 +1013,7 @@ namespace Halo_Infinite_Tag_Editor
                                 parentpanel.Children.Add(eb);
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, eb);
                             }
-                            else if (tvd.Type == "Flags")
+                            else if (tvd.ControlType == "Flags")
                             {
                                 byte flags_value = (byte)tvd.Value[0];
 
@@ -1037,7 +1038,7 @@ namespace Halo_Infinite_Tag_Editor
                                 parentpanel.Children.Add(vb);
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                             }
-                            else if (tvd.Type == "FlagGroup")
+                            else if (tvd.ControlType == "FlagGroup")
                             {
                                 if (!(entry.Value is TagLayouts.FlagGroup))
                                     continue;
@@ -1051,7 +1052,7 @@ namespace Halo_Infinite_Tag_Editor
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                                 parentpanel.Children.Add(vb);
                             }
-                            else if (tvd.Type == "BoundsFloat")
+                            else if (tvd.ControlType == "BoundsFloat")
                             {
                                 tvd.Type = "Float";
 
@@ -1071,7 +1072,7 @@ namespace Halo_Infinite_Tag_Editor
                                 parentpanel.Children.Add(vb);
 
                             }
-                            else if (tvd.Type == "Bounds2Byte")
+                            else if (tvd.ControlType == "Bounds2Byte")
                             {
                                 tvd.Type = "2Byte";
 
@@ -1090,7 +1091,7 @@ namespace Halo_Infinite_Tag_Editor
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                                 parentpanel.Children.Add(vb);
                             }
-                            else if (tvd.Type == "2DPoint_Float")
+                            else if (tvd.ControlType == "2DPoint_Float")
                             {
                                 tvd.Type = "Float";
 
@@ -1109,7 +1110,7 @@ namespace Halo_Infinite_Tag_Editor
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                                 parentpanel.Children.Add(vb);
                             }
-                            else if (tvd.Type == "2DPoint_2Byte")
+                            else if (tvd.ControlType == "2DPoint_2Byte")
                             {
                                 tvd.Type = "2Byte";
 
@@ -1128,7 +1129,7 @@ namespace Halo_Infinite_Tag_Editor
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                                 parentpanel.Children.Add(vb);
                             }
-                            else if (tvd.Type == "3DPoint")
+                            else if (tvd.ControlType == "3DPoint")
                             {
                                 tvd.Type = "Float";
 
@@ -1152,7 +1153,7 @@ namespace Halo_Infinite_Tag_Editor
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                                 parentpanel.Children.Add(vb);
                             }
-                            else if (tvd.Type == "Quanternion")
+                            else if (tvd.ControlType == "Quanternion")
                             {
                                 tvd.Type = "Float";
 
@@ -1181,7 +1182,7 @@ namespace Halo_Infinite_Tag_Editor
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                                 parentpanel.Children.Add(vb);
                             }
-                            else if (tvd.Type == "3DPlane")
+                            else if (tvd.ControlType == "3DPlane")
                             {
                                 tvd.Type = "Float";
 
@@ -1210,7 +1211,7 @@ namespace Halo_Infinite_Tag_Editor
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                                 parentpanel.Children.Add(vb);
                             }
-                            else if (tvd.Type == "RGB")
+                            else if (tvd.ControlType == "RGB")
                             {
                                 tvd.Type = "Float";
 
@@ -1235,7 +1236,7 @@ namespace Halo_Infinite_Tag_Editor
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                                 parentpanel.Children.Add(vb);
                             }
-                            else if (tvd.Type == "ARGB")
+                            else if (tvd.ControlType == "ARGB")
                             {
                                 tvd.Type = "Float";
 
@@ -1262,7 +1263,7 @@ namespace Halo_Infinite_Tag_Editor
                                 tagViewerControls.Add(entry.Value.AbsoluteTagOffset, vb);
                                 parentpanel.Children.Add(vb);
                             }
-                            else if (tvd.Type == "TagRef")
+                            else if (tvd.ControlType == "TagRef")
                             {
                                 try
                                 {
@@ -1291,7 +1292,7 @@ namespace Halo_Infinite_Tag_Editor
                                     break;
                                 }
                             }
-                            else if (tvd.Type == "Tagblock")
+                            else if (tvd.ControlType == "Tagblock")
                             {
                                 int dataOffset = 0;
                                 long stringAddress = BitConverter.ToInt64(GetDataFromFile(20, entry.Value.MemoryAddress), 8);
@@ -1301,9 +1302,14 @@ namespace Halo_Infinite_Tag_Editor
                                 if (entry.Value.N != null)
                                     our_name = entry.Value.N;
 
+                                long tempBlockAdd = 0;
+
+                                if (tvd.DataBlockIndex != 0)
+                                    tempBlockAdd = (long)moduleFile.Tag.DataBlockArray[tvd.DataBlockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset;
+
                                 TagBlock? vb = new(tagStruct);
                                 vb.tagblock_title.Text = our_name;
-                                vb.BlockAddress = (long)moduleFile.Tag.DataBlockArray[tvd.DataBlockIndex].Offset;
+                                vb.BlockAddress = tempBlockAdd;
                                 vb.tagblock_address.Text = "0x" + vb.BlockAddress.ToString("X");
                                 vb.tagblock_address.IsReadOnly = true;
                                 vb.Children = entry;
@@ -1353,14 +1359,15 @@ namespace Halo_Infinite_Tag_Editor
                                 }
                             }
 
+                            if (isTagBlock && tb != null)
+                                tb.controlKeys.Add(entry.Value.AbsoluteTagOffset);
+
                             prevEntry = entry;
                         }
                     }
                     catch (Exception ex)
                     {
-                        TextBox tb = new TextBox();
-                        tb.Text = ex.Message;
-                        TagViewer.Children.Add(tb);
+                        StatusOut(ex.Message);
                     }
                 }
             }
@@ -1370,14 +1377,22 @@ namespace Halo_Infinite_Tag_Editor
         {
             tagBlock.dockpanel.Children.Clear();
 
-            if (entry.Value.B != null)
+            foreach (string key in tagBlock.controlKeys)
+            {
+                if (tagViewerControls.ContainsKey(key))
+                    tagViewerControls.Remove(key);
+            }
+
+            tagBlock.controlKeys.Clear();
+
+            if (entry.Value.B != null && tagBlock.dataBlockInd > 0)
             {
                 try
                 {
-                    long newAddress = (long)moduleFile.Tag.DataBlockArray[tagBlock.dataBlockInd].Offset + (entry.Value.S * tagBlock.stored_num_on_index);
+                    long newAddress = (long)moduleFile.Tag.DataBlockArray[tagBlock.dataBlockInd].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * tagBlock.stored_num_on_index);
                     long startingAddress = tagBlock.size * tagBlock.stored_num_on_index + newAddress;
 
-                    CreateTagControls(tagStruct, startingAddress, entry.Value.B, newAddress, tagBlock.dockpanel, absolute_address_chain);
+                    CreateTagControls(tagStruct, startingAddress, entry.Value.B, newAddress, tagBlock.dockpanel, absolute_address_chain, tagBlock, true);
                 }
                 catch
                 {
@@ -1389,8 +1404,7 @@ namespace Halo_Infinite_Tag_Editor
 
         private byte[] GetDataFromFile(int size, long offset)
         {
-            dataOffset = (int)offset;
-            byte[] data = moduleFile.Tag.TagData.Skip(dataOffset).Take((dataOffset + size) - dataOffset).ToArray();
+            byte[] data = moduleFile.Tag.TagData.Skip((int)offset).Take(((int)offset + size) - (int)offset).ToArray();
             return data;
         }
 
@@ -1585,8 +1599,8 @@ namespace Halo_Infinite_Tag_Editor
         #endregion
 
         #region Dictionaries
-        private Dictionary<string, string> tagGroups = new Dictionary<string, string>();
-        private Dictionary<string, TagInfo> inhaledTags = new Dictionary<string, TagInfo>();
+        public Dictionary<string, string> tagGroups = new Dictionary<string, string>();
+        public Dictionary<string, TagInfo> inhaledTags = new Dictionary<string, TagInfo>();
 
         public class TagInfo
         {
