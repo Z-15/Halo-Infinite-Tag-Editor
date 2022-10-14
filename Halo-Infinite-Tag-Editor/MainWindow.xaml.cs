@@ -16,7 +16,10 @@ using InfiniteRuntimeTagViewer;
 using InfiniteRuntimeTagViewer.Halo.TagObjects;
 using InfiniteRuntimeTagViewer.Halo;
 using InfiniteRuntimeTagViewer.Interface.Controls;
+using Halo_Infinite_Tag_Editor.InfiniteRuntimeTagViewer.Controls;
 using TagBlock = InfiniteRuntimeTagViewer.Interface.Controls.TagBlock;
+using System.Xml.Linq;
+using System.Threading;
 
 namespace Halo_Infinite_Tag_Editor
 {
@@ -1402,9 +1405,12 @@ namespace Halo_Infinite_Tag_Editor
             }
         }
 
-        private byte[] GetDataFromFile(int size, long offset)
+        private byte[] GetDataFromFile(int size, long offset, ModuleFile? mf = null)
         {
-            byte[] data = moduleFile.Tag.TagData.Skip((int)offset).Take(((int)offset + size) - (int)offset).ToArray();
+            if (mf == null)
+                mf = moduleFile;
+
+            byte[] data = mf.Tag.TagData.Skip((int)offset).Take(((int)offset + size) - (int)offset).ToArray();
             return data;
         }
 
@@ -1607,6 +1613,7 @@ namespace Halo_Infinite_Tag_Editor
             public string Path = "";
             public string TagID = "";
             public string AssetID = "";
+            public string Module = "";
         }
 
         private void InhaleTagGroup()
@@ -1639,6 +1646,7 @@ namespace Halo_Infinite_Tag_Editor
                     ti.TagID = hexString[0];
                     ti.AssetID = hexString[1];
                     ti.Path = hexString[2];
+                    ti.Module = hexString[3];
                     inhaledTags.Add(hexString[0], ti);
                 }
             }
@@ -1672,28 +1680,30 @@ namespace Halo_Infinite_Tag_Editor
         #endregion
 
         #region Tools
-        private List<string> tagDumpInfos = new List<string>();
-
         private async void DumpTagInfoClick(object sender, RoutedEventArgs e)
         {
+            List<string> tagDumpInfos = new List<string>();
+
             try
             {
                 StatusOut("Dumping tag info...");
 
                 foreach (string path in modulePaths)
                 {
-                    FileStream ms = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    FileStream mStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    ModuleFile mFile = new ModuleFile();
 
                     Task dumpTags = new Task(() =>
                     {
-                        Module m = ModuleEditor.ReadModule(ms);
+                        Module m = ModuleEditor.ReadModule(mStream);
+
                         foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
                         {
                             string TagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
                             string AssetID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.AssetId));
-                            string TagPath = mf.Key;
-
-                            tagDumpInfos.Add(TagID + " : " + AssetID + " : " + TagPath.Replace("\0", String.Empty));
+                            string TagPath = mf.Key.Replace("\0", String.Empty);
+                            string ModulePath = path.Split("deploy\\").Last();
+                            tagDumpInfos.Add(TagID + " : " + AssetID + " : " + TagPath + " : " + ModulePath);
                         }
                     });
                     dumpTags.Start();
@@ -1717,6 +1727,374 @@ namespace Halo_Infinite_Tag_Editor
             {
                 StatusOut("Failed to dump tag info!");
             }
+        }
+
+        public class HashTagInfo
+        {
+            public string TagID = "";
+            public Dictionary<long, string> ReferenceLocations = new();
+        }
+
+        public class HashInfo
+        {
+            public string HashID = "";
+            public string HashName = "";
+            public Dictionary<string, HashTagInfo> Tags = new();
+        }
+
+        private Dictionary<string, HashInfo> foundHashes = new();
+        private Dictionary<string, string> hashNames = new();
+
+        private async void DumpHashesClick(object sender, RoutedEventArgs e)
+        {
+            StatusOut("Gathering hashes...");
+            bool done = false;
+            int modulesDone = 0;
+            Task dumpHashes = new Task(() =>
+            {
+                foreach (string line in File.ReadLines(@".\Files\all_trimmed.txt"))
+                {
+                    string trim = line.Trim();
+                    if (trim.Contains(":"))
+                        if (!hashNames.ContainsKey(trim.Split(":").First()))
+                            hashNames.Add(trim.Split(":").First(), trim.Split(":").Last());
+                }
+
+                foreach (string line in File.ReadLines(@".\Files\nocaps_3chars.txt"))
+                {
+                    string trim = line.Trim();
+                    if (trim.Contains(":"))
+                        if (!hashNames.ContainsKey(trim.Split(":").First()))
+                            hashNames.Add(trim.Split(":").First(), trim.Split(":").Last());
+                }
+
+                foreach (string path in modulePaths)
+                {
+                    Debug.WriteLine(modulesDone + " Current Module: " + path);
+                    FileStream mStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    Module m = ModuleEditor.ReadModule(mStream);
+                    ResetTagTree();
+                    foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
+                    {
+                        try
+                        {
+                            string TagPath = mf.Key.Replace("\0", String.Empty);
+
+                            if (!TagPath.EndsWith(".model_animation_graph") && !TagPath.EndsWith(".physics_model") && !TagPath.EndsWith(".decal_system") && !TagPath.EndsWith(".generator_system") && !TagPath.EndsWith(".composer_spawning_pattern"))
+                            {
+                                MemoryStream tStream = new();
+                                tStream = ModuleEditor.GetTag(m, mStream, TagPath);
+                                mf.Value.Tag = ModuleEditor.ReadTag(tStream, TagPath, mf.Value);
+                                mf.Value.Tag.Name = TagPath;
+                                mf.Value.Tag.ShortName = TagPath.Split("\\").Last();
+
+                                string curTagGroup = mf.Key.Replace("\0", String.Empty).Split(".").Last();
+                                string tagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
+
+                                if (tagGroups.ContainsKey(curTagGroup.Trim()))
+                                {
+                                    Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagGroups[curTagGroup]);
+                                    GetTagHashes(tagDefinitions, 0, 0, tagID + ":", mf.Value, path);
+                                }
+
+                                tStream.Close();
+                                curDataBlockInd = 1;
+                            } 
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine("Dump Hashes Task: " + ex.Message);
+                        }
+                    }
+                    mStream.Close();
+                    modulesDone++;
+                }       
+
+                done = true;
+            });
+
+            Task dumpCheck = new Task(() =>
+            {
+                while (!done)
+                {
+                    Thread.Sleep(1000);
+                    StatusOut("Hashes Found: " + foundHashes.Count());
+                }
+            });
+
+            dumpHashes.Start();
+            dumpCheck.Start();
+            await dumpHashes;
+            
+            StatusOut("Writing to file...");
+            CreateHashFile();
+            StatusOut("Hashes dumped!");
+        }
+
+        private void GetTagHashes(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain, ModuleFile mf, string modulePath)
+        {
+            try
+            {
+                foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
+                {
+                    entry.Value.MemoryAddress = address + entry.Key;
+                    entry.Value.AbsoluteTagOffset = offsetChain + "," + (entry.Key + startingTagOffset);
+                    string name = "";
+                    if (entry.Value.N != null)
+                        name = entry.Value.N;
+
+                    if (entry.Value.T == "Tagblock" || entry.Value.T == "FUNCTION")
+                    {
+                        TagValueData curTagData = new()
+                        {
+                            Name = name,
+                            ControlType = entry.Value.T,
+                            Type = entry.Value.T,
+                            OffsetChain = entry.Value.AbsoluteTagOffset,
+                            Offset = entry.Value.MemoryAddress,
+                            Value = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress, mf),
+                            Size = (int)entry.Value.S,
+                            ChildCount = 0,
+                            DataBlockIndex = 0
+                        };
+
+                        int blockIndex = 0;
+                        int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress, mf), 16);
+
+                        if (curTagData.Type == "Tagblock" && childCount < 10000)
+                        {
+                            if (childCount > 0)
+                            {
+                                blockIndex = curDataBlockInd;
+                                curDataBlockInd++;
+                                curTagData.ChildCount = childCount;
+                                curTagData.DataBlockIndex = blockIndex;
+
+                                for (int i = 0; i < childCount; i++)
+                                {
+                                    long newAddress = (long)mf.Tag.DataBlockArray[curTagData.DataBlockIndex].Offset - (long)mf.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
+                                    GetTagHashes(entry.Value.B, newAddress, newAddress + entry.Value.S * i, curTagData.OffsetChain, mf, modulePath);
+                                }
+                            }
+                        }
+                        else if (curTagData.Type == "FUNCTION")
+                        {
+                            curTagData.ChildCount = childCount;
+                            childCount = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20, mf));
+                            if (childCount > 0)
+                            {
+                                blockIndex = curDataBlockInd;
+                                curDataBlockInd++;
+
+                                curTagData.ChildCount = childCount;
+                                curTagData.DataBlockIndex = blockIndex;
+                            }
+                        }
+                    }
+
+                    if (entry.Value.T == "mmr3Hash")
+                    {
+                        string hash = Convert.ToHexString(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress, mf));
+
+                        if (hash != "BCBCBCBC" && hash != "00000000" && !String.IsNullOrWhiteSpace(hash) && !String.IsNullOrEmpty(hash))
+                        {
+                            string tagID = mf.FileEntry.GlobalTagId.ToString("X");
+                            if (!foundHashes.ContainsKey(hash))
+                            {
+                                HashInfo hashInfo = new();
+                                hashInfo.HashID = hash;
+
+                                if (hashNames.ContainsKey(hash))
+                                    hashInfo.HashName = hashNames[hash];
+                                else
+                                    hashInfo.HashName = "Unknown";
+
+                                HashTagInfo hashTagInfo = new();
+                                hashTagInfo.TagID = tagID;
+                                if (!hashTagInfo.ReferenceLocations.ContainsKey(entry.Value.MemoryAddress))
+                                    hashTagInfo.ReferenceLocations.Add(entry.Value.MemoryAddress, name);
+
+                                hashInfo.Tags.Add(hashTagInfo.TagID, hashTagInfo);
+                                foundHashes.Add(hash, hashInfo);
+                            }
+                            else
+                            {
+                                HashInfo hashInfo = foundHashes[hash];
+
+                                if (!hashInfo.Tags.ContainsKey(tagID))
+                                {
+                                    HashTagInfo hashTagInfo = new();
+                                    hashTagInfo.TagID = tagID;
+                                    if (!hashTagInfo.ReferenceLocations.ContainsKey(entry.Value.MemoryAddress))
+                                        hashTagInfo.ReferenceLocations.Add(entry.Value.MemoryAddress, name);
+                                    hashInfo.Tags.Add(hashTagInfo.TagID, hashTagInfo);
+                                }
+                                else
+                                {
+                                    HashTagInfo hashTagInfo = hashInfo.Tags[tagID];
+                                    if (!hashTagInfo.ReferenceLocations.ContainsKey(entry.Value.MemoryAddress))
+                                        hashTagInfo.ReferenceLocations.Add(entry.Value.MemoryAddress, name);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Get Tag Hashes: " + ex.Message);
+            }
+        }
+
+        private void CreateHashFile()
+        {
+            List<string> lines = new();
+
+            foreach (HashInfo hashInfo in foundHashes.Values)
+            {
+                string outLine = "";
+                outLine = "Hash-" +hashInfo.HashID + "~Name-" + hashInfo.HashName + "~Tags{";
+                int i = 0;
+                foreach (HashTagInfo hashTagInfo in hashInfo.Tags.Values)
+                {
+                    outLine += hashTagInfo.TagID + "[";
+                    int j = 0;
+                    foreach (KeyValuePair<long, string> kvp in hashTagInfo.ReferenceLocations)
+                    {
+                        outLine += kvp.Value + ":" + kvp.Key.ToString("X");
+                        if (j < hashTagInfo.ReferenceLocations.Count - 1)
+                            outLine += ",";
+
+                        j++;
+                    }
+                    outLine += "]";
+
+                    if (i < hashInfo.Tags.Count - 1)
+                        outLine += ",";
+
+                    i++;
+                }
+                outLine += "}";
+
+                lines.Add(outLine);
+            }
+
+            File.WriteAllLines(@".\Files\mmr3Hashes.txt", lines);
+        }
+        #endregion
+
+        #region Hash Searching
+
+        private void HashSearchClick(object sender, RoutedEventArgs e)
+        {
+            ResetHashSearch();
+            string search = hashSeachBox.Text.Trim();
+            if (search.Length == 8)
+            {
+                string foundLine = "";
+                int curLine = 1;
+                foreach (string line in File.ReadAllLines(@".\Files\mmr3Hashes.txt"))
+                {
+                    if (line.Contains(search))
+                    {
+                        foundLine = line;
+                        break;
+                    }
+                    curLine++;
+                }
+
+                if (foundLine.Length > 1)
+                {
+                    StatusOut("Hash found at line: " + curLine);
+                    string hash = foundLine.Split("~")[0].Split("-")[1];
+                    string hashName = foundLine.Split("~")[1].Split("-")[1];
+                    string TagList = foundLine.Split("~")[2].Replace("Tags{","").Replace("}", "");
+                    string[] Tags = TagList.Split("],");
+
+                    HashBox.Text = hash;
+                    HashNameBox.Text = hashName;
+                    TagCountBox.Text = Tags.Count().ToString();
+
+                    foreach (string tag in Tags)
+                    {
+                        string tagID = ReverseHexString(tag.Split("[").First());
+                        string tagName = "Object ID: " + tagID;
+                        if (inhaledTags.ContainsKey(tagID))
+                            tagName = inhaledTags[tagID].Path.Split("\\").Last();
+
+                        TreeViewItem item = new TreeViewItem();
+                        item.Header = tagName;
+                        item.Selected += HashTagSelected;
+                        item.Tag = tag;
+                        HashTree.Items.Add(item);
+                    }
+                }
+            }
+            else
+            {
+                StatusOut("Incorrect hash format!");
+            }
+            
+        }
+
+        private void HashTagSelected(object sender, RoutedEventArgs e)
+        {
+            TreeViewItem item = (TreeViewItem)sender;
+            string tagID = ReverseHexString(((string)item.Tag).Split("[").First());
+            string tagName = "Object ID: " + tagID;
+            string module = "";
+            if (inhaledTags.ContainsKey(tagID))
+            {
+                tagName = inhaledTags[tagID].Path.Split("\\").Last();
+                module = inhaledTags[tagID].Module;
+            }
+
+            TagIDBox.Text = tagID;
+            TagNameBox.Text = tagName;
+            ModuleNameBox.Text = module;
+
+            string referenceList = ((string)item.Tag).Split("[").Last().Replace("]","");
+            string[] references = referenceList.Split(",");
+
+            ReferencePanel.Children.Clear();
+            foreach (string reference in references)
+            {
+                HashReference hr = new();
+                hr.ValueName.Text = reference.Split(":")[0];
+                hr.ValueOffset.Text = reference.Split(":")[1];
+                ReferencePanel.Children.Add(hr);
+            }
+        }
+
+        private string ReverseHexString(string hexString)
+        {
+            string result = hexString;
+
+            if (hexString.Length == 8)
+            {
+                byte[] bArray = Convert.FromHexString(result);
+                byte[] newArray = new byte[4];
+                newArray[0] = bArray[3];
+                newArray[1] = bArray[2];
+                newArray[2] = bArray[1];
+                newArray[3] = bArray[0];
+
+                result = Convert.ToHexString(newArray);
+            }
+
+            return result;
+        }
+
+        private void ResetHashSearch()
+        {
+            HashBox.Text = "";
+            HashNameBox.Text = "";
+            TagCountBox.Text = "";
+            HashTree.Items.Clear();
+            TagIDBox.Text = "";
+            TagNameBox.Text = "";
+            ModuleNameBox.Text = "";
+            ReferencePanel.Children.Clear();
         }
         #endregion
     }
