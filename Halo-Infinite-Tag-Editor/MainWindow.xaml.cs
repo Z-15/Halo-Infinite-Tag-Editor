@@ -18,7 +18,6 @@ using InfiniteRuntimeTagViewer.Halo;
 using InfiniteRuntimeTagViewer.Interface.Controls;
 using Halo_Infinite_Tag_Editor.InfiniteRuntimeTagViewer.Controls;
 using TagBlock = InfiniteRuntimeTagViewer.Interface.Controls.TagBlock;
-using System.Xml.Linq;
 using System.Threading;
 
 namespace Halo_Infinite_Tag_Editor
@@ -1704,6 +1703,55 @@ namespace Halo_Infinite_Tag_Editor
                             string TagPath = mf.Key.Replace("\0", String.Empty);
                             string ModulePath = path.Split("deploy\\").Last();
                             tagDumpInfos.Add(TagID + " : " + AssetID + " : " + TagPath + " : " + ModulePath);
+                        }
+                    });
+                    dumpTags.Start();
+                    await dumpTags;
+                    dumpTags.Dispose();
+                }
+
+                tagDumpInfos.Sort();
+                SaveFileDialog sfd = new();
+                sfd.Filter = "Text File (*.txt)|*.txt";
+                sfd.FileName = "tagnames.txt";
+                if (sfd.ShowDialog() == true)
+                {
+                    File.WriteAllLines(sfd.FileName, tagDumpInfos.ToArray());
+                }
+
+                tagDumpInfos.Clear();
+                StatusOut("Tag info dumped!");
+            }
+            catch
+            {
+                StatusOut("Failed to dump tag info!");
+            }
+        }
+
+        private async void DumpTagInfoIRTVClick(object sender, RoutedEventArgs e)
+        {
+            List<string> tagDumpInfos = new List<string>();
+
+            try
+            {
+                StatusOut("Dumping tag info...");
+
+                foreach (string path in modulePaths)
+                {
+                    FileStream mStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    ModuleFile mFile = new ModuleFile();
+
+                    Task dumpTags = new Task(() =>
+                    {
+                        Module m = ModuleEditor.ReadModule(mStream);
+
+                        foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
+                        {
+                            string TagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
+                            string AssetID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.AssetId));
+                            string TagPath = mf.Key.Replace("\0", String.Empty);
+                            string ModulePath = path.Split("deploy\\").Last();
+                            tagDumpInfos.Add(TagID + " : " + TagPath);
                         }
                     });
                     dumpTags.Start();

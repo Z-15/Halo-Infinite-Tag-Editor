@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Halo_Infinite_Tag_Editor"
         mc:Ignorable="d"
-        Title="Halo Infinite Tag Editor" Height="1000" MinHeight="600" Width="1400" MinWidth="600" WindowStyle="None" Background="#151515" BorderBrush="#404040" BorderThickness="0" WindowStartupLocation="CenterScreen" AllowsTransparency="True">
+        Title="Halo Infinite Tag Editor" Height="1000" MinHeight="600" Width="1800" MinWidth="600" WindowStyle="None" Background="#151515" BorderBrush="#404040" BorderThickness="0" WindowStartupLocation="CenterScreen" AllowsTransparency="True">
     <!--Resources-->
     <Window.Resources>
         <ResourceDictionary>
@@ -48,7 +48,8 @@
                     <MenuItem Header="Close" Click="CloseTagClick" ToolTip="Close current tag"/>
                 </MenuItem>
                 <MenuItem Header="Tools" Style="{DynamicResource Z_MenuItemStyle}" Margin="5,0,0,0">
-                    <MenuItem Header="Dump Tag Info" Click="DumpTagInfoClick" ToolTip="Dumps tag info from modules in path"/>
+                    <MenuItem Header="Dump Tag Info HITE" Click="DumpTagInfoClick" ToolTip="Dumps tag info from modules in path"/>
+                    <MenuItem Header="Dump Tag Info IRTV" Click="DumpTagInfoIRTVClick" ToolTip="Dumps tag info from modules in path"/>
                     <MenuItem Header="Dump Hashes" Click="DumpHashesClick" ToolTip="Dumps hashes from every tag found in module path"/>
                 </MenuItem>
             </Menu>
@@ -169,10 +170,11 @@
                     <StackPanel x:Name="TagViewer" CanHorizontallyScroll="True" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"/>
                 </ScrollViewer>
             </Grid>
+            
             <TabControl TabStripPlacement="Right" Grid.Column="3" Background="#202020" BorderThickness="0">
                 <TabItem Header="^"/>
                 <TabItem Header="Hash Search">
-                    <Grid Width="300" Background="#252525">
+                    <Grid Width="400" Background="#252525">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="35"/>
