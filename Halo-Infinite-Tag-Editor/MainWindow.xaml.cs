@@ -1777,6 +1777,56 @@ namespace Halo_Infinite_Tag_Editor
             }
         }
 
+        private async void DumpTagInfoIRMEClick(object sender, RoutedEventArgs e)
+        {
+            List<string> tagDumpInfos = new List<string>();
+
+            try
+            {
+                StatusOut("Dumping tag info...");
+
+                foreach (string path in modulePaths)
+                {
+                    FileStream mStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    ModuleFile mFile = new ModuleFile();
+
+                    Task dumpTags = new Task(() =>
+                    {
+                        Module m = ModuleEditor.ReadModule(mStream);
+
+                        foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
+                        {
+                            string TagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
+                            string AssetID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.AssetId));
+                            string TagPath = mf.Key.Replace("\0", String.Empty);
+                            string ModulePath = path.Split("deploy\\").Last();
+                            if (TagPath.EndsWith("model"))
+                                tagDumpInfos.Add(TagID + " : " + TagPath);
+                        }
+                    });
+                    dumpTags.Start();
+                    await dumpTags;
+                    dumpTags.Dispose();
+                }
+
+                tagDumpInfos.Sort();
+                SaveFileDialog sfd = new();
+                sfd.Filter = "Text File (*.txt)|*.txt";
+                sfd.FileName = "tagnames.txt";
+                if (sfd.ShowDialog() == true)
+                {
+                    File.WriteAllLines(sfd.FileName, tagDumpInfos.ToArray());
+                }
+
+                tagDumpInfos.Clear();
+                StatusOut("Tag info dumped!");
+            }
+            catch
+            {
+                StatusOut("Failed to dump tag info!");
+            }
+        }
+
         public class HashTagInfo
         {
             public string TagID = "";
@@ -1792,7 +1842,7 @@ namespace Halo_Infinite_Tag_Editor
 
         private Dictionary<string, HashInfo> foundHashes = new();
         private Dictionary<string, string> hashNames = new();
-
+       
         private async void DumpHashesClick(object sender, RoutedEventArgs e)
         {
             StatusOut("Gathering hashes...");
@@ -2029,12 +2079,430 @@ namespace Halo_Infinite_Tag_Editor
 
             File.WriteAllLines(@".\Files\mmr3Hashes.txt", lines);
         }
+
+        #endregion
+
+        #region Forge Data
+        public class ForgeData
+        {
+            public string TagID = "";
+            public string TagName = "";
+            public int TagIDInt = 0;
+            public string Folder = "";
+            public string SubFolder = "";
+            public int EntryInd = 0;
+        }
+
+        private Dictionary<string, ForgeData> forgeDump = new();
+        private Dictionary<int, string> entryTags = new();
+        private Dictionary<int, string> catagoryIDs = new();
+        private Dictionary<int, string> parentCatagoryIDs = new();
+        private Dictionary<string, string> parentCategories = new();
+        private int entryCount = 0;
+        private int categoryCount = 0;
+
+        private async void DumpForgeData(object sender, RoutedEventArgs e)
+        {
+            StatusOut("Gathering forge data...");
+            forgeDump.Clear();
+
+            Dictionary<string, string> forgeObjectNames = new();
+            foreach (string line in File.ReadAllLines(@".\Files\nameList.txt"))
+            {
+                string ID = line.Split(" = ").Last().Replace(",", string.Empty).Trim();
+                string name = line.Split(" = ").First().Trim();
+                if (!forgeObjectNames.ContainsKey(ID))
+                    forgeObjectNames.Add(ID, name);
+            }
+
+            string objectDataPath = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Halo Infinite\\deploy\\any\\globals\\forge\\forge_objects-rtx-new.module";
+            string objectManifestPath = @"C:\Program Files (x86)\Steam\steamapps\common\Halo Infinite\deploy\any\globals\levels-rtx-new.module";
+
+            FileStream mStream = new FileStream(objectDataPath, FileMode.Open, FileAccess.Read);
+            Module m = ModuleEditor.ReadModule(mStream);
+
+            foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
+            {
+                try
+                {
+                    string TagPath = mf.Key.Replace("\0", String.Empty);
+
+                    if (TagPath.EndsWith(".forgeobjectdata"))
+                    {
+                        MemoryStream tStream = new();
+                        tStream = ModuleEditor.GetTag(m, mStream, TagPath);
+                        string tagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
+
+                        ForgeData fd = new();
+                        fd.TagID = tagID;
+                        fd.TagName = TagPath.Split("\\").Last().Split(".").First();
+                        fd.TagIDInt = mf.Value.FileEntry.GlobalTagId;
+
+                        if (forgeObjectNames.ContainsKey(fd.TagIDInt.ToString()))
+                        {
+                            fd.TagName = forgeObjectNames[fd.TagIDInt.ToString()];
+                        }
+                        forgeDump.Add(fd.TagID, fd);
+
+                        tStream.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Forge Dump Error: " + ex.Message);
+                }
+            }
+            mStream.Close();
+            m = new();
+
+            mStream = new FileStream(objectManifestPath, FileMode.Open, FileAccess.Read);
+            m = ModuleEditor.ReadModule(mStream);
+
+            
+
+            foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
+            {
+                string TagPath = mf.Key.Replace("\0", String.Empty);
+
+                if (TagPath.EndsWith(".forgeobjectmanifest"))
+                {
+                    MemoryStream tStream = new();
+                    tStream = ModuleEditor.GetTag(m, mStream, TagPath);
+                    mf.Value.Tag = ModuleEditor.ReadTag(tStream, TagPath, mf.Value);
+                    mf.Value.Tag.Name = TagPath;
+                    mf.Value.Tag.ShortName = TagPath.Split("\\").Last();
+
+                    string tagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
+                    string curTagGroup = mf.Key.Replace("\0", String.Empty).Split(".").Last();
+
+                    if (tagGroups.ContainsKey(curTagGroup.Trim()))
+                    {
+                        Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagGroups[curTagGroup]);
+                        GetForgeInfo(tagDefinitions, 0, 0, tagID + ":", mf.Value, objectManifestPath, true);
+                        entryCount = 0;
+                        categoryCount = 0;
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<int, string> kvp in catagoryIDs)
+            {
+                string parentCategory = parentCatagoryIDs[kvp.Key];
+                parentCategories.Add(kvp.Value, parentCategory);
+            }
+            List<string> lines = new();
+            foreach (ForgeData fd in forgeDump.Values)
+            {
+                fd.Folder = parentCategories[fd.SubFolder];
+
+                // Tag ID Int - Tag Name - SubFolder - ParentFolder
+                string folder = fd.Folder;
+                if (FolderNames.ContainsKey(fd.Folder))
+                {
+                    folder = FolderNames[fd.Folder];
+                }
+
+                string subfolder = fd.SubFolder;
+                if (FolderNames.ContainsKey(fd.SubFolder))
+                {
+                    subfolder = FolderNames[fd.SubFolder];
+                }
+
+                string line = folder.ToUpper() + " > ";
+                line += subfolder.ToUpper() + " > ";
+                line += fd.TagName.ToUpper() + " : ";
+                line += fd.TagIDInt.ToString() + " : " + fd.EntryInd;
+                lines.Add(line);
+
+            }
+            lines.Sort();
+            SaveFileDialog sfd = new();
+            sfd.Filter = "Text File (*.txt)|*.txt";
+            sfd.FileName = "ForgeObjects.txt";
+            if (sfd.ShowDialog() == true)
+            {
+                File.WriteAllLines(sfd.FileName, lines.ToArray());
+            }
+
+        }
+
+        private void GetForgeInfo(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain, ModuleFile mf, string modulePath, bool firstRun)
+        {
+            try
+            {
+                foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
+                {
+                    entry.Value.MemoryAddress = address + entry.Key;
+                    entry.Value.AbsoluteTagOffset = offsetChain + "," + (entry.Key + startingTagOffset);
+                    string name = "";
+                    if (entry.Value.N != null)
+                        name = entry.Value.N;
+
+                    if (entry.Value.T == "Tagblock" || entry.Value.T == "FUNCTION")
+                    {
+                        TagValueData curTagData = new()
+                        {
+                            Name = name,
+                            ControlType = entry.Value.T,
+                            Type = entry.Value.T,
+                            OffsetChain = entry.Value.AbsoluteTagOffset,
+                            Offset = entry.Value.MemoryAddress,
+                            Value = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress, mf),
+                            Size = (int)entry.Value.S,
+                            ChildCount = 0,
+                            DataBlockIndex = 0
+                        };
+
+                        int blockIndex = 0;
+                        int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress, mf), 16);
+
+                        if (curTagData.Type == "Tagblock" && childCount < 10000)
+                        {
+                            if (childCount > 0)
+                            {
+                                blockIndex = curDataBlockInd;
+                                curDataBlockInd++;
+                                curTagData.ChildCount = childCount;
+                                curTagData.DataBlockIndex = blockIndex;
+
+                                for (int i = 0; i < childCount; i++)
+                                {
+                                    long newAddress = (long)mf.Tag.DataBlockArray[curTagData.DataBlockIndex].Offset - (long)mf.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
+                                    GetForgeInfo(entry.Value.B, newAddress, newAddress + entry.Value.S * i, curTagData.OffsetChain, mf, modulePath, firstRun);
+                                }
+                            }
+                        }
+                        else if (curTagData.Type == "FUNCTION")
+                        {
+                            curTagData.ChildCount = childCount;
+                            childCount = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20, mf));
+                            if (childCount > 0)
+                            {
+                                blockIndex = curDataBlockInd;
+                                curDataBlockInd++;
+
+                                curTagData.ChildCount = childCount;
+                                curTagData.DataBlockIndex = blockIndex;
+                            }
+                        }
+                    }
+                    if (firstRun)
+                    {
+                        if (entry.Value.N == "Forge Object")
+                        {
+                            string entryTag = Convert.ToHexString(GetDataFromFile(4, entry.Value.MemoryAddress + 8, mf));
+                            if (forgeDump.ContainsKey(entryTag))
+                            {
+                                ForgeData fd = new();
+                                fd = (ForgeData)forgeDump[entryTag];
+                                fd.EntryInd = entryCount;
+                            }
+                            entryTags.Add(entryCount, entryTag);
+                            entryCount++;
+                        }
+                        if (entry.Value.N == "Keyword")
+                        {
+                            string subFolder = Convert.ToHexString(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress, mf));
+                            ForgeData fd = forgeDump[entryTags[entryCount - 1]];
+                            fd.SubFolder = subFolder;
+                        }
+
+                        if (entry.Value.N == "Category ID")
+                        {
+                            string categoryID = Convert.ToHexString(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress, mf));
+                            catagoryIDs.Add(categoryCount, categoryID);
+                            
+                        }
+                        if (entry.Value.N == "Parent Category ID")
+                        {
+                            string categoryID = Convert.ToHexString(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress, mf));
+                            parentCatagoryIDs.Add(categoryCount, categoryID);
+                            categoryCount++;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Get Tag Hashes: " + ex.Message);
+            }
+        }
+
+        private Dictionary<string, string> FolderNames = new()
+        {
+            // ROOT FOLDERS
+            { "EA3223EA", "accents" },
+            { "9D24B701", "biomes" },
+            { "957003CB", "blockers" },
+            { "7416759B", "decals" },
+            { "D45632B1", "fx" },
+            { "58EAD6EF", "gameplay" },
+            { "98D3445F", "halo design set" },
+            { "F1CC100D", "lights" },
+            { "EF548B2A", "primitives" },
+            { "805A8ACF", "props" },
+            { "AB5C78A5", "structures" },
+            { "920A82B9", "Z_Null" },
+            { "45E9333E", "Z_Unused" },
+            // ACCENTS
+            { "FCB0B577", "antennas" },
+            { "D3E15E7E", "antennas mp" },
+            { "051C51D3", "arena" },
+            { "C83A0371", "barrels" },
+            { "ACD5A535", "barrels mp" },
+            { "BA860FA1", "bazzar" },
+            { "A62122D8", "bazzar mp" },
+            { "600A76CA", "bodies" },
+            { "94C44886", "city props" },
+            { "4A174B06", "city props mp" },
+            { "48DF3BB5", "cover" },
+            { "3C5C221E", "cover mp" },
+            { "B8E84C1E", "crates" },
+            { "4215C711", "crates mp" },
+            { "094B5F3D", "destructibles" },
+            { "2730E2EF", "destructibles mp" },
+            { "374F00F1", "ducts" },
+            { "F32489F1", "fences" },
+            { "6C5E87BF", "fences mp" },
+            { "B62245A9", "forerunner" },
+            { "E908822C", "forerunner mp" },
+            { "228BE1A4", "garbage" },
+            { "9E83989D", "garbage mp" },
+            { "77B82060", "glass" },
+            { "56BA23BA", "missles" },
+            { "74D2A795", "missles mp" },
+            { "D7477F6A", "panels" },
+            { "BDD4227F", "pipes" },
+            { "69769AD1", "railings" },
+            { "D1CD6834", "railings mp" },
+            { "127F0160", "rubble" },
+            { "300A7AB4", "sandbags" },
+            { "A7DAD52E", "sandbags mp" },
+            { "17864DE1", "signs" },
+            { "4588194B", "supports" },
+            { "070BAEA1", "tools mp" },
+            { "935B215C", "unsc" },
+            { "67927F10", "unsc mp" },
+            { "FFC5EE8E", "vehicles" },
+            { "53833E8C", "vehicles mp" },
+            { "78F032BC", "wires" },
+            { "2C664138", "wires mp" },
+            { "06DFFE4B", "workstations" },
+            { "F3F5375C", "workstations mp" },
+            // BIOMES
+            { "59D2C375", "bushes" },
+            { "F7174DF2", "flora" },
+            { "7E640351", "rocks - alpine" },
+            { "F7D02A88", "rocks - burnt forest" },
+            { "D16E4F08", "rocks - desert" },
+            { "637D015B", "rocks - glacier" },
+            { "ACE14020", "rocks - misc" },
+            { "ADC73C23", "rocks - space" },
+            { "32E488A5", "rocks - tidal" },
+            { "A40F97C9", "rocks - wetlands" },
+            { "3B167CF9", "stumps" },
+            { "94C6B4EB", "terrain" },
+            { "E857DAFE", "trees" },
+            { "84A89220", "trees - logs" },
+            { "5D98AB89", "trees - roots" },
+            // BLOCKERS
+            { "48FD8875", "one way blockers" },
+            { "57FD7FFC", "player blockers" },
+            { "0CAD6ADA", "projectile blockers" },
+            { "94A72FF7", "team blockers" },
+            { "DD740B6E", "vehicle blockers" },
+            // DECALS
+            { "68B715EC", "building signage" },
+            { "3F6697AB", "letters" },
+            { "945FB30E", "numbered symbols" },
+            { "8FE9E9A6", "numbers" },
+            { "1EFE9CB5", "unsc" },
+            // FX
+            { "67FE6E8C", "ambient life" },
+            { "9F2A6BE7", "atmospherics" },
+            { "04758E7F", "energy" },
+            { "D96067BD", "explosions" },
+            { "E84E2354", "fire" },
+            { "05B5A5C8", "general" },
+            { "9B475E78", "holograms" },
+            { "04FEBB43", "liquids" },
+            { "94CD949E", "smoke" },
+            { "F24EA653", "sparks" },
+            // GAMEPLAY
+            { "3BD142A2", "audio" },
+            { "0EA3DB6D", "equipment" },
+            { "35328CB8", "game modes" },
+            { "16A987BE", "launchers / lifts" },
+            { "F773D4F6", "match flow" },
+            { "82B4C1BA", "nav mesh" },
+            { "466AD096", "player spawning" },
+            { "D623245D", "sandbox" },
+            { "A26A4C1A", "scripting" },
+            { "9DAB4EF5", "teleporters" },
+            { "D9026BD9", "vehicles" },
+            { "0C5B1EFE", "volumes" },
+            { "214E07D8", "weapon spawners" },
+            { "AE54AEC7", "weapons" },
+            // HALO DESIGN SET
+            { "007F8C7D", "columns" },
+            { "85FADED6", "columns mp" },
+            { "6CB2C702", "cover" },
+            { "931DAC45", "cover mp" },
+            { "037F0DCC", "crate" },
+            { "9E43E1BF", "crate mp" },
+            { "4A50D3DE", "doorways" },
+            { "891CD51E", "doorways mp" },
+            { "B7D08EFA", "floors" },
+            { "C3487ED6", "floors mp" },
+            { "0F051460", "railings" },
+            { "C7E7D7BE", "railings mp" },
+            { "5A3E0F31", "ramps" },
+            { "BD2FF5EF", "ramps mp" },
+            { "51CB6FCF", "scale objects" },
+            { "2E62784F", "walls" },
+            { "8E06BFE6", "walls mp" },
+            // LIGHTS
+            { "4FA9B4B8", "forerunner light" },
+            { "ED571C3C", "forerunner light mp" },
+            { "545838D9", "forerunner no light" },
+            { "DD37E7E2", "forerunner no light mp" },
+            { "9C3D0A89", "generic light objects" },
+            { "E019CC37", "unsc light" },
+            { "6A72C8B2", "unsc light mp" },
+            { "289FE80D", "unsc no light" },
+            { "91964832", "unsc no light mp" },
+            // PRIMITIVES
+            { "F3228393", "blocks" },
+            { "9A215954", "cones" },
+            { "BD977D51", "cylinders" },
+            { "0F2B2029", "pyramids" },
+            { "B5A1024C", "rings" },
+            { "15A30F2F", "spheres" },
+            { "F6B1AB74", "trapezoids" },
+            { "2C6FA031", "triangles" },
+            // PROPS
+            { "B33BA26D", "sports" },
+            { "85274C4A", "summertime" },
+            { "53087C47", "toys" },
+            // STRUCTURES
+            { "59E9E765", "beams" },
+            { "6E0FC805", "bridges" },
+            { "29DAE20F", "bridges mp" },
+            { "13944678", "columns" },
+            { "3D53832E", "cover" },
+            { "0813C7E9", "doors" },
+            { "FB42AFE8", "doors mp" },
+            { "8C890378", "floors" },
+            { "5589B3AD", "slopes" },
+            { "4DE4BA8D", "walls" },
+        };
         #endregion
 
         #region Hash Searching
 
         private void HashSearchClick(object sender, RoutedEventArgs e)
         {
+            StatusOut("Searching...");
             ResetHashSearch();
             string search = hashSeachBox.Text.Trim();
             if (search.Length == 8)

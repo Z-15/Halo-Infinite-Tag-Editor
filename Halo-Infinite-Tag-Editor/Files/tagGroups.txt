@@ -1,3 +1,8 @@
+fntl : ForgeNamedTagLists
+foom : forgeobjectmanifest
+fpal : ForgePaletteDefinition
+fosp : ForgeObjectScriptPropertyMenuIte
+food : forgeobjectdata
 sbnk : soundbank
 matg : globals
 curv : curvedefinition

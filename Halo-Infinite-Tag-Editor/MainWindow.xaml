@@ -50,7 +50,9 @@
                 <MenuItem Header="Tools" Style="{DynamicResource Z_MenuItemStyle}" Margin="5,0,0,0">
                     <MenuItem Header="Dump Tag Info HITE" Click="DumpTagInfoClick" ToolTip="Dumps tag info from modules in path"/>
                     <MenuItem Header="Dump Tag Info IRTV" Click="DumpTagInfoIRTVClick" ToolTip="Dumps tag info from modules in path"/>
+                    <MenuItem Header="Dump Tag Info IRME" Click="DumpTagInfoIRMEClick" ToolTip="Dumps tag info from modules in path"/>
                     <MenuItem Header="Dump Hashes" Click="DumpHashesClick" ToolTip="Dumps hashes from every tag found in module path"/>
+                    <MenuItem Header="Dump Forge Data" Click="DumpForgeData" ToolTip="Dumps data from all food tags."/>
                 </MenuItem>
             </Menu>
             <TextBlock Text="Halo Infinite Tag Editor" Style="{DynamicResource Z_TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>

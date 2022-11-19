@@ -35,6 +35,9 @@
     <None Update="Files\mmr3Hashes.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\nameList.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\nocaps_3chars.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
