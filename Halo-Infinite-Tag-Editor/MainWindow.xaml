@@ -175,7 +175,7 @@
             
             <TabControl TabStripPlacement="Right" Grid.Column="3" Background="#202020" BorderThickness="0">
                 <TabItem Header="^"/>
-                <TabItem Header="Hash Search">
+                <TabItem Header="Hash Search" FontWeight="Thin">
                     <Grid Width="400" Background="#252525">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
@@ -252,6 +252,49 @@
                                 </ScrollViewer>
                             </Grid>
                         </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Havok Script Reader" FontWeight="Thin">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Soupstream's Havok Script Disassembler" Style="{DynamicResource Z_TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <TextBox Width="600" Grid.Row="1" x:Name="luaView" IsReadOnly="True" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" FontWeight="Thin" FontFamily="Cascadia Code" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+                        <Button Content="Save" Grid.Row="2" Height="20" Width="100" VerticalAlignment="Bottom" Margin="2.5" Click="SaveScript"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Credits" FontWeight="Thin">
+                    <Grid Margin="5" Width="400">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Credits" Style="{DynamicResource Z_TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20"/>
+                        <StackPanel Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#252525">
+                            <TextBlock HorizontalAlignment="Center" Margin="5" FontSize="16">
+                                <Hyperlink NavigateUri="https://github.com/Gamergotten/Infinite-runtime-tagviewer" RequestNavigate="Hyperlink_RequestNavigate">
+                                    Gamergotten's Infinite Runtime Tag Viewer
+                                </Hyperlink>
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center" Margin="5" FontSize="16">
+                                <Hyperlink NavigateUri="https://github.com/Krevil/InfiniteModuleEditor" RequestNavigate="Hyperlink_RequestNavigate">
+                                    Krevil's Infinite Module Editor
+                                </Hyperlink>
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center" Margin="5" FontSize="16">
+                                <Hyperlink NavigateUri="https://github.com/Krevil/OodleSharp" RequestNavigate="Hyperlink_RequestNavigate">
+                                    Krevil's fork of Crauzer's OodleSharp
+                                </Hyperlink>
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center" Margin="5" FontSize="16">
+                                <Hyperlink NavigateUri="https://github.com/soupstream/havok-script-tools" RequestNavigate="Hyperlink_RequestNavigate">
+                                    Soupstream's Havok-Script-Tools
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
                     </Grid>
                 </TabItem>
             </TabControl>

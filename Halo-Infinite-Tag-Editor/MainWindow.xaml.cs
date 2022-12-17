@@ -19,6 +19,8 @@ using InfiniteRuntimeTagViewer.Interface.Controls;
 using Halo_Infinite_Tag_Editor.InfiniteRuntimeTagViewer.Controls;
 using TagBlock = InfiniteRuntimeTagViewer.Interface.Controls.TagBlock;
 using System.Threading;
+using HavokScriptToolsCommon;
+using System.Windows.Navigation;
 
 namespace Halo_Infinite_Tag_Editor
 {
@@ -33,9 +35,13 @@ namespace Halo_Infinite_Tag_Editor
         // I will try to credit everything I didn't personally write as to not upset those who spent their 
         // time building some pretty awesome programs.
         //
+        // Also, credit to soupstream and their Havok Script Disassembler. I decided to add it in here so we
+        // no long have to extract tags with havok scripts to read them. Credit will be given on the tab as well.
+        //
         // Krevil's Infinite Module Editor: https://github.com/Krevil/InfiniteModuleEditor
         // Gamergotten's Infinite Runtime Tag Viewer: https://github.com/Gamergotten/Infinite-runtime-tagviewer
         // Krevil's fork of Crauzer's OodleSharp: https://github.com/Krevil/OodleSharp
+        // Soupstream's Havok-Script-Tools: https://github.com/soupstream/havok-script-tools
         //
         // Everything used from other projects will be placed in their own seperate folders, unless it's impossible
         // or more difficult to do so.
@@ -111,6 +117,12 @@ namespace Halo_Infinite_Tag_Editor
             {
                 StatusBlock.Text = message;
             }), DispatcherPriority.Background);
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
         }
         #endregion
 
@@ -516,10 +528,56 @@ namespace Halo_Infinite_Tag_Editor
 
                 BuildTagViewer();
 
+                ReadScript(tagStream.ToArray());
+
                 ModuleBlock.Text = modulePath.Split("\\").Last();
                 TagNameBlock.Text = tagFileName.Split("\\").Last();
                 TagIDBlock.Text = moduleFile.Tag.TagData[8].ToString("X2") + moduleFile.Tag.TagData[9].ToString("X2") + moduleFile.Tag.TagData[10].ToString("X2") + moduleFile.Tag.TagData[11].ToString("X2");
                 DataOffsetBlock.Text = moduleFile.Tag.Header.HeaderSize.ToString();
+            }
+        }
+
+        private void ReadScript(byte[] data)
+        {
+            try
+            {
+                string search = "1B4C7561510E";
+                int index = 0;
+                bool found = false;
+                for (int i = 0; i < data.Length - 7; i++)
+                {
+                    string testBytes = Convert.ToHexString(data[i..(i + 6)]);
+
+                    if (testBytes == search)
+                    {
+                        index = i;
+                        found = true;
+                        break;
+                    }
+                }
+
+                // Doing it this way so any tag with a lua script is read.
+                if (found)
+                {
+                    byte[] lua = data[index..data.Length];
+                    var disassembler = new HksDisassembler(lua);
+                    luaView.Text = disassembler.Disassemble();
+                }
+            }
+            catch(Exception ex)
+            {
+                StatusOut("Error reading lua script: " + ex.Message);
+            }
+        }
+
+        private void SaveScript(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog sfd = new();
+            sfd.Filter = "Lua Script (*.lua)|*.lua";
+            sfd.FileName = TagNameBlock.Text.Split(".").First() + ".lua";
+            if (sfd.ShowDialog() == true)
+            {
+                File.WriteAllText(sfd.FileName, luaView.Text);
             }
         }
 
@@ -563,6 +621,8 @@ namespace Halo_Infinite_Tag_Editor
 
             if (ofd.ShowDialog() == true)
             {
+                ReadScript(File.ReadAllBytes(ofd.FileName));
+
                 tagFileStream = new FileStream(ofd.FileName, FileMode.Open);
                 moduleFile = new ModuleFile();
                 moduleFile.Tag = ModuleEditor.ReadTag(tagFileStream, ofd.SafeFileName);
@@ -693,6 +753,7 @@ namespace Halo_Infinite_Tag_Editor
                 tagStream = null;
                 tagFileStream = null;
                 moduleFile = null;
+                luaView.Clear();
             }
         }
         #endregion
@@ -2132,9 +2193,9 @@ namespace Halo_Infinite_Tag_Editor
                 if (!forgeObjectNames.ContainsKey(ID))
                     forgeObjectNames.Add(ID, name);
             }
-
-            string objectDataPath = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Halo Infinite\\deploy\\any\\globals\\forge\\forge_objects-rtx-new.module";
-            string objectManifestPath = @"C:\Program Files (x86)\Steam\steamapps\common\Halo Infinite\deploy\any\globals\levels-rtx-new.module";
+            string deploy = @"X:\Games\Halo Infinite - Big Forge\deploy";
+            string objectDataPath = deploy + @"\any\globals\forge\forge_objects-rtx-new.module";
+            string objectManifestPath = deploy + @"\any\globals\levels-rtx-new.module";
 
             FileStream mStream = new FileStream(objectDataPath, FileMode.Open, FileAccess.Read);
             Module m = ModuleEditor.ReadModule(mStream);
@@ -2242,24 +2303,32 @@ namespace Halo_Infinite_Tag_Editor
             List<string> lines = new();
             foreach (ForgeData fd in forgeDump.Values)
             {
-                fd.Folder = parentCategories[fd.SubFolder];
-                fd.EntryDesc = categoryDescs[fd.SubFolder];
-                fd.Title = categoryTitleIDs[fd.SubFolder];
-
-                string folder = fd.Folder;
-                if (FolderNames.ContainsKey(fd.Folder))
+                try
                 {
-                    folder = FolderNames[fd.Folder];
-                }
+                    fd.Folder = parentCategories[fd.SubFolder];
+                    fd.EntryDesc = categoryDescs[fd.SubFolder];
+                    fd.Title = categoryTitleIDs[fd.SubFolder];
 
-                string subfolder = fd.SubFolder;
-                if (FolderNames.ContainsKey(fd.SubFolder))
+                    string folder = fd.Folder;
+                    if (FolderNames.ContainsKey(fd.Folder))
+                    {
+                        folder = FolderNames[fd.Folder];
+                    }
+
+                    string subfolder = fd.SubFolder;
+                    if (FolderNames.ContainsKey(fd.SubFolder))
+                    {
+                        subfolder = FolderNames[fd.SubFolder];
+                    }
+
+                    string newLine = folder + ":" + fd.Folder + ":" + subfolder + ":" + fd.SubFolder + ":" + fd.TagName + ":" + fd.TagIDInt + ":" + fd.Description + ":" + fd.EntryDesc + ":" + fd.Title + ":" + fd.EntryInd;
+                    lines.Add(newLine);
+                }
+                catch
                 {
-                    subfolder = FolderNames[fd.SubFolder];
-                }
 
-                string newLine = folder + ":" + fd.Folder + ":" + subfolder + ":" + fd.SubFolder + ":" + fd.TagName + ":" + fd.TagIDInt + ":" + fd.Description + ":" + fd.EntryDesc + ":" + fd.Title + ":" + fd.EntryInd;
-                lines.Add(newLine);
+                }
+                
             }
             lines.Sort();
             SaveFileDialog sfd = new();
