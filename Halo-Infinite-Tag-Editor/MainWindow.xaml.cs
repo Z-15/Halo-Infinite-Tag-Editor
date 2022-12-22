@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Threading;
+using Newtonsoft.Json;
 using TagBlock = InfiniteRuntimeTagViewer.Interface.Controls.TagBlock;
 
 namespace Halo_Infinite_Tag_Editor
@@ -757,518 +759,7 @@ namespace Halo_Infinite_Tag_Editor
             }
         }
         
-        private void DumpTagClick(object sender, RoutedEventArgs e)
-        {
-            // Setup
-            string curTagGroup = moduleFile.Tag.ShortName.Split(".")[1];
-            curDataBlockInd = 1;
-            IRTV_TagStruct tagStruct = new()
-            {
-                Datnum = "",
-                ObjectId = curTagID,
-                TagGroup = tagGroups[curTagGroup],
-                TagData = 0,
-                TagTypeDesc = "",
-                TagFullName = moduleFile.Tag.Name,
-                TagFile = moduleFile.Tag.ShortName,
-                unloaded = false
-            };
-            Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagStruct.TagGroup);
-
-            // Initialize json lines
-            List<string> json = new();
-
-            // Header
-            json.Add("{");
-            json.Add("  \"TagName\": \"" + tagFileName + "\",");
-            json.Add("  \"Data\": {");
-
-            // Run through every control
-            foreach (string line in GetJsonData(tagDefinitions, 0, 0, curTagID + ":", 4))
-            {
-                json.Add(line);
-            }
-                
-            // End
-            json.Add("  }");
-            json.Add("}");
-
-            // Save File
-            SaveFileDialog sfd = new();
-            sfd.Filter = "Json (*.json)|*.json";
-            sfd.FileName = TagNameBlock.Text.Split(".").First();
-            if (sfd.ShowDialog() == true)
-            {
-                File.WriteAllLines(sfd.FileName, json);
-            }
-        }
-
-        private List<string> GetJsonData(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain,int indentCount)
-        {
-            KeyValuePair<long, TagLayouts.C> prevEntry = new();
-            List<string> result = new();
-            string indent = "";
-            int current = 0;
-
-            for (int i = 0; i < indentCount; i++)
-                indent += " ";
-
-            foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
-            {
-                entry.Value.MemoryAddress = address + entry.Key;
-                entry.Value.AbsoluteTagOffset = offsetChain + "," + (entry.Key + startingTagOffset);
-                
-                string name = "";
-                if (entry.Value.N != null)
-                    name = entry.Value.N;
-
-                if (!name.Contains("generated_pad"))
-                {
-                    try
-                    {
-                        if (entry.Value.T == "Comment")
-                        {
-                            if (prevEntry.Value != null)
-                            {
-                                if (entry.Value.T != prevEntry.Value.T && entry.Value.N != prevEntry.Value.N)
-                                {
-                                    string line = indent + "\"" + entry.Value.T + "\": \"" + entry.Value.N + "\"";
-
-                                    if (current < tagDefinitions.Count - 1)
-                                        result.Add(line + ",");
-                                    else
-                                        result.Add(line);
-                                }
-                            }
-                        }
-                        else if (entry.Value.T == "Byte")
-                        {
-                            string value = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0].ToString();
-                            string line = indent + "\"" + entry.Value.N + "\": " + value;
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "2Byte")
-                        {
-                            string value = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString();
-                            string line = indent + "\"" + entry.Value.N + "\": " + value;
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "4Byte")
-                        {
-                            string value = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString();
-                            string line = indent + "\"" + entry.Value.N + "\": " + value;
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "Float")
-                        {
-                            string value = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("0.000");
-                            string line = indent + "\"" + entry.Value.N + "\": " + value;
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "Pointer")
-                        {
-                            string value = "0x" + BitConverter.ToInt64(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X");
-                            string line = indent + "\"" + entry.Value.N + "\": \"" + value + "\"";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "mmr3Hash")
-                        {
-                            string value = BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("XXXXXXXX");
-                            string line = indent + "\"" + entry.Value.N + "\": \"" + value + "\"";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "String")
-                        {
-                            string value = Encoding.UTF8.GetString(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).Split('\0').First();
-                            string line = indent + "\"" + entry.Value.N + "\": \"" + value + "\"";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "EnumGroup")
-                        {
-                            TagLayouts.EnumGroup fg3 = entry.Value as TagLayouts.EnumGroup;
-
-                            result.Add(indent + "\"" + fg3.N + "\": {");
-                            // Get Value
-                            int enumValueRaw = 0;
-                            if (entry.Value.S == 1)
-                            {
-                                result.Add(indent + "  \"Type\": \"enum8\",");
-                                enumValueRaw = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0];
-                            }
-                            else if (entry.Value.S == 2)
-                            {
-                                result.Add(indent + "  \"Type\": \"enum16\",");
-                                enumValueRaw = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                            }
-                            else if (entry.Value.S == 4)
-                            {
-                                result.Add(indent + "  \"Type\": \"enum32\",");
-                                enumValueRaw = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                            }
-                            result.Add(indent + "  \"Value\": " + enumValueRaw + ",");
-                            if (fg3.STR.ContainsKey(enumValueRaw))
-                                result.Add(indent + "  \"ValueName\": \"" + fg3.STR[enumValueRaw] + "\"");
-                            else
-                                result.Add(indent + "  \"ValueName\": \"Error\"");
-
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "FlagGroup")
-                        {
-                            TagLayouts.FlagGroup? fg = entry.Value as TagLayouts.FlagGroup;
-                            result.Add(indent + "\"" + fg.N + "\": {");
-
-                            int enumValueRaw = 0;
-                            if (entry.Value.S == 1)
-                            {
-                                result.Add(indent + "  \"Type\": \"flags8\",");
-                                enumValueRaw = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0];
-                            }
-                            else if (entry.Value.S == 2)
-                            {
-                                result.Add(indent + "  \"Type\": \"flags16\",");
-                                enumValueRaw = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                            }
-                            else if (entry.Value.S == 4)
-                            {
-                                result.Add(indent + "  \"Type\": \"flags32\",");
-                                enumValueRaw = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                            }
-
-                            result.Add(indent + "  \"Value\": " + enumValueRaw + ",");
-
-                            result.Add(indent + "  \"Flags\": {");
-
-                            Dictionary<string, bool> values = GetFlagsFromBits(fg.A, fg.MB, GetDataFromFile(fg.A, entry.Value.MemoryAddress), fg.STR);
-                            int i = 1;
-                            foreach (KeyValuePair<string, bool> kvp in values)
-                            {
-                                if (i != values.Count)
-                                    result.Add(indent + "    \"" + kvp.Key + "\": \"" + kvp.Value + "\",");
-                                else
-                                    result.Add(indent + "    \"" + kvp.Key + "\": \"" + kvp.Value + "\"");
-                                i++;
-                            }
-                            result.Add(indent + "  }");
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "BoundsFloat")
-                        {
-                            string value1 = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0).ToString("0.000");
-                            string value2 = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4).ToString("0.000");
-
-                            result.Add(indent + "\"" + entry.Value.N + "\": {");
-                            result.Add(indent + "  \"Min\": " + value1 + ",");
-                            result.Add(indent + "  \"Max\": " + value2 + "");
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "Bounds2Byte")
-                        {
-                            string value1 = BitConverter.ToInt16(GetDataFromFile(4, entry.Value.MemoryAddress), 0).ToString();
-                            string value2 = BitConverter.ToInt16(GetDataFromFile(4, entry.Value.MemoryAddress), 2).ToString();
-
-                            result.Add(indent + "\"" + entry.Value.N + "\": {");
-                            result.Add(indent + "  \"Min\": " + value1 + ",");
-                            result.Add(indent + "  \"Max\": " + value2 + "");
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "2DPoint_Float")
-                        {
-                            string value1 = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0).ToString("0.000");
-                            string value2 = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4).ToString("0.000");
-
-                            result.Add(indent + "\"" + entry.Value.N + "\": {");
-                            result.Add(indent + "  \"X\": " + value1 + ",");
-                            result.Add(indent + "  \"Y\": " + value2 + "");
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "2DPoint_2Byte")
-                        {
-                            string value1 = BitConverter.ToInt16(GetDataFromFile(4, entry.Value.MemoryAddress), 0).ToString();
-                            string value2 = BitConverter.ToInt16(GetDataFromFile(4, entry.Value.MemoryAddress), 2).ToString();
-
-                            result.Add(indent + "\"" + entry.Value.N + "\": {");
-                            result.Add(indent + "  \"X\": " + value1 + ",");
-                            result.Add(indent + "  \"Y\": " + value2 + "");
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "3DPoint")
-                        {
-                            string value1 = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0).ToString("0.000");
-                            string value2 = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4).ToString("0.000");
-                            string value3 = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8).ToString("0.000");
-
-                            result.Add(indent + "\"" + entry.Value.N + "\": {");
-                            result.Add(indent + "  \"X\": " + value1 + ",");
-                            result.Add(indent + "  \"Y\": " + value2 + ",");
-                            result.Add(indent + "  \"Z\": " + value3 + "");
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "Quanternion")
-                        {
-                            string value1 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 0).ToString("0.000");
-                            string value2 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 4).ToString("0.000");
-                            string value3 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 8).ToString("0.000");
-                            string value4 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 12).ToString("0.000");
-
-                            result.Add(indent + "\"" + entry.Value.N + "\": {");
-                            result.Add(indent + "  \"W\": " + value1 + ",");
-                            result.Add(indent + "  \"X\": " + value2 + ",");
-                            result.Add(indent + "  \"Y\": " + value3 + ",");
-                            result.Add(indent + "  \"Z\": " + value4 + "");
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "3DPlane")
-                        {
-                            string value1 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 0).ToString("0.000");
-                            string value2 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 4).ToString("0.000");
-                            string value3 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 8).ToString("0.000");
-                            string value4 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 12).ToString("0.000");
-
-                            result.Add(indent + "\"" + entry.Value.N + "\": {");
-                            result.Add(indent + "  \"X\": " + value1 + ",");
-                            result.Add(indent + "  \"Y\": " + value2 + ",");
-                            result.Add(indent + "  \"Z\": " + value3 + ",");
-                            result.Add(indent + "  \"P\": " + value4 + "");
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "RGB")
-                        {
-                            byte r_hex = (byte)(BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0) * 255);
-                            byte g_hex = (byte)(BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4) * 255);
-                            byte b_hex = (byte)(BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8) * 255);
-                            string hex_color = r_hex.ToString("X2") + g_hex.ToString("X2") + b_hex.ToString("X2");
-
-                            string value1 = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0).ToString("0.000");
-                            string value2 = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4).ToString("0.000");
-                            string value3 = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8).ToString("0.000");
-
-                            result.Add(indent + "\"" + entry.Value.N + "\": {");
-                            result.Add(indent + "  \"Hex\": \"#" + hex_color + "\",");
-                            result.Add(indent + "  \"R\": " + value1 + ",");
-                            result.Add(indent + "  \"G\": " + value2 + ",");
-                            result.Add(indent + "  \"B\": " + value3 + "");
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "ARGB")
-                        {
-                            byte a_hex = (byte)(BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 0) * 255);
-                            byte r_hex = (byte)(BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 4) * 255);
-                            byte g_hex = (byte)(BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 8) * 255);
-                            byte b_hex = (byte)(BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 12) * 255);
-                            string hex_color = a_hex.ToString("X2") + r_hex.ToString("X2") + g_hex.ToString("X2") + b_hex.ToString("X2");
-
-                            string value1 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 0).ToString("0.000");
-                            string value2 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 4).ToString("0.000");
-                            string value3 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 8).ToString("0.000");
-                            string value4 = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 12).ToString("0.000");
-
-                            result.Add(indent + "\"" + entry.Value.N + "\": {");
-                            result.Add(indent + "  \"Hex\": \"#" + hex_color + "\",");
-                            result.Add(indent + "  \"A\": " + value1 + ",");
-                            result.Add(indent + "  \"R\": " + value2 + ",");
-                            result.Add(indent + "  \"G\": " + value3 + ",");
-                            result.Add(indent + "  \"B\": " + value4 + "");
-
-                            string line = indent + "}";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else if (entry.Value.T == "TagRef")
-                        {
-                            string tagId = Convert.ToHexString(GetDataFromFile(4, entry.Value.MemoryAddress + 8));
-                            string tagName = IDToTagName(tagId);
-                            byte[] tagGroupData = GetDataFromFile(4, entry.Value.MemoryAddress + 20);
-                            string tagGroup = "Null";
-                            if (Convert.ToHexString(tagGroupData) != "FFFFFFFF")
-                                tagGroup = ReverseString(Encoding.UTF8.GetString(tagGroupData));
-
-                            if (tagId == "FFFFFFFF" && tagGroup == "Null")
-                            {
-                                string line = indent + "\"" + entry.Value.N + "\": \"Null\"";
-                                if (current < tagDefinitions.Count - 1)
-                                    result.Add(line + ",");
-                                else
-                                    result.Add(line);
-                            }
-                            else
-                            {
-                                result.Add(indent + "\"" + entry.Value.N + "\": {");
-                                result.Add(indent + "  \"TagGroup\": \"" + tagGroup + "\",");
-                                result.Add(indent + "  \"TagID\": \"" + tagId + "\",");
-                                result.Add(indent + "  \"TagName\": \"" + tagName + "\"");
-
-                                string line = indent + "}";
-                                if (current < tagDefinitions.Count - 1)
-                                    result.Add(line + ",");
-                                else
-                                    result.Add(line);
-                            }
-                        }
-                        else if (entry.Value.T == "Tagblock")
-                        {
-                            int blockIndex = 0;
-                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
-
-                            if (childCount > 0 && childCount < 100000)
-                            {
-                                result.Add(indent + "\"" + entry.Value.N + "\": [");
-
-                                blockIndex = curDataBlockInd;
-                                curDataBlockInd++;
-
-                                for (int i = 0; i < childCount; i++)
-                                {
-                                    long newAddress = (long)moduleFile.Tag.DataBlockArray[blockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
-                                    result.Add(indent + "  {");
-                                    result.Add(indent + "    \"Index\": " + i);
-                                    foreach (string line in GetJsonData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, indentCount + 4))
-                                    {
-                                        result.Add(line);
-                                    }
-                                    if (i == childCount - 1)
-                                        result.Add(indent + "  }");
-                                    else
-                                        result.Add(indent + "  },");
-                                }
-
-                                string newLine = indent + "]";
-                                if (current < tagDefinitions.Count - 1)
-                                    result.Add(newLine + ",");
-                                else
-                                    result.Add(newLine);
-                            }
-                            else
-                            {
-                                string line = indent + "\"" + entry.Value.N + "\": []";
-
-                                if (current < tagDefinitions.Count - 1)
-                                    result.Add(line + ",");
-                                else
-                                    result.Add(line);
-                            }
-                        }
-                        else if (entry.Value.T == "FUNCTION")
-                        {
-                            int blockIndex = 0;
-                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
-
-                            childCount = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20));
-                            if (childCount > 0)
-                            {
-                                blockIndex = curDataBlockInd;
-                                curDataBlockInd++;
-                            }
-
-                            string line = indent + "\"" + entry.Value.N + "\": []";
-
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                        else
-                        {
-                            string line = indent + "\"Type not supported\": " + "\"" + entry.Value.T + "\"";
-                            if (current < tagDefinitions.Count - 1)
-                                result.Add(line + ",");
-                            else
-                                result.Add(line);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                    }
-                }
-                
-                prevEntry = entry;
-                current++;
-            }
-            return result;
-        }
-
+        
         private Dictionary<string, bool> GetFlagsFromBits(int amountOfBytes, int maxBit, byte[] data, Dictionary<int, string>? descriptions = null)
         {
             Dictionary<string, bool> values = new();
@@ -3387,6 +2878,926 @@ namespace Halo_Infinite_Tag_Editor
             ModuleNameBox.Text = "";
             ReferencePanel.Children.Clear();
         }
+        #endregion
+
+        #region CoatingDump
+        public class MaterialStyle
+        {
+            // Material Style Data
+            public string style_id = "";
+            public string style_name = "";
+            // List of palettes
+            public Dictionary<string, StyleData> styles = new();
+        }
+
+        public class StyleData
+        {
+            // Material Style - Style Tag Block.
+            public string name = "";
+            public string palette_id = "";
+            public string palette = "";
+            public float emissive_amount = 0;
+            public float scratch_amount = 0;
+            public string grime_type = "";
+            public float grime_amount = 0;
+            // List of swatches
+            public Dictionary<string, MaterialPalette> palettes = new();
+        }
+
+        public class MaterialPalette
+        {
+            // Material Palette - swatches tag block
+            public string name = "";
+            public string swatch_id = "";
+            public string swatch = "";
+            public string color = "";
+            public string roughnessOverride = "";
+            public float emissiveIntensity = 0;
+            public float emissiveAmount = 0;
+            public string groupName = "";
+            // Material Swatch
+            public Vector2 colorAndRoughnessTextureTransform = new(0, 0);
+            public Vector2 normalTextureTransform = new(0, 0);
+            public string color_gradient_map_id = "";
+            public string color_gradient_map = "";
+            public float roughness_white = 0;
+            public float roughness_black = 0;
+            public string normal_detail_map_id = "";
+            public string normal_detail_map = "";
+            public float metallic = 0;
+			public float ior = 0;
+			public float albedo_tint_spec = 0;
+            public float sss_strenght = 0;
+            public Vector3 scratch_color = new(0, 0, 0);
+            public float scratch_brightness = 0;
+			public float scratch_roughness = 0;
+			public float scratch_metallic = 0;
+			public float scratch_ior = 0;
+			public float scratch_albedo_tint_spec = 0;
+            public float sss_intensity = 0;
+            // List of color variants.
+            public ColorVariant color_variant = new();
+        }
+
+        public class ColorVariant
+        {
+            // Found in the MaterialSwatch tag in the color variants tag block.
+            public string name = "";
+            public Vector3 gradient_top_color = new(0, 0, 0);
+            public Vector3 gradient_mid_color = new(0, 0, 0);
+            public Vector3 gradient_bottom_color = new(0, 0, 0);
+        }
+
+        private void DumpStyleClick(object sender, RoutedEventArgs e)
+        {
+            if (tagFileName.EndsWith("materialstyles"))
+            {
+                StatusOut("Attempting to dump style data...");
+                try
+                {
+                    string fileName = tagFileName.Split('.').First().Split(@"\").Last();
+                    MaterialStyle style = GetMaterialData();
+
+                    // Save File
+                    SaveFileDialog sfd = new();
+                    sfd.Filter = "Json (*.json)|*.json";
+                    sfd.FileName = fileName + ".json";
+                    if (sfd.ShowDialog() == true)
+                    {
+                        File.WriteAllText(sfd.FileName, JsonConvert.SerializeObject(style, Formatting.Indented).ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StatusOut("Failed to dump style data: " + ex.Message);
+                }
+            }
+            else
+            {
+                StatusOut("Tag must be material style!");
+            }
+            
+        }
+
+        private MaterialStyle GetMaterialData()
+        {
+            MaterialStyle style = new MaterialStyle();
+            style.style_id = TagIDBlock.Text;
+            style.style_name = tagFileName;
+            // Get all palette data
+            ReadTagStyle(style.style_id, style);
+
+            // Read all palettes
+            foreach (KeyValuePair<string, StyleData> pal in style.styles)
+            {
+                ReadTagStyle(pal.Value.palette_id, pal.Value);
+
+                // Read all swatches
+                foreach (KeyValuePair<string, MaterialPalette> swa in pal.Value.palettes)
+                {
+                    ReadTagStyle(swa.Value.swatch_id, swa.Value);
+                }
+            }
+
+            return style;
+        }
+
+        private void ReadTagStyle(string tag, Object obj)
+        {
+            ResetTagTree();
+            Thread.Sleep(100);
+
+            FileStream mStream = new FileStream(modulePath, FileMode.Open, FileAccess.Read);
+            Module m = ModuleEditor.ReadModule(mStream);
+
+            KeyValuePair<string, ModuleFile> file = new();
+
+            foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
+            {
+                string test = ReverseHexString(mf.Value.FileEntry.GlobalTagId.ToString("X"));
+                if (test == tag)
+                    file = mf;
+            }
+            curTagID = tag;
+            moduleFile = file.Value;
+
+            string TagPath = file.Key.Replace("\0", String.Empty);
+
+            MemoryStream tStream = new();
+            tStream = ModuleEditor.GetTag(m, mStream, TagPath);
+            file.Value.Tag = ModuleEditor.ReadTag(tStream, TagPath, file.Value);
+            file.Value.Tag.Name = TagPath;
+            file.Value.Tag.ShortName = TagPath.Split("\\").Last();
+
+            string curTagGroup = file.Key.Replace("\0", String.Empty).Split(".").Last();
+            string tagID = Convert.ToHexString(BitConverter.GetBytes(file.Value.FileEntry.GlobalTagId));
+
+            if (tagGroups.ContainsKey(curTagGroup.Trim()))
+            {
+                Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagGroups[curTagGroup]);
+
+                if (obj.GetType() == typeof(MaterialStyle))
+                    GetStyleData(tagDefinitions, 0, 0, tag + ":", (MaterialStyle)obj);
+                else if (obj.GetType() == typeof(StyleData))
+                    GetPaletteData(tagDefinitions, 0, 0, tag + ":", (StyleData)obj);
+                else if (obj.GetType() == typeof(MaterialPalette))
+                    GetSwatchData(tagDefinitions, 0, 0, tag + ":", (MaterialPalette)obj);
+            }
+
+            tStream.Close();
+            curDataBlockInd = 1;
+            mStream.Close();
+        }
+
+        private void GetStyleData(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain, MaterialStyle style, bool save = false)
+        {
+            KeyValuePair<long, TagLayouts.C> prevEntry = new();
+            List<string> result = new();
+            string indent = "";
+            int current = 0;
+
+            StyleData palette = new();
+            
+
+            foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
+            {
+                entry.Value.MemoryAddress = address + entry.Key;
+                entry.Value.AbsoluteTagOffset = offsetChain + "," + (entry.Key + startingTagOffset);
+
+                string name = "";
+                if (entry.Value.N != null)
+                    name = entry.Value.N;
+
+                if (!name.Contains("generated_pad"))
+                {
+                    try
+                    {
+                        if (save)
+                        {
+                            if (moduleFile.Tag.Name.EndsWith("materialstyles"))
+                            {
+                                switch (entry.Value.N.ToLower())
+                                {
+                                    case "name":
+                                        palette.name = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
+                                        break;
+                                    case "palette":
+                                        palette.palette_id = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 8)).ToString("X"));
+                                        palette.palette = IDToTagName(palette.palette_id);
+                                        break;
+                                    case "emissive_amount":
+                                        palette.emissive_amount = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "scratch_amount":
+                                        palette.scratch_amount = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "grime_type":
+                                        palette.grime_type = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
+                                        break;
+                                    case "grime_amount":
+                                        palette.grime_amount = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                }
+                            }
+                        }
+
+                        if (entry.Value.T == "Tagblock")
+                        {
+                            int blockIndex = 0;
+                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
+
+                            if (childCount > 0 && childCount < 100000)
+                            {
+                                result.Add(indent + "\"" + entry.Value.N + "\": [");
+
+                                blockIndex = curDataBlockInd;
+                                curDataBlockInd++;
+
+                                for (int i = 0; i < childCount; i++)
+                                {
+                                    long newAddress = (long)moduleFile.Tag.DataBlockArray[blockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
+                                    if (moduleFile.Tag.Name.EndsWith("materialstyles"))
+                                    {
+                                        if (entry.Value.N == "style")
+                                            GetStyleData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, style, true);
+                                        else
+                                            GetStyleData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, style);
+                                    }
+                                }
+                            }
+                        }
+                        else if (entry.Value.T == "FUNCTION")
+                        {
+                            int blockIndex = 0;
+                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
+
+                            childCount = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20));
+                            if (childCount > 0)
+                            {
+                                blockIndex = curDataBlockInd;
+                                curDataBlockInd++;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                    }
+                }
+
+                prevEntry = entry;
+                current++;
+            }
+
+            if (moduleFile.Tag.Name.EndsWith("materialstyles") && save)
+            {
+                style.styles.Add(palette.name, palette);
+            }
+        }
+
+        private void GetPaletteData(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain, StyleData pal, bool save = false)
+        {
+            KeyValuePair<long, TagLayouts.C> prevEntry = new();
+            List<string> result = new();
+            string indent = "";
+            int current = 0;
+
+            MaterialPalette swatch = new();
+
+            foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
+            {
+                entry.Value.MemoryAddress = address + entry.Key;
+                entry.Value.AbsoluteTagOffset = offsetChain + "," + (entry.Key + startingTagOffset);
+
+                string name = "";
+                if (entry.Value.N != null)
+                    name = entry.Value.N;
+
+                if (!name.Contains("generated_pad"))
+                {
+                    try
+                    {
+                        if (save)
+                        {
+                            if (moduleFile.Tag.Name.EndsWith("materialpalette"))
+                            {
+                                if (entry.Value.T == "EnumGroup")
+                                {
+                                    TagLayouts.EnumGroup fg3 = entry.Value as TagLayouts.EnumGroup;
+                                    int enumValueRaw = 0;
+                                    if (fg3.N == "roughnessOverride")
+                                    {
+                                        if (entry.Value.S == 1)
+                                        {
+                                            enumValueRaw = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0];
+                                        }
+                                        else if (entry.Value.S == 2)
+                                        {
+                                            enumValueRaw = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        }
+                                        else if (entry.Value.S == 4)
+                                        {
+                                            enumValueRaw = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        }
+
+                                        if (fg3.STR.ContainsKey(enumValueRaw))
+                                            swatch.roughnessOverride = fg3.STR[enumValueRaw];
+                                        else
+                                            swatch.roughnessOverride = "Error";
+                                    }
+                                }
+                                else
+                                {
+                                    switch (entry.Value.N.ToLower())
+                                    {
+                                        case "name":
+                                            swatch.name = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
+                                            break;
+                                        case "swatch":
+                                            swatch.swatch_id = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 8)).ToString("X"));
+                                            swatch.swatch = IDToTagName(swatch.swatch_id);
+                                            break;
+                                        case "color":
+                                            swatch.color = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
+                                            break;
+                                        case "emissiveintensity":
+                                            swatch.emissiveIntensity = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                            break;
+                                        case "emissiveamount":
+                                            swatch.emissiveAmount = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                            break;
+                                        case "groupname":
+                                            swatch.groupName = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
+                                            break;
+                                    }
+                                }
+
+                            }
+                        }
+
+                        if (entry.Value.T == "Tagblock")
+                        {
+                            int blockIndex = 0;
+                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
+
+                            if (childCount > 0 && childCount < 100000)
+                            {
+                                result.Add(indent + "\"" + entry.Value.N + "\": [");
+
+                                blockIndex = curDataBlockInd;
+                                curDataBlockInd++;
+
+                                for (int i = 0; i < childCount; i++)
+                                {
+                                    long newAddress = (long)moduleFile.Tag.DataBlockArray[blockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
+
+                                    if (moduleFile.Tag.Name.EndsWith("materialpalette"))
+                                    {
+                                        if (entry.Value.N == "swatches")
+                                            GetPaletteData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, pal, true);
+                                        else
+                                            GetPaletteData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, pal);
+                                    }
+
+                                }
+                            }
+                        }
+                        else if (entry.Value.T == "FUNCTION")
+                        {
+                            int blockIndex = 0;
+                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
+
+                            childCount = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20));
+                            if (childCount > 0)
+                            {
+                                blockIndex = curDataBlockInd;
+                                curDataBlockInd++;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                    }
+                }
+
+                prevEntry = entry;
+                current++;
+            }
+
+            if (moduleFile.Tag.Name.EndsWith("materialpalette") && save)
+            {
+                pal.palettes.Add(swatch.name, swatch);
+            }
+        }
+
+        private void GetSwatchData(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain, MaterialPalette swatch, bool save = false)
+        {
+            KeyValuePair<long, TagLayouts.C> prevEntry = new();
+            List<string> result = new();
+            string indent = "";
+            int current = 0;
+
+            ColorVariant cVar = new();
+
+            foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
+            {
+                entry.Value.MemoryAddress = address + entry.Key;
+                entry.Value.AbsoluteTagOffset = offsetChain + "," + (entry.Key + startingTagOffset);
+
+                string name = "";
+                if (entry.Value.N != null)
+                    name = entry.Value.N;
+
+                if (!name.Contains("generated_pad"))
+                {
+                    try
+                    {
+                        if (moduleFile.Tag.Name.EndsWith("materialswatch"))
+                        {
+                            if (save)
+                            {
+                                switch (entry.Value.N.ToLower())
+                                {
+                                    case "name":
+                                        cVar.name = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
+                                        break;
+                                    case "gradient_top_color":
+                                        cVar.gradient_top_color.X = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0);
+                                        cVar.gradient_top_color.Y = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4);
+                                        cVar.gradient_top_color.Z = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8);
+                                        break;
+                                    case "gradient_mid_color":
+                                        cVar.gradient_mid_color.X = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0);
+                                        cVar.gradient_mid_color.Y = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4);
+                                        cVar.gradient_mid_color.Z = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8);
+                                        break;
+                                    case "gradient_bottom_color":
+                                        cVar.gradient_bottom_color.X = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0);
+                                        cVar.gradient_bottom_color.Y = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4);
+                                        cVar.gradient_bottom_color.Z = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8);
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                switch (entry.Value.N.ToLower())
+                                {
+                                    case "colorandroughnesstexturetransform": // Bound Float
+                                        swatch.colorAndRoughnessTextureTransform.X = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0);
+                                        swatch.colorAndRoughnessTextureTransform.Y = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4);
+                                        break;
+                                    case "normaltexturetransform": // Bound Float
+                                        swatch.normalTextureTransform.X = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0);
+                                        swatch.normalTextureTransform.Y = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4);
+                                        break;
+                                    case "color_gradient_map": // Tag Ref
+                                        swatch.color_gradient_map_id = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 8)).ToString("X"));
+                                        swatch.color_gradient_map = IDToTagName(swatch.color_gradient_map_id);
+                                        break;
+                                    case "roughness_white": // Float
+                                        swatch.roughness_white = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "roughness_black": // Float
+                                        swatch.roughness_black = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "normal_detail_map": // Tag Ref
+                                        swatch.normal_detail_map_id = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 8)).ToString("X"));
+                                        swatch.normal_detail_map = IDToTagName(swatch.swatch_id);
+                                        break;
+                                    case "metallic": // Float
+                                        swatch.metallic = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "ior": // Float
+                                        swatch.ior = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "albedo_tint_spec": // Float
+                                        swatch.albedo_tint_spec = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "sss_strength": // Float
+                                        swatch.sss_strenght = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "scratch_color": // RGB
+                                        swatch.scratch_color.X = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0);
+                                        swatch.scratch_color.Y = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4);
+                                        swatch.scratch_color.Z = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8);
+                                        break;
+                                    case "scratch_brightness": // Float
+                                        swatch.scratch_brightness = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "scratch_roughness": // Float
+                                        swatch.scratch_roughness = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "scratch_metallic": // Float
+                                        swatch.scratch_metallic = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "scratch_ior": // Float
+                                        swatch.scratch_ior = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "scratch_albedo_tint_spec": // Float
+                                        swatch.scratch_albedo_tint_spec = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                    case "sss_intensity": // Float
+                                        swatch.sss_intensity = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                        break;
+                                }
+                            }
+                        }
+
+                        if (entry.Value.T == "Tagblock")
+                        {
+                            int blockIndex = 0;
+                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
+
+                            if (childCount > 0 && childCount < 100000)
+                            {
+                                result.Add(indent + "\"" + entry.Value.N + "\": [");
+
+                                blockIndex = curDataBlockInd;
+                                curDataBlockInd++;
+
+                                for (int i = 0; i < childCount; i++)
+                                {
+                                    long newAddress = (long)moduleFile.Tag.DataBlockArray[blockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
+
+                                    if (moduleFile.Tag.Name.EndsWith("materialswatch"))
+                                    {
+                                        if (entry.Value.N == "color_variants")
+                                            GetSwatchData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, swatch, true);
+                                        else
+                                            GetSwatchData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, swatch);
+                                    }
+
+                                }
+                            }
+                        }
+                        else if (entry.Value.T == "FUNCTION")
+                        {
+                            int blockIndex = 0;
+                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
+
+                            childCount = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20));
+                            if (childCount > 0)
+                            {
+                                blockIndex = curDataBlockInd;
+                                curDataBlockInd++;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                    }
+                }
+
+                if (cVar.name == swatch.color && save)
+                {
+                    swatch.color_variant = cVar;
+                }
+
+                prevEntry = entry;
+                current++;
+            }
+        }
+        #endregion
+
+        #region TagExport
+        public class TagJsonData
+        {
+            public string TagID = "";
+            public string TagName = "";
+            public string DataOffset = "";
+            public Dictionary<object, object> Data = new();
+        }
+
+        public class BasicValue
+        {
+            public string Name = "";
+            public string Type = "";
+            public long Size = 0;
+            public object Value = new();
+        }
+
+        public class Bounds
+        {
+            public object Min = 0;
+            public object Max = 0;
+        }
+
+        public class RGBValue
+        {
+            public RGBValue(float r, float g, float b)
+            {
+                R = r;
+                G = g;
+                B = b;
+                HexColor = "#" + ((byte)(r * 255)).ToString("X2") + ((byte)(g * 255)).ToString("X2") + ((byte)(b * 255)).ToString("X2");
+            }
+            
+            public string HexColor = "";
+            public float R = 0;
+            public float G = 0;
+            public float B = 0;
+        }
+
+        public class ARGBValue
+        {
+            public ARGBValue(float a, float r, float g, float b)
+            {
+                A = a;
+                R = r;
+                G = g;
+                B = b;
+                HexColor = "#" + ((byte)(a * 255)).ToString("X2") + ((byte)(r * 255)).ToString("X2") + ((byte)(g * 255)).ToString("X2") + ((byte)(b * 255)).ToString("X2");
+            }
+
+            public string HexColor = "";
+            public float A = 0;
+            public float R = 0;
+            public float G = 0;
+            public float B = 0;
+        }
+
+        public class TagBlockValue
+        {
+            public int Count = 0;
+            public int BlockIndex = 0;
+            public string Address = "";
+            public Dictionary<string, object> Data = new();
+        }
+
+        public class TagRefValue
+        {
+            public string TagID = "";
+            public string AssetID = "";
+            public string TagGroup = "";
+            public string TagPath = "";
+            public string ModulePath = "";
+        }
+
+        public class EnumValue
+        {
+            public int RawValue = 0;
+            public string Selection = "";
+            public Dictionary<int, string> Options = new();
+        }
+
+        public class FlagValue
+        {
+            public int RawValue = 0;
+            public Dictionary<string, bool> Flags = new();
+        }
+
+        private void DumpTagClick(object sender, RoutedEventArgs e)
+        {
+            // Setup
+            curDataBlockInd = 1;
+            string curTagGroup = moduleFile.Tag.ShortName.Split(".")[1];
+            Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagGroups[curTagGroup]);
+            TagJsonData tjd = new();
+
+            tjd.TagID = TagIDBlock.Text;
+            tjd.TagName = tagFileName;
+            tjd.DataOffset = "0x" + DataOffsetBlock.Text;
+            tjd.Data = GetJsonData(tagDefinitions, 0, 0, TagIDBlock.Text + ":");
+
+            // Save File
+            SaveFileDialog sfd = new();
+            sfd.Filter = "Json (*.json)|*.json";
+            sfd.FileName = TagNameBlock.Text.Split(".").First();
+            if (sfd.ShowDialog() == true)
+            {
+                File.WriteAllText(sfd.FileName, JsonConvert.SerializeObject(tjd, Formatting.Indented).ToString());
+            }
+        }
+
+        private Dictionary<object, object> GetJsonData(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain)
+        {
+            Dictionary<object, object> Data = new();
+
+            foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
+            {
+                entry.Value.MemoryAddress = address + entry.Key;
+
+                string name = "";
+                string type = "";
+
+                if (entry.Value.N != null)
+                    name = entry.Value.N;
+
+                if (entry.Value.T != null)
+                    type = entry.Value.T;
+
+                if (!name.Contains("generated_pad"))
+                {
+                    try
+                    {
+                        if (type == "Comment")
+                        {
+                            Data.Add(type, name);
+                        }
+                        else
+                        {
+                            BasicValue v = new()
+                            {
+                                Name = name,
+                                Type = type,
+                                Size = entry.Value.S,
+                                Value = "Null"
+                            };
+
+                            switch (type)
+                            {
+                                case "Byte":
+                                    v.Value = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0];
+                                    break;
+                                case "2Byte":
+                                    v.Value = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                    break;
+                                case "4Byte":
+                                    v.Value = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                    break;
+                                case "Float":
+                                    v.Value = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                    break;
+                                case "Pointer":
+                                    v.Value = "0x" + BitConverter.ToUInt64(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X");
+                                    break;
+                                case "mmr3Hash":
+                                    v.Value = BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X");
+                                    break;
+                                case "String":
+                                    v.Value = Encoding.UTF8.GetString(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).Split('\0').First();
+                                    break;
+                                case "EnumGroup":
+                                    TagLayouts.EnumGroup fg3 = (TagLayouts.EnumGroup)entry.Value;
+                                    v.Name = fg3.N;
+                                    EnumValue eVal = new();
+                                    eVal.Options = fg3.STR;
+
+                                    if (entry.Value.S == 1)
+                                        eVal.RawValue = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0];
+                                    else if (entry.Value.S == 2)
+                                        eVal.RawValue = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                    else if (entry.Value.S == 4)
+                                        eVal.RawValue = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+
+                                    if (eVal.Options.ContainsKey(eVal.RawValue))
+                                        eVal.Selection = eVal.Options[eVal.RawValue];
+                                    else
+                                        eVal.Selection = "Error";
+
+                                    v.Value = eVal;
+                                    break;
+                                case "FlagGroup":
+                                    TagLayouts.FlagGroup? fg = (TagLayouts.FlagGroup)entry.Value;
+                                    v.Name = fg.N;
+                                    FlagValue fVal = new();
+
+                                    if (entry.Value.S == 1)
+                                        fVal.RawValue = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0];
+                                    else if (entry.Value.S == 2)
+                                        fVal.RawValue = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+                                    else if (entry.Value.S == 4)
+                                        fVal.RawValue = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
+
+                                    fVal.Flags = GetFlagsFromBits(fg.A, fg.MB, GetDataFromFile(fg.A, entry.Value.MemoryAddress), fg.STR);
+                                    v.Value = fVal;
+                                    break;
+                                case "BoundsFloat":
+                                    v.Value = new Bounds()
+                                    {
+                                        Min = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0),
+                                        Max = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4)
+                                    };
+                                    break;
+                                case "Bounds2Byte":
+                                    v.Value = new Bounds()
+                                    {
+                                        Min = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0),
+                                        Max = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4)
+                                    };
+                                    break;
+                                case "2DPoint_Float":
+                                    v.Value = new Vector2()
+                                    {
+                                        X = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0),
+                                        Y = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4)
+                                    };
+                                    break;
+                                case "2DPoint_2Byte":
+                                    v.Value = new Vector2()
+                                    {
+                                        X = BitConverter.ToInt16(GetDataFromFile(4, entry.Value.MemoryAddress), 0),
+                                        Y = BitConverter.ToInt16(GetDataFromFile(4, entry.Value.MemoryAddress), 2)
+                                    };
+                                    break;
+                                case "3DPoint":
+                                    v.Value = new Vector3()
+                                    {
+                                        X = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0),
+                                        Y = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4),
+                                        Z = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8)
+                                    };
+                                    break;
+                                case "Quanternion":
+                                    v.Value = new Quaternion()
+                                    {
+                                        W = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 0),
+                                        X = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 4),
+                                        Y = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 8),
+                                        Z = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 12)
+                                    };
+                                    break;
+                                case "3DPlane":
+                                    v.Value = new Quaternion()
+                                    {
+                                        W = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 0),
+                                        X = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 4),
+                                        Y = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 8),
+                                        Z = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 12)
+                                    };
+                                    break;
+                                case "RGB":
+                                    v.Value = new RGBValue(BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0),
+                                        BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4),
+                                        BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8));
+                                    break;
+                                case "ARGB":
+                                    v.Value = new ARGBValue(BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 0),
+                                        BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 4),
+                                        BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 8),
+                                        BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 12));
+                                    break;
+                                case "TagRef":
+                                    string tagId = Convert.ToHexString(GetDataFromFile(4, entry.Value.MemoryAddress + 8));
+                                    byte[] tagGroupData = GetDataFromFile(4, entry.Value.MemoryAddress + 20);
+                                    string tagGroup = Convert.ToHexString(tagGroupData);
+                                    if (tagGroup != "FFFFFFFF")
+                                        tagGroup = ReverseString(Encoding.UTF8.GetString(tagGroupData));
+
+                                    if (tagId != "FFFFFFFF" && tagGroup != "FFFFFFFF")
+                                    {
+                                        TagRefValue value = new();
+                                        value.TagID = tagId;
+                                        value.TagGroup = tagGroup;
+
+                                        if (inhaledTags.ContainsKey(tagId))
+                                        {
+                                            value.AssetID = inhaledTags[tagId].AssetID;
+                                            value.TagPath = inhaledTags[tagId].Path;
+                                            value.ModulePath = inhaledTags[tagId].Module;
+                                        }
+
+                                        v.Value = value;
+                                    }
+                                    break;
+                                case "Tagblock":
+                                    int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
+
+                                    TagBlockValue tbv = new();
+                                    if (childCount > 0 && childCount < 100000)
+                                    {
+                                        tbv.Count = childCount;
+                                        tbv.BlockIndex = curDataBlockInd;
+                                        tbv.Address = "0x" + moduleFile.Tag.DataBlockArray[tbv.BlockIndex].Offset.ToString("X");
+                                        curDataBlockInd++;
+                                        for (int i = 0; i < childCount; i++)
+                                        {
+                                            long newAddress = (long)moduleFile.Tag.DataBlockArray[tbv.BlockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
+                                            tbv.Data.Add("Index " + (i + 1), GetJsonData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset));
+                                        }
+                                        v.Value = tbv;
+                                    }
+                                    
+                                    break;
+                                case "FUNCTION":
+                                    int funcSize = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20));
+                                    TagBlockValue funcV = new();
+                                    if (funcSize > 0)
+                                    {
+                                        funcV.Count = funcSize;
+                                        funcV.BlockIndex = curDataBlockInd;
+                                        curDataBlockInd++;
+
+                                        v.Value = funcV;
+                                    }
+                                    break;
+                            }
+
+                            Data.Add("0x" + entry.Value.MemoryAddress.ToString("X"), v);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                    }
+                }
+            }
+
+            return Data;
+        }
+        
         #endregion
     }
 }

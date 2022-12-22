@@ -45,7 +45,8 @@
                     <MenuItem Header="Open" Click="OpenTagClick" ToolTip="Open a tag file"/>
                     <MenuItem Header="Import" Click="ImportTagClick" ToolTip="Overwrite current tag with file"/>
                     <MenuItem Header="Export" Click="ExportTagClick" ToolTip="Export currently loaded tag"/>
-                    <MenuItem Header="Export JSON" Click="DumpTagClick" ToolTip="Export currently loaded tag"/>
+                    <MenuItem Header="Export JSON" Click="DumpTagClick" ToolTip="Export currently loaded tag to JSON"/>
+                    <MenuItem Header="Export Material Style" Click="DumpStyleClick" ToolTip="Export style tag data"/>
                     <MenuItem Header="Close" Click="CloseTagClick" ToolTip="Close current tag"/>
                 </MenuItem>
                 <MenuItem Header="Tools" Style="{DynamicResource Z_MenuItemStyle}" Margin="5,0,0,0">
