@@ -329,7 +329,7 @@ namespace ZTools
                                     int childCount = BitConverter.ToInt32(GetDataFromByteArray(20, entry.Value.MemoryAddress, data), 16);
 
                                     TagBlockValue tbv = new();
-                                    if (childCount > 0 && childCount < 100000)
+                                    if (childCount > 0 && childCount < 100000 && entry.Value.N != "material constants")
                                     {
                                         tbv.Count = childCount;
                                         tbv.BlockIndex = curDataBlockInd;

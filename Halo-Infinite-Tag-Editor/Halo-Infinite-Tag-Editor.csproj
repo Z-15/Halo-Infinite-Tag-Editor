@@ -763,9 +763,6 @@
     <None Update="Tag_Structures\maps.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Tag_Structures\mat .xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Tag_Structures\mat.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

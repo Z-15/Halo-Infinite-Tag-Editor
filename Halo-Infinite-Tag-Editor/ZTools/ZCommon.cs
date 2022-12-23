@@ -93,5 +93,36 @@ namespace ZTools
             Array.Reverse(myArr);
             return new string(myArr);
         }
+
+        public static string ReverseHexString(string hexString)
+        {
+            string result = hexString;
+
+            if (hexString.Length == 8)
+            {
+                byte[] bArray = Convert.FromHexString(result);
+                byte[] newArray = new byte[4];
+                newArray[0] = bArray[3];
+                newArray[1] = bArray[2];
+                newArray[2] = bArray[1];
+                newArray[3] = bArray[0];
+
+                result = Convert.ToHexString(newArray);
+            }
+
+            return result;
+        }
+
+        public static string IDToTagName(string value)
+        {
+            if (inhaledTags.ContainsKey(value))
+            {
+                return inhaledTags[value].TagPath;
+            }
+            else
+            {
+                return "ObjectID: " + value;
+            }
+        }
     }
 }

@@ -863,7 +863,7 @@ namespace Halo_Infinite_Tag_Editor
 
                         if (curTagData.Type == "Tagblock" && childCount < 100000)
                         {
-                            if (childCount > 0)
+                            if (childCount > 0 && entry.Value.N != "material constants")
                             {
                                 blockIndex = curDataBlockInd;
                                 curDataBlockInd++;
@@ -1487,17 +1487,7 @@ namespace Halo_Infinite_Tag_Editor
             return data;
         }
 
-        public string IDToTagName(string value)
-        {
-            if (inhaledTags.ContainsKey(value))
-            {
-                return inhaledTags[value].TagPath;
-            }
-            else
-            {
-                return "ObjectID: " + value;
-            }
-        }
+        
 
         private TagInfo GetTagInfo(string tagID)
         {
@@ -2114,6 +2104,71 @@ namespace Halo_Infinite_Tag_Editor
             File.WriteAllLines(@".\Files\mmr3Hashes.txt", lines);
         }
 
+        #endregion
+
+        #region TagExport
+        private async void TagJsonExportClick(object sender, RoutedEventArgs e)
+        {
+            StatusOut("Attempting to export tag to JSON...");
+            if (tagFileName.Length > 0 && curTagID.Length == 8)
+            {
+                string? result = JsonExport.ExportTagToJson(TagLayouts.Tags(tagGroups[tagFileName.Split(".").Last()]), GetTagInfo(curTagID), moduleFile);
+
+                if (result != null)
+                {
+                    StatusOut("Tag data converted to JSON!");
+                    // Save File
+                    SaveFileDialog sfd = new();
+                    sfd.Filter = "Json (*.json)|*.json";
+                    sfd.FileName = tagFileName.Split("\\").Last().Split(".").First() + ".json";
+                    if (sfd.ShowDialog() == true)
+                    {
+                        File.WriteAllText(sfd.FileName, result);
+                    }
+
+                    StatusOut("Tag successfully exported to JSON!");
+                    return;
+                }
+            }
+
+            StatusOut("Error exporting tag to json!");
+        }
+        #endregion
+
+        #region CoatingDump
+        private void ExportMaterialClick(object sender, RoutedEventArgs e)
+        {
+            StatusOut("Attempting to export material data...");
+            if (tagFileName.Length > 0 && curTagID.Length == 8 && moduleStream != null && tagStream != null && module != null)
+            {
+                // Close tag
+                tagStream.Close();
+
+                // Attempt to export material data
+                string? result = MaterialExport.ExportMaterial(GetTagInfo(curTagID), moduleStream, module);
+
+                if (result != null)
+                {
+                    // Save File
+                    StatusOut("Material data converted to JSON!");
+                    SaveFileDialog sfd = new();
+                    sfd.Filter = "Json (*.json)|*.json";
+                    sfd.FileName = tagFileName.Split("\\").Last().Split(".").First() + ".json";
+                    if (sfd.ShowDialog() == true)
+                    {
+                        File.WriteAllText(sfd.FileName, result);
+                    }
+
+                    StatusOut("Material successfully exported to JSON!");
+                    return;
+                }
+
+                // Re-open tag
+                tagStream = ModuleEditor.GetTag(module, moduleStream, tagFileName);
+            }
+
+            StatusOut("Error exporting material data!");
+        }
         #endregion
 
         #region Forge Data
@@ -2762,24 +2817,7 @@ namespace Halo_Infinite_Tag_Editor
             }
         }
 
-        private string ReverseHexString(string hexString)
-        {
-            string result = hexString;
-
-            if (hexString.Length == 8)
-            {
-                byte[] bArray = Convert.FromHexString(result);
-                byte[] newArray = new byte[4];
-                newArray[0] = bArray[3];
-                newArray[1] = bArray[2];
-                newArray[2] = bArray[1];
-                newArray[3] = bArray[0];
-
-                result = Convert.ToHexString(newArray);
-            }
-
-            return result;
-        }
+        
 
         private void ResetHashSearch()
         {
@@ -2794,615 +2832,5 @@ namespace Halo_Infinite_Tag_Editor
         }
         #endregion
 
-        #region CoatingDump
-        public class MaterialStyle
-        {
-            // Material Style Data
-            public string style_id = "";
-            public string style_name = "";
-            // List of palettes
-            public Dictionary<string, StyleData> styles = new();
-        }
-
-        public class StyleData
-        {
-            // Material Style - Style Tag Block.
-            public string name = "";
-            public string palette_id = "";
-            public string palette = "";
-            public float emissive_amount = 0;
-            public float scratch_amount = 0;
-            public string grime_type = "";
-            public float grime_amount = 0;
-            // List of swatches
-            public Dictionary<string, MaterialPalette> palettes = new();
-        }
-
-        public class MaterialPalette
-        {
-            // Material Palette - swatches tag block
-            public string name = "";
-            public string swatch_id = "";
-            public string swatch = "";
-            public string color = "";
-            public string roughnessOverride = "";
-            public float emissiveIntensity = 0;
-            public float emissiveAmount = 0;
-            public string groupName = "";
-            // Material Swatch
-            public Vector2 colorAndRoughnessTextureTransform = new(0, 0);
-            public Vector2 normalTextureTransform = new(0, 0);
-            public string color_gradient_map_id = "";
-            public string color_gradient_map = "";
-            public float roughness_white = 0;
-            public float roughness_black = 0;
-            public string normal_detail_map_id = "";
-            public string normal_detail_map = "";
-            public float metallic = 0;
-			public float ior = 0;
-			public float albedo_tint_spec = 0;
-            public float sss_strenght = 0;
-            public Vector3 scratch_color = new(0, 0, 0);
-            public float scratch_brightness = 0;
-			public float scratch_roughness = 0;
-			public float scratch_metallic = 0;
-			public float scratch_ior = 0;
-			public float scratch_albedo_tint_spec = 0;
-            public float sss_intensity = 0;
-            // List of color variants.
-            public ColorVariant color_variant = new();
-        }
-
-        public class ColorVariant
-        {
-            // Found in the MaterialSwatch tag in the color variants tag block.
-            public string name = "";
-            public Vector3 gradient_top_color = new(0, 0, 0);
-            public Vector3 gradient_mid_color = new(0, 0, 0);
-            public Vector3 gradient_bottom_color = new(0, 0, 0);
-        }
-
-        private void DumpStyleClick(object sender, RoutedEventArgs e)
-        {
-            if (tagFileName.EndsWith("materialstyles"))
-            {
-                StatusOut("Attempting to dump style data...");
-                try
-                {
-                    string fileName = tagFileName.Split('.').First().Split(@"\").Last();
-                    MaterialStyle style = GetMaterialData();
-
-                    // Save File
-                    SaveFileDialog sfd = new();
-                    sfd.Filter = "Json (*.json)|*.json";
-                    sfd.FileName = fileName + ".json";
-                    if (sfd.ShowDialog() == true)
-                    {
-                        File.WriteAllText(sfd.FileName, JsonConvert.SerializeObject(style, Formatting.Indented).ToString());
-                    }
-                }
-                catch (Exception ex)
-                {
-                    StatusOut("Failed to dump style data: " + ex.Message);
-                }
-            }
-            else
-            {
-                StatusOut("Tag must be material style!");
-            }
-            
-        }
-
-        private MaterialStyle GetMaterialData()
-        {
-            MaterialStyle style = new MaterialStyle();
-            style.style_id = TagIDBlock.Text;
-            style.style_name = tagFileName;
-            // Get all palette data
-            ReadTagStyle(style.style_id, style);
-
-            // Read all palettes
-            foreach (KeyValuePair<string, StyleData> pal in style.styles)
-            {
-                ReadTagStyle(pal.Value.palette_id, pal.Value);
-
-                // Read all swatches
-                foreach (KeyValuePair<string, MaterialPalette> swa in pal.Value.palettes)
-                {
-                    ReadTagStyle(swa.Value.swatch_id, swa.Value);
-                }
-            }
-
-            return style;
-        }
-
-        private void ReadTagStyle(string tag, Object obj)
-        {
-            ResetTagTree();
-            Thread.Sleep(100);
-
-            FileStream mStream = new FileStream(modulePath, FileMode.Open, FileAccess.Read);
-            Module m = ModuleEditor.ReadModule(mStream);
-
-            KeyValuePair<string, ModuleFile> file = new();
-
-            foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
-            {
-                string test = ReverseHexString(mf.Value.FileEntry.GlobalTagId.ToString("X"));
-                if (test == tag)
-                    file = mf;
-            }
-            curTagID = tag;
-            moduleFile = file.Value;
-
-            string TagPath = file.Key.Replace("\0", String.Empty);
-
-            MemoryStream tStream = new();
-            tStream = ModuleEditor.GetTag(m, mStream, TagPath);
-            file.Value.Tag = ModuleEditor.ReadTag(tStream, TagPath, file.Value);
-            file.Value.Tag.Name = TagPath;
-            file.Value.Tag.ShortName = TagPath.Split("\\").Last();
-
-            string curTagGroup = file.Key.Replace("\0", String.Empty).Split(".").Last();
-            string tagID = Convert.ToHexString(BitConverter.GetBytes(file.Value.FileEntry.GlobalTagId));
-
-            if (tagGroups.ContainsKey(curTagGroup.Trim()))
-            {
-                Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagGroups[curTagGroup]);
-
-                if (obj.GetType() == typeof(MaterialStyle))
-                    GetStyleData(tagDefinitions, 0, 0, tag + ":", (MaterialStyle)obj);
-                else if (obj.GetType() == typeof(StyleData))
-                    GetPaletteData(tagDefinitions, 0, 0, tag + ":", (StyleData)obj);
-                else if (obj.GetType() == typeof(MaterialPalette))
-                    GetSwatchData(tagDefinitions, 0, 0, tag + ":", (MaterialPalette)obj);
-            }
-
-            tStream.Close();
-            curDataBlockInd = 1;
-            mStream.Close();
-        }
-
-        private void GetStyleData(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain, MaterialStyle style, bool save = false)
-        {
-            KeyValuePair<long, TagLayouts.C> prevEntry = new();
-            List<string> result = new();
-            string indent = "";
-            int current = 0;
-
-            StyleData palette = new();
-            
-
-            foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
-            {
-                entry.Value.MemoryAddress = address + entry.Key;
-                entry.Value.AbsoluteTagOffset = offsetChain + "," + (entry.Key + startingTagOffset);
-
-                string name = "";
-                if (entry.Value.N != null)
-                    name = entry.Value.N;
-
-                if (!name.Contains("generated_pad"))
-                {
-                    try
-                    {
-                        if (save)
-                        {
-                            if (moduleFile.Tag.Name.EndsWith("materialstyles"))
-                            {
-                                switch (entry.Value.N.ToLower())
-                                {
-                                    case "name":
-                                        palette.name = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
-                                        break;
-                                    case "palette":
-                                        palette.palette_id = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 8)).ToString("X"));
-                                        palette.palette = IDToTagName(palette.palette_id);
-                                        break;
-                                    case "emissive_amount":
-                                        palette.emissive_amount = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "scratch_amount":
-                                        palette.scratch_amount = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "grime_type":
-                                        palette.grime_type = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
-                                        break;
-                                    case "grime_amount":
-                                        palette.grime_amount = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                }
-                            }
-                        }
-
-                        if (entry.Value.T == "Tagblock")
-                        {
-                            int blockIndex = 0;
-                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
-
-                            if (childCount > 0 && childCount < 100000)
-                            {
-                                result.Add(indent + "\"" + entry.Value.N + "\": [");
-
-                                blockIndex = curDataBlockInd;
-                                curDataBlockInd++;
-
-                                for (int i = 0; i < childCount; i++)
-                                {
-                                    long newAddress = (long)moduleFile.Tag.DataBlockArray[blockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
-                                    if (moduleFile.Tag.Name.EndsWith("materialstyles"))
-                                    {
-                                        if (entry.Value.N == "style")
-                                            GetStyleData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, style, true);
-                                        else
-                                            GetStyleData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, style);
-                                    }
-                                }
-                            }
-                        }
-                        else if (entry.Value.T == "FUNCTION")
-                        {
-                            int blockIndex = 0;
-                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
-
-                            childCount = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20));
-                            if (childCount > 0)
-                            {
-                                blockIndex = curDataBlockInd;
-                                curDataBlockInd++;
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                    }
-                }
-
-                prevEntry = entry;
-                current++;
-            }
-
-            if (moduleFile.Tag.Name.EndsWith("materialstyles") && save)
-            {
-                style.styles.Add(palette.name, palette);
-            }
-        }
-
-        private void GetPaletteData(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain, StyleData pal, bool save = false)
-        {
-            KeyValuePair<long, TagLayouts.C> prevEntry = new();
-            List<string> result = new();
-            string indent = "";
-            int current = 0;
-
-            MaterialPalette swatch = new();
-
-            foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
-            {
-                entry.Value.MemoryAddress = address + entry.Key;
-                entry.Value.AbsoluteTagOffset = offsetChain + "," + (entry.Key + startingTagOffset);
-
-                string name = "";
-                if (entry.Value.N != null)
-                    name = entry.Value.N;
-
-                if (!name.Contains("generated_pad"))
-                {
-                    try
-                    {
-                        if (save)
-                        {
-                            if (moduleFile.Tag.Name.EndsWith("materialpalette"))
-                            {
-                                if (entry.Value.T == "EnumGroup")
-                                {
-                                    TagLayouts.EnumGroup fg3 = entry.Value as TagLayouts.EnumGroup;
-                                    int enumValueRaw = 0;
-                                    if (fg3.N == "roughnessOverride")
-                                    {
-                                        if (entry.Value.S == 1)
-                                        {
-                                            enumValueRaw = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0];
-                                        }
-                                        else if (entry.Value.S == 2)
-                                        {
-                                            enumValueRaw = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        }
-                                        else if (entry.Value.S == 4)
-                                        {
-                                            enumValueRaw = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        }
-
-                                        if (fg3.STR.ContainsKey(enumValueRaw))
-                                            swatch.roughnessOverride = fg3.STR[enumValueRaw];
-                                        else
-                                            swatch.roughnessOverride = "Error";
-                                    }
-                                }
-                                else
-                                {
-                                    switch (entry.Value.N.ToLower())
-                                    {
-                                        case "name":
-                                            swatch.name = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
-                                            break;
-                                        case "swatch":
-                                            swatch.swatch_id = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 8)).ToString("X"));
-                                            swatch.swatch = IDToTagName(swatch.swatch_id);
-                                            break;
-                                        case "color":
-                                            swatch.color = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
-                                            break;
-                                        case "emissiveintensity":
-                                            swatch.emissiveIntensity = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                            break;
-                                        case "emissiveamount":
-                                            swatch.emissiveAmount = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                            break;
-                                        case "groupname":
-                                            swatch.groupName = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
-                                            break;
-                                    }
-                                }
-
-                            }
-                        }
-
-                        if (entry.Value.T == "Tagblock")
-                        {
-                            int blockIndex = 0;
-                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
-
-                            if (childCount > 0 && childCount < 100000)
-                            {
-                                result.Add(indent + "\"" + entry.Value.N + "\": [");
-
-                                blockIndex = curDataBlockInd;
-                                curDataBlockInd++;
-
-                                for (int i = 0; i < childCount; i++)
-                                {
-                                    long newAddress = (long)moduleFile.Tag.DataBlockArray[blockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
-
-                                    if (moduleFile.Tag.Name.EndsWith("materialpalette"))
-                                    {
-                                        if (entry.Value.N == "swatches")
-                                            GetPaletteData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, pal, true);
-                                        else
-                                            GetPaletteData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, pal);
-                                    }
-
-                                }
-                            }
-                        }
-                        else if (entry.Value.T == "FUNCTION")
-                        {
-                            int blockIndex = 0;
-                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
-
-                            childCount = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20));
-                            if (childCount > 0)
-                            {
-                                blockIndex = curDataBlockInd;
-                                curDataBlockInd++;
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                    }
-                }
-
-                prevEntry = entry;
-                current++;
-            }
-
-            if (moduleFile.Tag.Name.EndsWith("materialpalette") && save)
-            {
-                pal.palettes.Add(swatch.name, swatch);
-            }
-        }
-
-        private void GetSwatchData(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain, MaterialPalette swatch, bool save = false)
-        {
-            KeyValuePair<long, TagLayouts.C> prevEntry = new();
-            List<string> result = new();
-            string indent = "";
-            int current = 0;
-
-            ColorVariant cVar = new();
-
-            foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
-            {
-                entry.Value.MemoryAddress = address + entry.Key;
-                entry.Value.AbsoluteTagOffset = offsetChain + "," + (entry.Key + startingTagOffset);
-
-                string name = "";
-                if (entry.Value.N != null)
-                    name = entry.Value.N;
-
-                if (!name.Contains("generated_pad"))
-                {
-                    try
-                    {
-                        if (moduleFile.Tag.Name.EndsWith("materialswatch"))
-                        {
-                            if (save)
-                            {
-                                switch (entry.Value.N.ToLower())
-                                {
-                                    case "name":
-                                        cVar.name = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X"));
-                                        break;
-                                    case "gradient_top_color":
-                                        cVar.gradient_top_color.X = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0);
-                                        cVar.gradient_top_color.Y = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4);
-                                        cVar.gradient_top_color.Z = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8);
-                                        break;
-                                    case "gradient_mid_color":
-                                        cVar.gradient_mid_color.X = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0);
-                                        cVar.gradient_mid_color.Y = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4);
-                                        cVar.gradient_mid_color.Z = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8);
-                                        break;
-                                    case "gradient_bottom_color":
-                                        cVar.gradient_bottom_color.X = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0);
-                                        cVar.gradient_bottom_color.Y = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4);
-                                        cVar.gradient_bottom_color.Z = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8);
-                                        break;
-                                }
-                            }
-                            else
-                            {
-                                switch (entry.Value.N.ToLower())
-                                {
-                                    case "colorandroughnesstexturetransform": // Bound Float
-                                        swatch.colorAndRoughnessTextureTransform.X = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0);
-                                        swatch.colorAndRoughnessTextureTransform.Y = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4);
-                                        break;
-                                    case "normaltexturetransform": // Bound Float
-                                        swatch.normalTextureTransform.X = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0);
-                                        swatch.normalTextureTransform.Y = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4);
-                                        break;
-                                    case "color_gradient_map": // Tag Ref
-                                        swatch.color_gradient_map_id = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 8)).ToString("X"));
-                                        swatch.color_gradient_map = IDToTagName(swatch.color_gradient_map_id);
-                                        break;
-                                    case "roughness_white": // Float
-                                        swatch.roughness_white = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "roughness_black": // Float
-                                        swatch.roughness_black = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "normal_detail_map": // Tag Ref
-                                        swatch.normal_detail_map_id = ReverseHexString(BitConverter.ToUInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 8)).ToString("X"));
-                                        swatch.normal_detail_map = IDToTagName(swatch.swatch_id);
-                                        break;
-                                    case "metallic": // Float
-                                        swatch.metallic = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "ior": // Float
-                                        swatch.ior = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "albedo_tint_spec": // Float
-                                        swatch.albedo_tint_spec = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "sss_strength": // Float
-                                        swatch.sss_strenght = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "scratch_color": // RGB
-                                        swatch.scratch_color.X = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0);
-                                        swatch.scratch_color.Y = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4);
-                                        swatch.scratch_color.Z = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8);
-                                        break;
-                                    case "scratch_brightness": // Float
-                                        swatch.scratch_brightness = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "scratch_roughness": // Float
-                                        swatch.scratch_roughness = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "scratch_metallic": // Float
-                                        swatch.scratch_metallic = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "scratch_ior": // Float
-                                        swatch.scratch_ior = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "scratch_albedo_tint_spec": // Float
-                                        swatch.scratch_albedo_tint_spec = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                    case "sss_intensity": // Float
-                                        swatch.sss_intensity = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                        break;
-                                }
-                            }
-                        }
-
-                        if (entry.Value.T == "Tagblock")
-                        {
-                            int blockIndex = 0;
-                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
-
-                            if (childCount > 0 && childCount < 100000)
-                            {
-                                result.Add(indent + "\"" + entry.Value.N + "\": [");
-
-                                blockIndex = curDataBlockInd;
-                                curDataBlockInd++;
-
-                                for (int i = 0; i < childCount; i++)
-                                {
-                                    long newAddress = (long)moduleFile.Tag.DataBlockArray[blockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
-
-                                    if (moduleFile.Tag.Name.EndsWith("materialswatch"))
-                                    {
-                                        if (entry.Value.N == "color_variants")
-                                            GetSwatchData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, swatch, true);
-                                        else
-                                            GetSwatchData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset, swatch);
-                                    }
-
-                                }
-                            }
-                        }
-                        else if (entry.Value.T == "FUNCTION")
-                        {
-                            int blockIndex = 0;
-                            int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
-
-                            childCount = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20));
-                            if (childCount > 0)
-                            {
-                                blockIndex = curDataBlockInd;
-                                curDataBlockInd++;
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                    }
-                }
-
-                if (cVar.name == swatch.color && save)
-                {
-                    swatch.color_variant = cVar;
-                }
-
-                prevEntry = entry;
-                current++;
-            }
-        }
-        #endregion
-
-        #region TagExport
-        private async void TagJsonExportClick(object sender, RoutedEventArgs e)
-        {
-            StatusOut("Attemptint to export tag to JSON...");
-            Thread.Sleep(20);
-            if (tagFileName.Length > 0 && curTagID.Length == 8)
-            {
-                string? result = JsonExport.ExportTagToJson(TagLayouts.Tags(tagGroups[tagFileName.Split(".").Last()]), GetTagInfo(curTagID), moduleFile);
-
-                if (result != null)
-                {
-                    StatusOut("Tag data converted to JSON!");
-                    // Save File
-                    SaveFileDialog sfd = new();
-                    sfd.Filter = "Json (*.json)|*.json";
-                    sfd.FileName = tagFileName.Split("\\").Last().Split(".").First() + ".json";
-                    if (sfd.ShowDialog() == true)
-                    {
-                        File.WriteAllText(sfd.FileName, result);
-                    }
-
-                    StatusOut("Tag successfully exported to JSON!");
-                    return;
-                }
-            }
-
-            StatusOut("Error exporting tag to json!");
-        }
-        #endregion
     }
 }
