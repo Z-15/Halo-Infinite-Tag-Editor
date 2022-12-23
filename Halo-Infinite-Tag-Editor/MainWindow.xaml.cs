@@ -23,6 +23,8 @@ using System.Windows.Navigation;
 using System.Windows.Threading;
 using Newtonsoft.Json;
 using TagBlock = InfiniteRuntimeTagViewer.Interface.Controls.TagBlock;
+using static ZTools.ZCommon;
+using ZTools;
 
 namespace Halo_Infinite_Tag_Editor
 {
@@ -524,7 +526,7 @@ namespace Halo_Infinite_Tag_Editor
                 moduleFile.Tag = ModuleEditor.ReadTag(tagStream, tagFileName.Replace("\0", String.Empty), moduleFile);
                 moduleFile.Tag.Name = tagFileName;
                 moduleFile.Tag.ShortName = tagFileName.Split("\\").Last();
-
+                curTagID = Convert.ToHexString(GetDataFromByteArray(4, 8, moduleFile.Tag.TagData));
                 tagOpen = true;
                 tagOpenedFromModule = true;
 
@@ -534,7 +536,7 @@ namespace Halo_Infinite_Tag_Editor
 
                 ModuleBlock.Text = modulePath.Split("\\").Last();
                 TagNameBlock.Text = tagFileName.Split("\\").Last();
-                TagIDBlock.Text = moduleFile.Tag.TagData[8].ToString("X2") + moduleFile.Tag.TagData[9].ToString("X2") + moduleFile.Tag.TagData[10].ToString("X2") + moduleFile.Tag.TagData[11].ToString("X2");
+                TagIDBlock.Text = curTagID;
                 DataOffsetBlock.Text = moduleFile.Tag.Header.HeaderSize.ToString();
             }
         }
@@ -634,8 +636,7 @@ namespace Halo_Infinite_Tag_Editor
                 
                 tagOpen = true;
                 tagOpenedFromModule = false;
-                curTagID = moduleFile.Tag.TagData[8].ToString("X2") + moduleFile.Tag.TagData[9].ToString("X2") + moduleFile.Tag.TagData[10].ToString("X2") + moduleFile.Tag.TagData[11].ToString("X2");
-
+                curTagID = Convert.ToHexString(GetDataFromByteArray(4, 8, moduleFile.Tag.TagData));
                 ModuleBlock.Text = modulePath.Split("\\").Last();
                 TagNameBlock.Text = tagFileName.Split("\\").Last();
                 TagIDBlock.Text = curTagID;
@@ -760,50 +761,6 @@ namespace Halo_Infinite_Tag_Editor
         }
         
         
-        private Dictionary<string, bool> GetFlagsFromBits(int amountOfBytes, int maxBit, byte[] data, Dictionary<int, string>? descriptions = null)
-        {
-            Dictionary<string, bool> values = new();
-
-            if (maxBit == 0)
-            {
-                maxBit = maxBit = amountOfBytes * 8;
-            }
-
-            int maxAmountOfBytes = Math.Clamp((int)Math.Ceiling((double)maxBit / 8), 0, amountOfBytes);
-            int bitsLeft = maxBit - 1; // -1 to start at 
-
-            for (int @byte = 0; @byte < maxAmountOfBytes; @byte++)
-            {
-                if (bitsLeft < 0)
-                {
-                    continue;
-                }
-
-                int amountOfBits = @byte * 8 > maxBit ? ((@byte * 8) - maxBit) : 8;
-                byte flags_value = (byte)data[@byte];
-
-                for (int bit = 0; bit < amountOfBits; bit++)
-                {
-                    int currentBitIndex = (@byte * 8) + bit;
-                    if (bitsLeft < 0)
-                    {
-                        continue;
-                    }
-
-                    int _byte = @byte, _bit = bit;
-
-                    if (descriptions != null && descriptions.ContainsKey(currentBitIndex))
-                    {
-                        bool value = flags_value.GetBit(bit);
-                        string description = descriptions[(@byte * 8) + bit];
-                        values.Add(description, value);
-                    }
-                    bitsLeft--;
-                }
-            }
-
-            return values;
-        }
         #endregion
 
         #region Tag Viewer Controls
@@ -1534,19 +1491,12 @@ namespace Halo_Infinite_Tag_Editor
         {
             if (inhaledTags.ContainsKey(value))
             {
-                return inhaledTags[value].Path;
+                return inhaledTags[value].TagPath;
             }
             else
             {
                 return "ObjectID: " + value;
             }
-        }
-
-        public static string ReverseString(string myStr)
-        {
-            char[] myArr = myStr.ToCharArray();
-            Array.Reverse(myArr);
-            return new string(myArr);
         }
 
         private TagInfo GetTagInfo(string tagID)
@@ -1559,7 +1509,7 @@ namespace Halo_Infinite_Tag_Editor
             {
                 result.TagID = tagID;
                 result.AssetID = "Unknown";
-                result.Path = "Unknown";
+                result.TagPath = "Unknown";
             }    
 
             return result;
@@ -1721,17 +1671,6 @@ namespace Halo_Infinite_Tag_Editor
         #endregion
 
         #region Dictionaries
-        public Dictionary<string, string> tagGroups = new Dictionary<string, string>();
-        public Dictionary<string, TagInfo> inhaledTags = new Dictionary<string, TagInfo>();
-
-        public class TagInfo
-        {
-            public string Path = "";
-            public string TagID = "";
-            public string AssetID = "";
-            public string Module = "";
-        }
-
         private void InhaleTagGroup()
         {
             foreach(string line in File.ReadAllLines(@".\Files\tagGroups.txt"))
@@ -1761,38 +1700,13 @@ namespace Halo_Infinite_Tag_Editor
                     TagInfo ti = new();
                     ti.TagID = hexString[0];
                     ti.AssetID = hexString[1];
-                    ti.Path = hexString[2];
-                    ti.Module = hexString[3];
+                    ti.TagPath = hexString[2];
+                    ti.ModulePath = hexString[3];
                     inhaledTags.Add(hexString[0], ti);
                 }
             }
             Debug.WriteLine("");
         }
-        #endregion
-
-        #region Tag References
-        // Notes:
-        // 
-        // There are two parts to tag references.
-        // The tag reference index:
-        //      1. Bytes [0-3] - Tag Type
-        //      2. Bytes [4-7] - Tag path start in tag path index
-        //      3. Bytes [8-15] - Asset ID
-        //      4. Bytes [16-19] - Tag ID
-        //      5. Bytes [20-24] - 0xFF
-        //
-        // The Tag Ref Itself:
-        //      1. Bytes [0-7] - 0xBC
-        //      2. Bytes [8-11] - Tag ID
-        //      3. Bytes [12-19] - Asset ID
-        //      4. Bytes [20-23] - Tag Type
-        //      5. Bytes [24-27] - 0xBC
-        //
-        // Asset ID can be found when loading in a module, however it needs to be output to the tag ID file.
-        // I'm going to make a new dump and tag list loading system to account for this.
-        // 
-        // Something really weird with all of this, it doesn't work all the time for some reason.
-        // Sometimes you can change the tag reference, sometimes you can't. I'm not sure why.
         #endregion
 
         #region Tools
@@ -2802,7 +2716,7 @@ namespace Halo_Infinite_Tag_Editor
                         string tagID = ReverseHexString(tag.Split("[").First());
                         string tagName = "Object ID: " + tagID;
                         if (inhaledTags.ContainsKey(tagID))
-                            tagName = inhaledTags[tagID].Path.Split("\\").Last();
+                            tagName = inhaledTags[tagID].TagPath.Split("\\").Last();
 
                         TreeViewItem item = new TreeViewItem();
                         item.Header = tagName;
@@ -2827,8 +2741,8 @@ namespace Halo_Infinite_Tag_Editor
             string module = "";
             if (inhaledTags.ContainsKey(tagID))
             {
-                tagName = inhaledTags[tagID].Path.Split("\\").Last();
-                module = inhaledTags[tagID].Module;
+                tagName = inhaledTags[tagID].TagPath.Split("\\").Last();
+                module = inhaledTags[tagID].ModulePath;
             }
 
             TagIDBox.Text = tagID;
@@ -3462,342 +3376,33 @@ namespace Halo_Infinite_Tag_Editor
         #endregion
 
         #region TagExport
-        public class TagJsonData
+        private async void TagJsonExportClick(object sender, RoutedEventArgs e)
         {
-            public string TagID = "";
-            public string TagName = "";
-            public string DataOffset = "";
-            public Dictionary<object, object> Data = new();
-        }
-
-        public class BasicValue
-        {
-            public string Name = "";
-            public string Type = "";
-            public long Size = 0;
-            public object Value = new();
-        }
-
-        public class Bounds
-        {
-            public object Min = 0;
-            public object Max = 0;
-        }
-
-        public class RGBValue
-        {
-            public RGBValue(float r, float g, float b)
+            StatusOut("Attemptint to export tag to JSON...");
+            Thread.Sleep(20);
+            if (tagFileName.Length > 0 && curTagID.Length == 8)
             {
-                R = r;
-                G = g;
-                B = b;
-                HexColor = "#" + ((byte)(r * 255)).ToString("X2") + ((byte)(g * 255)).ToString("X2") + ((byte)(b * 255)).ToString("X2");
-            }
-            
-            public string HexColor = "";
-            public float R = 0;
-            public float G = 0;
-            public float B = 0;
-        }
+                string? result = JsonExport.ExportTagToJson(TagLayouts.Tags(tagGroups[tagFileName.Split(".").Last()]), GetTagInfo(curTagID), moduleFile);
 
-        public class ARGBValue
-        {
-            public ARGBValue(float a, float r, float g, float b)
-            {
-                A = a;
-                R = r;
-                G = g;
-                B = b;
-                HexColor = "#" + ((byte)(a * 255)).ToString("X2") + ((byte)(r * 255)).ToString("X2") + ((byte)(g * 255)).ToString("X2") + ((byte)(b * 255)).ToString("X2");
-            }
-
-            public string HexColor = "";
-            public float A = 0;
-            public float R = 0;
-            public float G = 0;
-            public float B = 0;
-        }
-
-        public class TagBlockValue
-        {
-            public int Count = 0;
-            public int BlockIndex = 0;
-            public string Address = "";
-            public Dictionary<string, object> Data = new();
-        }
-
-        public class TagRefValue
-        {
-            public string TagID = "";
-            public string AssetID = "";
-            public string TagGroup = "";
-            public string TagPath = "";
-            public string ModulePath = "";
-        }
-
-        public class EnumValue
-        {
-            public int RawValue = 0;
-            public string Selection = "";
-            public Dictionary<int, string> Options = new();
-        }
-
-        public class FlagValue
-        {
-            public int RawValue = 0;
-            public Dictionary<string, bool> Flags = new();
-        }
-
-        private void DumpTagClick(object sender, RoutedEventArgs e)
-        {
-            // Setup
-            curDataBlockInd = 1;
-            string curTagGroup = moduleFile.Tag.ShortName.Split(".")[1];
-            Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagGroups[curTagGroup]);
-            TagJsonData tjd = new();
-
-            tjd.TagID = TagIDBlock.Text;
-            tjd.TagName = tagFileName;
-            tjd.DataOffset = "0x" + DataOffsetBlock.Text;
-            tjd.Data = GetJsonData(tagDefinitions, 0, 0, TagIDBlock.Text + ":");
-
-            // Save File
-            SaveFileDialog sfd = new();
-            sfd.Filter = "Json (*.json)|*.json";
-            sfd.FileName = TagNameBlock.Text.Split(".").First();
-            if (sfd.ShowDialog() == true)
-            {
-                File.WriteAllText(sfd.FileName, JsonConvert.SerializeObject(tjd, Formatting.Indented).ToString());
-            }
-        }
-
-        private Dictionary<object, object> GetJsonData(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain)
-        {
-            Dictionary<object, object> Data = new();
-
-            foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
-            {
-                entry.Value.MemoryAddress = address + entry.Key;
-
-                string name = "";
-                string type = "";
-
-                if (entry.Value.N != null)
-                    name = entry.Value.N;
-
-                if (entry.Value.T != null)
-                    type = entry.Value.T;
-
-                if (!name.Contains("generated_pad"))
+                if (result != null)
                 {
-                    try
+                    StatusOut("Tag data converted to JSON!");
+                    // Save File
+                    SaveFileDialog sfd = new();
+                    sfd.Filter = "Json (*.json)|*.json";
+                    sfd.FileName = tagFileName.Split("\\").Last().Split(".").First() + ".json";
+                    if (sfd.ShowDialog() == true)
                     {
-                        if (type == "Comment")
-                        {
-                            Data.Add(type, name);
-                        }
-                        else
-                        {
-                            BasicValue v = new()
-                            {
-                                Name = name,
-                                Type = type,
-                                Size = entry.Value.S,
-                                Value = "Null"
-                            };
-
-                            switch (type)
-                            {
-                                case "Byte":
-                                    v.Value = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0];
-                                    break;
-                                case "2Byte":
-                                    v.Value = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                    break;
-                                case "4Byte":
-                                    v.Value = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                    break;
-                                case "Float":
-                                    v.Value = BitConverter.ToSingle(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                    break;
-                                case "Pointer":
-                                    v.Value = "0x" + BitConverter.ToUInt64(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X");
-                                    break;
-                                case "mmr3Hash":
-                                    v.Value = BitConverter.ToUInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).ToString("X");
-                                    break;
-                                case "String":
-                                    v.Value = Encoding.UTF8.GetString(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)).Split('\0').First();
-                                    break;
-                                case "EnumGroup":
-                                    TagLayouts.EnumGroup fg3 = (TagLayouts.EnumGroup)entry.Value;
-                                    v.Name = fg3.N;
-                                    EnumValue eVal = new();
-                                    eVal.Options = fg3.STR;
-
-                                    if (entry.Value.S == 1)
-                                        eVal.RawValue = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0];
-                                    else if (entry.Value.S == 2)
-                                        eVal.RawValue = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                    else if (entry.Value.S == 4)
-                                        eVal.RawValue = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-
-                                    if (eVal.Options.ContainsKey(eVal.RawValue))
-                                        eVal.Selection = eVal.Options[eVal.RawValue];
-                                    else
-                                        eVal.Selection = "Error";
-
-                                    v.Value = eVal;
-                                    break;
-                                case "FlagGroup":
-                                    TagLayouts.FlagGroup? fg = (TagLayouts.FlagGroup)entry.Value;
-                                    v.Name = fg.N;
-                                    FlagValue fVal = new();
-
-                                    if (entry.Value.S == 1)
-                                        fVal.RawValue = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress)[0];
-                                    else if (entry.Value.S == 2)
-                                        fVal.RawValue = BitConverter.ToInt16(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-                                    else if (entry.Value.S == 4)
-                                        fVal.RawValue = BitConverter.ToInt32(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress));
-
-                                    fVal.Flags = GetFlagsFromBits(fg.A, fg.MB, GetDataFromFile(fg.A, entry.Value.MemoryAddress), fg.STR);
-                                    v.Value = fVal;
-                                    break;
-                                case "BoundsFloat":
-                                    v.Value = new Bounds()
-                                    {
-                                        Min = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0),
-                                        Max = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4)
-                                    };
-                                    break;
-                                case "Bounds2Byte":
-                                    v.Value = new Bounds()
-                                    {
-                                        Min = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0),
-                                        Max = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4)
-                                    };
-                                    break;
-                                case "2DPoint_Float":
-                                    v.Value = new Vector2()
-                                    {
-                                        X = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 0),
-                                        Y = BitConverter.ToSingle(GetDataFromFile(8, entry.Value.MemoryAddress), 4)
-                                    };
-                                    break;
-                                case "2DPoint_2Byte":
-                                    v.Value = new Vector2()
-                                    {
-                                        X = BitConverter.ToInt16(GetDataFromFile(4, entry.Value.MemoryAddress), 0),
-                                        Y = BitConverter.ToInt16(GetDataFromFile(4, entry.Value.MemoryAddress), 2)
-                                    };
-                                    break;
-                                case "3DPoint":
-                                    v.Value = new Vector3()
-                                    {
-                                        X = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0),
-                                        Y = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4),
-                                        Z = BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8)
-                                    };
-                                    break;
-                                case "Quanternion":
-                                    v.Value = new Quaternion()
-                                    {
-                                        W = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 0),
-                                        X = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 4),
-                                        Y = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 8),
-                                        Z = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 12)
-                                    };
-                                    break;
-                                case "3DPlane":
-                                    v.Value = new Quaternion()
-                                    {
-                                        W = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 0),
-                                        X = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 4),
-                                        Y = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 8),
-                                        Z = BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 12)
-                                    };
-                                    break;
-                                case "RGB":
-                                    v.Value = new RGBValue(BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 0),
-                                        BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 4),
-                                        BitConverter.ToSingle(GetDataFromFile(12, entry.Value.MemoryAddress), 8));
-                                    break;
-                                case "ARGB":
-                                    v.Value = new ARGBValue(BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 0),
-                                        BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 4),
-                                        BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 8),
-                                        BitConverter.ToSingle(GetDataFromFile(16, entry.Value.MemoryAddress), 12));
-                                    break;
-                                case "TagRef":
-                                    string tagId = Convert.ToHexString(GetDataFromFile(4, entry.Value.MemoryAddress + 8));
-                                    byte[] tagGroupData = GetDataFromFile(4, entry.Value.MemoryAddress + 20);
-                                    string tagGroup = Convert.ToHexString(tagGroupData);
-                                    if (tagGroup != "FFFFFFFF")
-                                        tagGroup = ReverseString(Encoding.UTF8.GetString(tagGroupData));
-
-                                    if (tagId != "FFFFFFFF" && tagGroup != "FFFFFFFF")
-                                    {
-                                        TagRefValue value = new();
-                                        value.TagID = tagId;
-                                        value.TagGroup = tagGroup;
-
-                                        if (inhaledTags.ContainsKey(tagId))
-                                        {
-                                            value.AssetID = inhaledTags[tagId].AssetID;
-                                            value.TagPath = inhaledTags[tagId].Path;
-                                            value.ModulePath = inhaledTags[tagId].Module;
-                                        }
-
-                                        v.Value = value;
-                                    }
-                                    break;
-                                case "Tagblock":
-                                    int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress), 16);
-
-                                    TagBlockValue tbv = new();
-                                    if (childCount > 0 && childCount < 100000)
-                                    {
-                                        tbv.Count = childCount;
-                                        tbv.BlockIndex = curDataBlockInd;
-                                        tbv.Address = "0x" + moduleFile.Tag.DataBlockArray[tbv.BlockIndex].Offset.ToString("X");
-                                        curDataBlockInd++;
-                                        for (int i = 0; i < childCount; i++)
-                                        {
-                                            long newAddress = (long)moduleFile.Tag.DataBlockArray[tbv.BlockIndex].Offset - (long)moduleFile.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
-                                            tbv.Data.Add("Index " + (i + 1), GetJsonData(entry.Value.B, newAddress, newAddress + entry.Value.S * i, entry.Value.AbsoluteTagOffset));
-                                        }
-                                        v.Value = tbv;
-                                    }
-                                    
-                                    break;
-                                case "FUNCTION":
-                                    int funcSize = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20));
-                                    TagBlockValue funcV = new();
-                                    if (funcSize > 0)
-                                    {
-                                        funcV.Count = funcSize;
-                                        funcV.BlockIndex = curDataBlockInd;
-                                        curDataBlockInd++;
-
-                                        v.Value = funcV;
-                                    }
-                                    break;
-                            }
-
-                            Data.Add("0x" + entry.Value.MemoryAddress.ToString("X"), v);
-                        }
+                        File.WriteAllText(sfd.FileName, result);
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                    }
+
+                    StatusOut("Tag successfully exported to JSON!");
+                    return;
                 }
             }
 
-            return Data;
+            StatusOut("Error exporting tag to json!");
         }
-        
         #endregion
     }
 }

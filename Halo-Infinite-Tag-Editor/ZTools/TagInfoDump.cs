@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Halo_Infinite_Tag_Editor.ZTools
+namespace ZTools
 {
-    public class Common
+    public class TagInfoDump
     {
 
     }
