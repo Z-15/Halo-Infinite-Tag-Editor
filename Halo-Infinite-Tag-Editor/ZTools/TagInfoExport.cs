@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZTools
 {
-    public class TagInfoDump
+    public class TagInfoExport
     {
 
     }

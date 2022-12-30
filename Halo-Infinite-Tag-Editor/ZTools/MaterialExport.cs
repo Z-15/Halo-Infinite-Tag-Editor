@@ -112,7 +112,7 @@ namespace ZTools
             GetMaterialData(TagLayouts.Tags(tagGroups[tag.TagPath.Split(".").Last()]), mf, 0, obj: mat);
 
             // Return restult
-            return JsonConvert.SerializeObject(mat, Formatting.Indented).ToString(); ;
+            return JsonConvert.SerializeObject(mat, Formatting.Indented).ToString();
         }
 
         private static ModuleFile? TryOpenTag(string tagPath)
