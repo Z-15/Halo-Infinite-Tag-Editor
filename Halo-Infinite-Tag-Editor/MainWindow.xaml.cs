@@ -51,90 +51,13 @@ namespace Halo_Infinite_Tag_Editor
         // or more difficult to do so.
 
         // Used to reference in other classes.
+
+        #region Initialization
         public static MainWindow? instance;
-
-        public MainWindow()
-        {
-            InitializeComponent();
-
-            // Set instance to this window.
-            instance = this;
-
-            // Don't know how settings work yet, this will be updated in the future.
-            deployPath = AppSettings.Default.DeployPath;
-
-            // Tries to find module files in the given path.
-            if (FindModuleFiles())
-            {
-                CreateModuleTree(null, baseFolder);
-            }
-            else
-            {
-                StatusOut("No module files were found in given path...");
-            }
-
-            // Read and store info from the text files in the Files directory.
-            InhaleTagGroup();
-            InhaleTagNames();
-        }
-
-        #region Window Controls
-        // Anything that controls how the UI that doesn't fit in another group.
-        private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = true;
-        }
-
-        private void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)
-        {
-            SystemCommands.MinimizeWindow(this);
-        }
-
-        private void CommandBinding_Executed_Maximize(object sender, ExecutedRoutedEventArgs e)
-        {
-            SystemCommands.MaximizeWindow(this);
-            RestoreButton.Visibility = Visibility.Visible;
-            MaximizeButton.Visibility = Visibility.Collapsed;
-        }
-
-        private void CommandBinding_Executed_Restore(object sender, ExecutedRoutedEventArgs e)
-        {
-            SystemCommands.RestoreWindow(this);
-            RestoreButton.Visibility = Visibility.Collapsed;
-            MaximizeButton.Visibility = Visibility.Visible;
-        }
-
-        private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
-        {
-            SystemCommands.CloseWindow(this);
-        }
-
-        private void Move_Window(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
-        }
-
-        private void StatusOut(string message)
-        {
-            // Invoking dispatcher allows this to be called from other threads.
-            Dispatcher.Invoke(new Action(() =>
-            {
-                StatusBlock.Text = message;
-            }), DispatcherPriority.Background);
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
-            e.Handled = true;
-        }
-        #endregion
-
-        #region Module List
         private string deployPath = "";
         private Folder baseFolder = new Folder();
         public List<string> modulePaths = new List<string>();
-        
+
         public class Folder
         {
             public string fullPath = "";
@@ -180,25 +103,66 @@ namespace Halo_Infinite_Tag_Editor
             }
         }
 
-        private void SetPathClick(object sender, RoutedEventArgs e)
+        public MainWindow()
         {
-            deployPath = DeployPathBox.Text;
+            InitializeComponent();
 
-            baseFolder = new Folder();
-            ModuleTree.Items.Clear();
+            // Set instance to this window.
+            instance = this;
 
+            // Don't know how settings work yet, this will be updated in the future.
+            deployPath = AppSettings.Default.DeployPath;
+
+            // Tries to find module files in the given path.
             if (FindModuleFiles())
             {
-                AppSettings.Default.DeployPath = deployPath;
                 CreateModuleTree(null, baseFolder);
             }
             else
             {
-                ModuleTree.Items.Clear();
                 StatusOut("No module files were found in given path...");
             }
 
-            GC.Collect();
+            // Read and store info from the text files in the Files directory.
+            InhaleTagGroup();
+            InhaleTagNames();
+        }
+
+        private void InhaleTagGroup()
+        {
+            foreach (string line in File.ReadAllLines(@".\Files\tagGroups.txt"))
+            {
+                if (line.Contains(":"))
+                {
+                    string tagGroup = line.Split(":")[1];
+                    string tagGroupShort = line.Split(":")[0];
+
+                    if (!tagGroups.ContainsKey(tagGroup))
+                    {
+                        tagGroups.Add(tagGroup.Trim(), tagGroupShort.Trim());
+                    }
+                }
+            }
+        }
+
+        public void InhaleTagNames()
+        {
+            string filename = Directory.GetCurrentDirectory() + @"\files\tagnames.txt";
+            IEnumerable<string>? lines = System.IO.File.ReadLines(filename);
+            foreach (string? line in lines)
+            {
+                string[] hexString = line.Split(" : ");
+                if (!inhaledTags.ContainsKey(hexString[0]))
+                {
+                    TagInfo ti = new();
+                    ti.TagID = hexString[0];
+                    ti.AssetID = hexString[1];
+                    ti.TagPath = hexString[2];
+                    ti.ModulePath = hexString[3];
+                    inhaledTags.Add(hexString[0], ti);
+                }
+            }
+            Debug.WriteLine("");
         }
 
         private bool FindModuleFiles()
@@ -251,7 +215,7 @@ namespace Halo_Infinite_Tag_Editor
                         foreach (string file in folder.files)
                         {
                             TreeViewItem tvFile = new TreeViewItem();
-                            
+
                             tvFile.Header = file;
                             tvFile.Tag = folder.fullPath + "\\" + file;
                             tvFile.Selected += ModuleSelected;
@@ -264,6 +228,79 @@ namespace Halo_Infinite_Tag_Editor
                 if (folder.subfolders.Count > 0)
                     CreateModuleTree(tvFolder, folder);
             }
+        }
+        #endregion
+        
+        #region Window Controls
+        // Anything that controls how the UI that doesn't fit in another group.
+        private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)
+        {
+            SystemCommands.MinimizeWindow(this);
+        }
+
+        private void CommandBinding_Executed_Maximize(object sender, ExecutedRoutedEventArgs e)
+        {
+            SystemCommands.MaximizeWindow(this);
+            RestoreButton.Visibility = Visibility.Visible;
+            MaximizeButton.Visibility = Visibility.Collapsed;
+        }
+
+        private void CommandBinding_Executed_Restore(object sender, ExecutedRoutedEventArgs e)
+        {
+            SystemCommands.RestoreWindow(this);
+            RestoreButton.Visibility = Visibility.Collapsed;
+            MaximizeButton.Visibility = Visibility.Visible;
+        }
+
+        private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
+        {
+            SystemCommands.CloseWindow(this);
+        }
+
+        private void Move_Window(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
+
+        private void StatusOut(string message)
+        {
+            // Invoking dispatcher allows this to be called from other threads.
+            Dispatcher.Invoke(new Action(() =>
+            {
+                StatusBlock.Text = message;
+            }), DispatcherPriority.Background);
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
+        }
+
+        private void SetPathClick(object sender, RoutedEventArgs e)
+        {
+            deployPath = DeployPathBox.Text;
+
+            baseFolder = new Folder();
+            ModuleTree.Items.Clear();
+
+            if (FindModuleFiles())
+            {
+                AppSettings.Default.DeployPath = deployPath;
+                CreateModuleTree(null, baseFolder);
+            }
+            else
+            {
+                ModuleTree.Items.Clear();
+                StatusOut("No module files were found in given path...");
+            }
+
+            GC.Collect();
         }
         #endregion
 
@@ -1751,45 +1788,6 @@ namespace Halo_Infinite_Tag_Editor
             TagNameBox.Text = "";
             ModuleNameBox.Text = "";
             ReferencePanel.Children.Clear();
-        }
-        #endregion
-
-        #region Dictionaries
-        private void InhaleTagGroup()
-        {
-            foreach(string line in File.ReadAllLines(@".\Files\tagGroups.txt"))
-            {
-                if (line.Contains(":"))
-                {
-                    string tagGroup = line.Split(":")[1];
-                    string tagGroupShort = line.Split(":")[0];
-
-                    if (!tagGroups.ContainsKey(tagGroup))
-                    {
-                        tagGroups.Add(tagGroup.Trim(), tagGroupShort.Trim());
-                    }
-                }
-            }
-        }
-
-        public void InhaleTagNames()
-        {
-            string filename = Directory.GetCurrentDirectory() + @"\files\tagnames.txt";
-            IEnumerable<string>? lines = System.IO.File.ReadLines(filename);
-            foreach (string? line in lines)
-            {
-                string[] hexString = line.Split(" : ");
-                if (!inhaledTags.ContainsKey(hexString[0]))
-                {
-                    TagInfo ti = new();
-                    ti.TagID = hexString[0];
-                    ti.AssetID = hexString[1];
-                    ti.TagPath = hexString[2];
-                    ti.ModulePath = hexString[3];
-                    inhaledTags.Add(hexString[0], ti);
-                }
-            }
-            Debug.WriteLine("");
         }
         #endregion
 
