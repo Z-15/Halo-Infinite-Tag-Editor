@@ -96,7 +96,8 @@ namespace InfiniteModuleEditor
                 {
                     TagName = Encoding.ASCII.GetString(ModuleStrings, moduleItem.NameOffset, module.StringsSize - moduleItem.NameOffset);
                 }
-                StringList.Add(moduleItem.GlobalTagId, TagName);
+                if (!StringList.ContainsKey((moduleItem.GlobalTagId)))
+                    StringList.Add(moduleItem.GlobalTagId, TagName);
                 module.ModuleFiles.Add(TagName, new ModuleFile { FileEntry = moduleItem });
             }
             return module;

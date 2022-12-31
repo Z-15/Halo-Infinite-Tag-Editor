@@ -22,10 +22,8 @@ namespace ZTools
         {
             public string materialID = "";
             public string materialName = "";
-
             public float real = 0;
             public Vector3 vector = new();
-
             public string regionName = "";
             public string materialStyleID = "";
             public string materialStyleName = "";
@@ -97,7 +95,6 @@ namespace ZTools
         public static string? ExportMaterial(TagInfo tag, FileStream moduleStream, Module module)
         {
             // Set Values
-            
             mStream = moduleStream;
             mod = module;
 

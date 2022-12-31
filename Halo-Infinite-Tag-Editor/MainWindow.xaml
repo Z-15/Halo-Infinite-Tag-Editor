@@ -45,16 +45,7 @@
                     <MenuItem Header="Open" Click="OpenTagClick" ToolTip="Open a tag file"/>
                     <MenuItem Header="Import" Click="ImportTagClick" ToolTip="Overwrite current tag with file"/>
                     <MenuItem Header="Export" Click="ExportTagClick" ToolTip="Export currently loaded tag"/>
-                    <MenuItem Header="Export JSON" Click="TagJsonExportClick" ToolTip="Export currently loaded tag to JSON"/>
-                    <MenuItem Header="Export Material Style" Click="ExportMaterialClick" ToolTip="Export style tag data"/>
                     <MenuItem Header="Close" Click="CloseTagClick" ToolTip="Close current tag"/>
-                </MenuItem>
-                <MenuItem Header="Tools" Style="{DynamicResource Z_MenuItemStyle}" Margin="5,0,0,0">
-                    <MenuItem Header="Dump Tag Info HITE" Click="DumpTagInfoClick" ToolTip="Dumps tag info from modules in path"/>
-                    <MenuItem Header="Dump Tag Info IRTV" Click="DumpTagInfoIRTVClick" ToolTip="Dumps tag info from modules in path"/>
-                    <MenuItem Header="Dump Tag Info IRME" Click="DumpTagInfoIRMEClick" ToolTip="Dumps tag info from modules in path"/>
-                    <MenuItem Header="Dump Hashes" Click="DumpHashesClick" ToolTip="Dumps hashes from every tag found in module path"/>
-                    <MenuItem Header="Dump Forge Data" Click="DumpForgeData" ToolTip="Dumps data from all food tags."/>
                 </MenuItem>
             </Menu>
             <TextBlock Text="Halo Infinite Tag Editor" Style="{DynamicResource Z_TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -266,6 +257,73 @@
                         <TextBlock Text="Soupstream's Havok Script Disassembler" Style="{DynamicResource Z_TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         <TextBox Width="600" Grid.Row="1" x:Name="luaView" IsReadOnly="True" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" FontWeight="Thin" FontFamily="Cascadia Code" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
                         <Button Content="Save" Grid.Row="2" Height="20" Width="100" VerticalAlignment="Bottom" Margin="2.5" Click="SaveScript"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Data Exporting" FontWeight="Thin">
+                    <Grid Width="400" Background="#222222">
+                        <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="5">
+                            <Grid>
+                                <StackPanel>
+                                    <!-- Exporting Options -->
+                                    <TextBlock Text="Exporting Options" FontSize="20" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <StackPanel Margin="2.5, 5">
+                                        <Grid Margin="2.5">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="20"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="35"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="100"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Type" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
+                                            <Rectangle Grid.Column="1" Fill="#303030" Height="2.5" HorizontalAlignment="Stretch"/>
+                                            <ComboBox Name="DumpTypeCB" Grid.Column="2" Width="100" Margin="2.5,0,0,0" SelectionChanged="DumpTypeChange">
+                                                <ComboBoxItem Content="All Tag Info"/>
+                                                <ComboBoxItem Content="Current Tag"/>
+                                                <ComboBoxItem Content="Current Material"/>
+                                                <ComboBoxItem Content="Forge Objects"/>
+                                                <ComboBoxItem Content="Hashes"/>
+                                            </ComboBox>
+                                        </Grid>
+                                        <Grid Margin="2.5" x:Name="FormatOption" Visibility="Collapsed">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="20"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="47.5"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="100"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Format" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
+                                            <Rectangle Grid.Column="1" Fill="#303030" Height="2.5" HorizontalAlignment="Stretch"/>
+                                            <ComboBox Name="DumpFormat" Grid.Column="2" Width="100" Margin="2.5,0,0,0" SelectionChanged="DumpTypeChange">
+                                                <ComboBoxItem Content="JSON"/>
+                                                <ComboBoxItem Content="Text"/>
+                                            </ComboBox>
+                                        </Grid>
+                                        <Grid Margin="2.5" x:Name="FlatFileOption" Visibility="Collapsed">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="20"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="47.5"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="20"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Flat" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
+                                            <Rectangle Grid.Column="1" Fill="#303030" Height="2.5" HorizontalAlignment="Stretch"/>
+                                            <CheckBox Name="FlatCheck" Grid.Column="2" Margin="2.5,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+                                    <!-- Extract Button -->
+                                    <Button Content="Extract" Grid.Row="2" Width="70" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2.5" Click="ExtractClick"/>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Credits" FontWeight="Thin">

@@ -1487,8 +1487,6 @@ namespace Halo_Infinite_Tag_Editor
             return data;
         }
 
-        
-
         private TagInfo GetTagInfo(string tagID)
         {
             TagInfo result = new TagInfo();
@@ -1661,7 +1659,6 @@ namespace Halo_Infinite_Tag_Editor
         #endregion
 
         #region Hash Searching
-
         private void HashSearchClick(object sender, RoutedEventArgs e)
         {
             StatusOut("Searching...");
@@ -1796,503 +1793,148 @@ namespace Halo_Infinite_Tag_Editor
         }
         #endregion
 
-        #region Tools
-        private async void DumpTagInfoClick(object sender, RoutedEventArgs e)
+        #region Data Extraction
+        private void ExtractClick(object sender, RoutedEventArgs e)
         {
-            List<string> tagDumpInfos = new List<string>();
-
-            try
+            if (DumpTypeCB.SelectedIndex == 0)
             {
-                StatusOut("Dumping tag info...");
+                Dictionary<string, TagInfo> tInfo = TagInfoExport.ExtractTagInfo(modulePaths);
 
-                foreach (string path in modulePaths)
-                {
-                    FileStream mStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-                    ModuleFile mFile = new ModuleFile();
-
-                    Task dumpTags = new Task(() =>
-                    {
-                        Module m = ModuleEditor.ReadModule(mStream);
-
-                        foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
-                        {
-                            string TagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
-                            string AssetID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.AssetId));
-                            string TagPath = mf.Key.Replace("\0", String.Empty);
-                            string ModulePath = path.Split("deploy\\").Last();
-                            tagDumpInfos.Add(TagID + " : " + AssetID + " : " + TagPath + " : " + ModulePath);
-                        }
-                    });
-                    dumpTags.Start();
-                    await dumpTags;
-                    dumpTags.Dispose();
-                }
-
-                tagDumpInfos.Sort();
-                SaveFileDialog sfd = new();
-                sfd.Filter = "Text File (*.txt)|*.txt";
-                sfd.FileName = "tagnames.txt";
-                if (sfd.ShowDialog() == true)
-                {
-                    File.WriteAllLines(sfd.FileName, tagDumpInfos.ToArray());
-                }
-
-                tagDumpInfos.Clear();
-                StatusOut("Tag info dumped!");
-            }
-            catch
-            {
-                StatusOut("Failed to dump tag info!");
-            }
-        }
-
-        private async void DumpTagInfoIRTVClick(object sender, RoutedEventArgs e)
-        {
-            List<string> tagDumpInfos = new List<string>();
-
-            try
-            {
-                StatusOut("Dumping tag info...");
-
-                foreach (string path in modulePaths)
-                {
-                    FileStream mStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-                    ModuleFile mFile = new ModuleFile();
-
-                    Task dumpTags = new Task(() =>
-                    {
-                        Module m = ModuleEditor.ReadModule(mStream);
-
-                        foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
-                        {
-                            string TagID = mf.Value.FileEntry.GlobalTagId.ToString();
-                            //string TagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
-                            string AssetID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.AssetId));
-                            string TagPath = mf.Key.Replace("\0", String.Empty);
-                            string ModulePath = path.Split("deploy\\").Last();
-
-                            if (TagPath.EndsWith(".forgeobjectdata"))
-                                tagDumpInfos.Add(TagID + " : " + TagPath);
-                        }
-                    });
-                    dumpTags.Start();
-                    await dumpTags;
-                    dumpTags.Dispose();
-                }
-
-                tagDumpInfos.Sort();
-                SaveFileDialog sfd = new();
-                sfd.Filter = "Text File (*.txt)|*.txt";
-                sfd.FileName = "tagnames.txt";
-                if (sfd.ShowDialog() == true)
-                {
-                    File.WriteAllLines(sfd.FileName, tagDumpInfos.ToArray());
-                }
-
-                tagDumpInfos.Clear();
-                StatusOut("Tag info dumped!");
-            }
-            catch
-            {
-                StatusOut("Failed to dump tag info!");
-            }
-        }
-
-        private async void DumpTagInfoIRMEClick(object sender, RoutedEventArgs e)
-        {
-            List<string> tagDumpInfos = new List<string>();
-
-            try
-            {
-                StatusOut("Dumping tag info...");
-
-                foreach (string path in modulePaths)
-                {
-                    FileStream mStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-                    ModuleFile mFile = new ModuleFile();
-
-                    Task dumpTags = new Task(() =>
-                    {
-                        Module m = ModuleEditor.ReadModule(mStream);
-
-                        foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
-                        {
-                            string TagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
-                            string AssetID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.AssetId));
-                            string TagPath = mf.Key.Replace("\0", String.Empty);
-                            string ModulePath = path.Split("deploy\\").Last();
-                            if (TagPath.EndsWith("model"))
-                                tagDumpInfos.Add(TagID + " : " + TagPath);
-                        }
-                    });
-                    dumpTags.Start();
-                    await dumpTags;
-                    dumpTags.Dispose();
-                }
-
-                tagDumpInfos.Sort();
-                SaveFileDialog sfd = new();
-                sfd.Filter = "Text File (*.txt)|*.txt";
-                sfd.FileName = "tagnames.txt";
-                if (sfd.ShowDialog() == true)
-                {
-                    File.WriteAllLines(sfd.FileName, tagDumpInfos.ToArray());
-                }
-
-                tagDumpInfos.Clear();
-                StatusOut("Tag info dumped!");
-            }
-            catch
-            {
-                StatusOut("Failed to dump tag info!");
-            }
-        }
-
-        public class HashTagInfo
-        {
-            public string TagID = "";
-            public Dictionary<long, string> ReferenceLocations = new();
-        }
-
-        public class HashInfo
-        {
-            public string HashID = "";
-            public string HashName = "";
-            public Dictionary<string, HashTagInfo> Tags = new();
-        }
-
-        private Dictionary<string, HashInfo> foundHashes = new();
-        private Dictionary<string, string> hashNames = new();
-       
-        private async void DumpHashesClick(object sender, RoutedEventArgs e)
-        {
-            StatusOut("Gathering hashes...");
-            bool done = false;
-            int modulesDone = 0;
-            Task dumpHashes = new Task(() =>
-            {
-                foreach (string line in File.ReadLines(@".\Files\all_trimmed.txt"))
-                {
-                    string trim = line.Trim();
-                    if (trim.Contains(":"))
-                        if (!hashNames.ContainsKey(trim.Split(":").First()))
-                            hashNames.Add(trim.Split(":").First(), trim.Split(":").Last());
-                }
-
-                foreach (string line in File.ReadLines(@".\Files\nocaps_3chars.txt"))
-                {
-                    string trim = line.Trim();
-                    if (trim.Contains(":"))
-                        if (!hashNames.ContainsKey(trim.Split(":").First()))
-                            hashNames.Add(trim.Split(":").First(), trim.Split(":").Last());
-                }
-
-                foreach (string path in modulePaths)
-                {
-                    Debug.WriteLine(modulesDone + " Current Module: " + path);
-                    FileStream mStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-                    Module m = ModuleEditor.ReadModule(mStream);
-                    ResetTagTree();
-                    foreach (KeyValuePair<string, ModuleFile> mf in m.ModuleFiles)
-                    {
-                        try
-                        {
-                            string TagPath = mf.Key.Replace("\0", String.Empty);
-
-                            if (!TagPath.EndsWith(".model_animation_graph") && !TagPath.EndsWith(".physics_model") && !TagPath.EndsWith(".decal_system") && !TagPath.EndsWith(".generator_system") && !TagPath.EndsWith(".composer_spawning_pattern"))
-                            {
-                                MemoryStream tStream = new();
-                                tStream = ModuleEditor.GetTag(m, mStream, TagPath);
-                                mf.Value.Tag = ModuleEditor.ReadTag(tStream, TagPath, mf.Value);
-                                mf.Value.Tag.Name = TagPath;
-                                mf.Value.Tag.ShortName = TagPath.Split("\\").Last();
-
-                                string curTagGroup = mf.Key.Replace("\0", String.Empty).Split(".").Last();
-                                string tagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
-
-                                if (tagGroups.ContainsKey(curTagGroup.Trim()))
-                                {
-                                    Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagGroups[curTagGroup]);
-                                    GetTagHashes(tagDefinitions, 0, 0, tagID + ":", mf.Value, path);
-                                }
-
-                                tStream.Close();
-                                curDataBlockInd = 1;
-                            } 
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine("Dump Hashes Task: " + ex.Message);
-                        }
-                    }
-                    mStream.Close();
-                    modulesDone++;
-                }       
-
-                done = true;
-            });
-
-            Task dumpCheck = new Task(() =>
-            {
-                while (!done)
-                {
-                    Thread.Sleep(1000);
-                    StatusOut("Hashes Found: " + foundHashes.Count());
-                }
-            });
-
-            dumpHashes.Start();
-            dumpCheck.Start();
-            await dumpHashes;
-            
-            StatusOut("Writing to file...");
-            CreateHashFile();
-            StatusOut("Hashes dumped!");
-        }
-
-        private void GetTagHashes(Dictionary<long, TagLayouts.C> tagDefinitions, long address, long startingTagOffset, string offsetChain, ModuleFile mf, string modulePath)
-        {
-            try
-            {
-                foreach (KeyValuePair<long, TagLayouts.C> entry in tagDefinitions)
-                {
-                    entry.Value.MemoryAddress = address + entry.Key;
-                    entry.Value.AbsoluteTagOffset = offsetChain + "," + (entry.Key + startingTagOffset);
-                    string name = "";
-                    if (entry.Value.N != null)
-                        name = entry.Value.N;
-
-                    if (entry.Value.T == "Tagblock" || entry.Value.T == "FUNCTION")
-                    {
-                        TagValueData curTagData = new()
-                        {
-                            Name = name,
-                            ControlType = entry.Value.T,
-                            Type = entry.Value.T,
-                            OffsetChain = entry.Value.AbsoluteTagOffset,
-                            Offset = entry.Value.MemoryAddress,
-                            Value = GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress, mf),
-                            Size = (int)entry.Value.S,
-                            ChildCount = 0,
-                            DataBlockIndex = 0
-                        };
-
-                        int blockIndex = 0;
-                        int childCount = BitConverter.ToInt32(GetDataFromFile(20, entry.Value.MemoryAddress, mf), 16);
-
-                        if (curTagData.Type == "Tagblock" && childCount < 10000)
-                        {
-                            if (childCount > 0)
-                            {
-                                blockIndex = curDataBlockInd;
-                                curDataBlockInd++;
-                                curTagData.ChildCount = childCount;
-                                curTagData.DataBlockIndex = blockIndex;
-
-                                for (int i = 0; i < childCount; i++)
-                                {
-                                    long newAddress = (long)mf.Tag.DataBlockArray[curTagData.DataBlockIndex].Offset - (long)mf.Tag.DataBlockArray[0].Offset + (entry.Value.S * i);
-                                    GetTagHashes(entry.Value.B, newAddress, newAddress + entry.Value.S * i, curTagData.OffsetChain, mf, modulePath);
-                                }
-                            }
-                        }
-                        else if (curTagData.Type == "FUNCTION")
-                        {
-                            curTagData.ChildCount = childCount;
-                            childCount = BitConverter.ToInt32(GetDataFromFile(4, entry.Value.MemoryAddress + 20, mf));
-                            if (childCount > 0)
-                            {
-                                blockIndex = curDataBlockInd;
-                                curDataBlockInd++;
-
-                                curTagData.ChildCount = childCount;
-                                curTagData.DataBlockIndex = blockIndex;
-                            }
-                        }
-                    }
-
-                    if (entry.Value.T == "mmr3Hash")
-                    {
-                        string hash = Convert.ToHexString(GetDataFromFile((int)entry.Value.S, entry.Value.MemoryAddress, mf));
-
-                        if (hash != "BCBCBCBC" && hash != "00000000" && !String.IsNullOrWhiteSpace(hash) && !String.IsNullOrEmpty(hash))
-                        {
-                            string tagID = mf.FileEntry.GlobalTagId.ToString("X");
-                            if (!foundHashes.ContainsKey(hash))
-                            {
-                                HashInfo hashInfo = new();
-                                hashInfo.HashID = hash;
-
-                                if (hashNames.ContainsKey(hash))
-                                    hashInfo.HashName = hashNames[hash];
-                                else
-                                    hashInfo.HashName = "Unknown";
-
-                                HashTagInfo hashTagInfo = new();
-                                hashTagInfo.TagID = tagID;
-                                if (!hashTagInfo.ReferenceLocations.ContainsKey(entry.Value.MemoryAddress))
-                                    hashTagInfo.ReferenceLocations.Add(entry.Value.MemoryAddress, name);
-
-                                hashInfo.Tags.Add(hashTagInfo.TagID, hashTagInfo);
-                                foundHashes.Add(hash, hashInfo);
-                            }
-                            else
-                            {
-                                HashInfo hashInfo = foundHashes[hash];
-
-                                if (!hashInfo.Tags.ContainsKey(tagID))
-                                {
-                                    HashTagInfo hashTagInfo = new();
-                                    hashTagInfo.TagID = tagID;
-                                    if (!hashTagInfo.ReferenceLocations.ContainsKey(entry.Value.MemoryAddress))
-                                        hashTagInfo.ReferenceLocations.Add(entry.Value.MemoryAddress, name);
-                                    hashInfo.Tags.Add(hashTagInfo.TagID, hashTagInfo);
-                                }
-                                else
-                                {
-                                    HashTagInfo hashTagInfo = hashInfo.Tags[tagID];
-                                    if (!hashTagInfo.ReferenceLocations.ContainsKey(entry.Value.MemoryAddress))
-                                        hashTagInfo.ReferenceLocations.Add(entry.Value.MemoryAddress, name);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Get Tag Hashes: " + ex.Message);
-            }
-        }
-
-        private void CreateHashFile()
-        {
-            List<string> lines = new();
-
-            foreach (HashInfo hashInfo in foundHashes.Values)
-            {
-                string outLine = "";
-                outLine = "Hash-" +hashInfo.HashID + "~Name-" + hashInfo.HashName + "~Tags{";
-                int i = 0;
-                foreach (HashTagInfo hashTagInfo in hashInfo.Tags.Values)
-                {
-                    outLine += hashTagInfo.TagID + "[";
-                    int j = 0;
-                    foreach (KeyValuePair<long, string> kvp in hashTagInfo.ReferenceLocations)
-                    {
-                        outLine += kvp.Value + ":" + kvp.Key.ToString("X");
-                        if (j < hashTagInfo.ReferenceLocations.Count - 1)
-                            outLine += ",";
-
-                        j++;
-                    }
-                    outLine += "]";
-
-                    if (i < hashInfo.Tags.Count - 1)
-                        outLine += ",";
-
-                    i++;
-                }
-                outLine += "}";
-
-                lines.Add(outLine);
-            }
-
-            File.WriteAllLines(@".\Files\mmr3Hashes.txt", lines);
-        }
-
-        #endregion
-
-        #region TagExport
-        private void TagJsonExportClick(object sender, RoutedEventArgs e)
-        {
-            StatusOut("Attempting to export tag to JSON...");
-            if (tagFileName.Length > 0 && curTagID.Length == 8)
-            {
-                string? result = JsonExport.ExportTagToJson(TagLayouts.Tags(tagGroups[tagFileName.Split(".").Last()]), GetTagInfo(curTagID), moduleFile);
-
-                if (result != null)
-                {
-                    StatusOut("Tag data converted to JSON!");
-                    // Save File
-                    SaveFileDialog sfd = new();
-                    sfd.Filter = "Json (*.json)|*.json";
-                    sfd.FileName = tagFileName.Split("\\").Last().Split(".").First() + ".json";
-                    if (sfd.ShowDialog() == true)
-                    {
-                        File.WriteAllText(sfd.FileName, result);
-                    }
-
-                    StatusOut("Tag successfully exported to JSON!");
-                    return;
-                }
-            }
-
-            StatusOut("Error exporting tag to json!");
-        }
-        #endregion
-
-        #region CoatingDump
-        private void ExportMaterialClick(object sender, RoutedEventArgs e)
-        {
-            StatusOut("Attempting to export material data...");
-            if (tagFileName.Length > 0 && curTagID.Length == 8 && moduleStream != null && tagStream != null && module != null)
-            {
-                // Close tag
-                tagStream.Close();
-
-                // Attempt to export material data
-                string? result = MaterialExport.ExportMaterial(GetTagInfo(curTagID), moduleStream, module);
-
-                if (result != null)
-                {
-                    // Save File
-                    StatusOut("Material data converted to JSON!");
-                    SaveFileDialog sfd = new();
-                    sfd.Filter = "Json (*.json)|*.json";
-                    sfd.FileName = tagFileName.Split("\\").Last().Split(".").First() + ".json";
-                    if (sfd.ShowDialog() == true)
-                    {
-                        File.WriteAllText(sfd.FileName, result);
-                    }
-
-                    StatusOut("Material successfully exported to JSON!");
-                    return;
-                }
-
-                // Re-open tag
-                tagStream = ModuleEditor.GetTag(module, moduleStream, tagFileName);
-            }
-
-            StatusOut("Error exporting material data!");
-        }
-        #endregion
-
-        #region Forge Data
-        private void DumpForgeData(object sender, RoutedEventArgs e)
-        {
-            StatusOut("Attempting to export forge data...");
-            // Attempt to export forge data
-
-            string? result = ForgeExport.ExtractForgeData(modulePaths);
-
-            if (result != null)
-            {
-                // Save File
-                StatusOut("Forge data converted to JSON!");
                 SaveFileDialog sfd = new();
                 sfd.Filter = "Json (*.json)|*.json";
-                sfd.FileName = "ForgeObjectData.json";
+                sfd.FileName = "tagInfo.json";
                 if (sfd.ShowDialog() == true)
                 {
-                    File.WriteAllText(sfd.FileName, result);
+                    File.WriteAllText(sfd.FileName, JsonConvert.SerializeObject(tInfo, Formatting.Indented).ToString());
                 }
 
-                StatusOut("Forge data successfully exported to JSON!");
+                StatusOut("Retrieving tag info...");
+            }
+
+            if (DumpTypeCB.SelectedIndex == 1)
+            {
+                StatusOut("Attempting to export tag to JSON...");
+                if (tagFileName.Length > 0 && curTagID.Length == 8)
+                {
+                    string? result = JsonExport.ExportTagToJson(TagLayouts.Tags(tagGroups[tagFileName.Split(".").Last()]), GetTagInfo(curTagID), moduleFile);
+
+                    if (result != null)
+                    {
+                        StatusOut("Tag data converted to JSON!");
+                        // Save File
+                        SaveFileDialog sfd = new();
+                        sfd.Filter = "Json (*.json)|*.json";
+                        sfd.FileName = tagFileName.Split("\\").Last().Split(".").First() + ".json";
+                        if (sfd.ShowDialog() == true)
+                        {
+                            File.WriteAllText(sfd.FileName, result);
+                        }
+
+                        StatusOut("Tag successfully exported to JSON!");
+                        return;
+                    }
+                }
+
+                StatusOut("Error exporting tag to json!");
+            }
+
+            if (DumpTypeCB.SelectedIndex == 2)
+            {
+                StatusOut("Attempting to export material data...");
+                if (tagFileName.Length > 0 && curTagID.Length == 8 && moduleStream != null && tagStream != null && module != null)
+                {
+                    // Close tag
+                    tagStream.Close();
+
+                    // Attempt to export material data
+                    string? result = MaterialExport.ExportMaterial(GetTagInfo(curTagID), moduleStream, module);
+
+                    if (result != null)
+                    {
+                        // Save File
+                        StatusOut("Material data converted to JSON!");
+                        SaveFileDialog sfd = new();
+                        sfd.Filter = "Json (*.json)|*.json";
+                        sfd.FileName = tagFileName.Split("\\").Last().Split(".").First() + ".json";
+                        if (sfd.ShowDialog() == true)
+                        {
+                            File.WriteAllText(sfd.FileName, result);
+                        }
+
+                        StatusOut("Material successfully exported to JSON!");
+                        return;
+                    }
+
+                    // Re-open tag
+                    tagStream = ModuleEditor.GetTag(module, moduleStream, tagFileName);
+                }
+
+                StatusOut("Error exporting material data!");
+            }
+
+            if (DumpTypeCB.SelectedIndex == 3)
+            {
+                StatusOut("Attempting to export forge data...");
+                // Attempt to export forge data
+
+                string? result = ForgeExport.ExtractForgeData(modulePaths);
+
+                if (result != null)
+                {
+                    // Save File
+                    StatusOut("Forge data converted to JSON!");
+                    SaveFileDialog sfd = new();
+                    sfd.Filter = "Json (*.json)|*.json";
+                    sfd.FileName = "ForgeObjectData.json";
+                    if (sfd.ShowDialog() == true)
+                    {
+                        File.WriteAllText(sfd.FileName, result);
+                    }
+
+                    StatusOut("Forge data successfully exported to JSON!");
+                }
+                else
+                {
+                    StatusOut("Error retrieving forge data!");
+                }
+            }
+            
+            if (DumpTypeCB.SelectedIndex == 4)
+            {
+                StatusOut("Attempting to export hashes...");
+                List<string> result = HashExport.DumpHashes(modulePaths);
+
+                if (result.Count > 0)
+                {
+                    // Save File
+                    StatusOut("Hashes found!");
+                    SaveFileDialog sfd = new();
+                    sfd.Filter = "Text (*.txt)|*.txt";
+                    sfd.FileName = "mmr3Hashes.txt";
+                    if (sfd.ShowDialog() == true)
+                    {
+                        File.WriteAllLines(sfd.FileName, result);
+                    }
+                    StatusOut("Hashes exported!");
+                }
+                else
+                {
+                    StatusOut("Error retrieving hashes!");
+                }
+            }
+        }
+
+        private void DumpTypeChange(object sender, RoutedEventArgs e)
+        {
+            if (DumpTypeCB.SelectedIndex == 0)
+            {
+                FormatOption.Visibility = Visibility.Visible;
+                FlatFileOption.Visibility = Visibility.Visible;
             }
             else
             {
-                StatusOut("Error retrieving forge data!");
+                FormatOption.Visibility = Visibility.Collapsed;
+                FlatFileOption.Visibility = Visibility.Collapsed;
             }
         }
         #endregion
