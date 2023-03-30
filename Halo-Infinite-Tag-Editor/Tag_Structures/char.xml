@@ -70,7 +70,6 @@
 	</_40>
 	<_40 v="general properties">
 		<_D v="general flags">
-			<Flag v="swarm" />
 			<Flag v="flying" />
 			<Flag v="dual wields" />
 			<Flag v="uses gravemind" />

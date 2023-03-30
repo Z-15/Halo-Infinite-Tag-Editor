@@ -124,25 +124,7 @@ namespace Halo_Infinite_Tag_Editor
             }
 
             // Read and store info from the text files in the Files directory.
-            InhaleTagGroup();
             InhaleTagNames();
-        }
-
-        private void InhaleTagGroup()
-        {
-            foreach (string line in File.ReadAllLines(@".\Files\tagGroups.txt"))
-            {
-                if (line.Contains(":"))
-                {
-                    string tagGroup = line.Split(":")[1];
-                    string tagGroupShort = line.Split(":")[0];
-
-                    if (!tagGroups.ContainsKey(tagGroup))
-                    {
-                        tagGroups.Add(tagGroup.Trim(), tagGroupShort.Trim());
-                    }
-                }
-            }
         }
 
         public void InhaleTagNames()
@@ -157,8 +139,9 @@ namespace Halo_Infinite_Tag_Editor
                     TagInfo ti = new();
                     ti.TagID = hexString[0];
                     ti.AssetID = hexString[1];
-                    ti.TagPath = hexString[2];
-                    ti.ModulePath = hexString[3];
+                    ti.ModulePath = hexString[2];
+                    ti.TagPath = hexString[3];
+                    ti.TagGroup = hexString[4];
                     inhaledTags.Add(hexString[0], ti);
                 }
             }
@@ -464,39 +447,48 @@ namespace Halo_Infinite_Tag_Editor
                     fileStreamOpen = true;
                     modulePath = path;
 
-                    foreach (string tag in module.ModuleFiles.Keys)
+                    foreach (KeyValuePair<string, ModuleFile> tag in module.ModuleFiles)
                     {
-                        string[] pathSplit = tag.Split("\\");
-                        string head = tag;
+                        string[] pathSplit = tag.Key.Split("\\");
+                        string head = tag.Key;
 
                         if (pathSplit.Count() > 2)
                         {
-                            List<string> head1 = tag.Split("\\").TakeLast(2).ToList();
+                            List<string> head1 = tag.Key.Split("\\").TakeLast(2).ToList();
                             head = head1[0] + "\\" + head1[1];
                         }
 
-                        string group = tag.Split(".").Last();
+                        string group = ReverseString(ASCIIEncoding.ASCII.GetString(BitConverter.GetBytes(tag.Value.FileEntry.ClassId)));
+
+                        if (!groupNames.ContainsKey(group) && tag.Key.Contains("."))
+                            groupNames.Add(group, tag.Key.Split(".").Last());
 
                         TagData newTag = new()
                         {
                             Header = head,
-                            Tag = tag,
+                            Tag = tag.Key,
                             Group = group
                         };
+
+                        string folderName = group;
+                        if (groupNames.ContainsKey(group))
+                            folderName = $"{group} ({groupNames[group]})";
+                        else
+                            folderName = $"{group} (Unknown)";
 
                         if (!tagFolders.ContainsKey(group))
                         {
                             TagFolder newFolder = new();
-                            newFolder.folderName = group;
-                            newFolder.tags.Add(tag, newTag);
+                            newFolder.folderName = folderName;
+                            newFolder.tags.Add(tag.Key, newTag);
                             tagFolders.Add(group, newFolder);
-
                         }
                         else
                         {
                             TagFolder tf = tagFolders[group];
+                            tf.folderName = folderName;
                             if (!tf.tags.ContainsKey(head))
-                                tf.tags.Add(tag, newTag);
+                                tf.tags.Add(tag.Key, newTag);
                         }
                     }
                 });
@@ -822,45 +814,37 @@ namespace Halo_Infinite_Tag_Editor
         {
             try
             {
-                string curTagGroup = moduleFile.Tag.ShortName.Split(".")[1];
                 curDataBlockInd = 1;
 
-                if (tagGroups.ContainsKey(curTagGroup.Trim()))
+                StatusOut("Retrieving tag data...");
+
+                IRTV_TagStruct tagStruct = new()
                 {
-                    StatusOut("Retrieving tag data...");
+                    Datnum = "",
+                    ObjectId = curTagID,
+                    TagGroup = inhaledTags[curTagID].TagGroup,
+                    TagData = 0,
+                    TagTypeDesc = "",
+                    TagFullName = inhaledTags[curTagID].TagPath,
+                    TagFile = moduleFile.Tag.ShortName,
+                    unloaded = false
+                };
 
-                    IRTV_TagStruct tagStruct = new()
-                    {
-                        Datnum = "",
-                        ObjectId = curTagID,
-                        TagGroup = tagGroups[curTagGroup],
-                        TagData = 0,
-                        TagTypeDesc = "",
-                        TagFullName = moduleFile.Tag.Name,
-                        TagFile = moduleFile.Tag.ShortName,
-                        unloaded = false
-                    };
+                Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagStruct.TagGroup);
+                Task loadTag = new Task(() =>
+                {
+                    GetTagValueData(tagDefinitions, 0, 0, curTagID + ":");
+                });
 
-                    Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagStruct.TagGroup);
-                    Task loadTag = new Task(() =>
-                    {
-                        GetTagValueData(tagDefinitions, 0, 0, curTagID + ":");
-                    });
-
-                    loadTag.Start();
-                    await loadTag;
-                    loadTag.Dispose();
+                loadTag.Start();
+                await loadTag;
+                loadTag.Dispose();
                     
-                    StatusOut("Building tag viewer...");
-                    CreateTagControls(tagStruct, 0, tagDefinitions, tagStruct.TagData, TagViewer, curTagID + ":", null, false);
-                    StatusOut("Opened tag from module: " + tagFileName.Split("\\").Last());
+                StatusOut("Building tag viewer...");
+                CreateTagControls(tagStruct, 0, tagDefinitions, tagStruct.TagData, TagViewer, curTagID + ":", null, false);
+                StatusOut("Opened tag from module: " + tagFileName.Split("\\").Last());
 
-                    GC.Collect();
-                }
-                else
-                {
-                    StatusOut("Tag group name missing...");
-                }
+                GC.Collect();
             }
             catch (Exception ex)
             {
@@ -1814,7 +1798,7 @@ namespace Halo_Infinite_Tag_Editor
                 StatusOut("Attempting to export tag to JSON...");
                 if (tagFileName.Length > 0 && curTagID.Length == 8)
                 {
-                    string? result = JsonExport.ExportTagToJson(TagLayouts.Tags(tagGroups[tagFileName.Split(".").Last()]), GetTagInfo(curTagID), moduleFile);
+                    string? result = JsonExport.ExportTagToJson(TagLayouts.Tags(inhaledTags[curTagID].TagGroup), GetTagInfo(curTagID), moduleFile);
 
                     if (result != null)
                     {

@@ -57,6 +57,15 @@
 				<_3B v="" />
 			</_38>
 			<_37 v="" />
+			<_37 v="Proritizer" />
+			<_38 v="Prioritizer">
+				<_6 v="Max Events 1 Player" />
+				<_6 v="Max Events 2 Player" />
+				<_6 v="Max Events 3 Player" />
+				<_6 v="Max Events 4 Player" />
+				<_3B v="" />
+			</_38>
+			<_37 v="" />
 			<_3B v="" />
 		</_38>
 		<_37 v="" />
@@ -81,6 +90,15 @@
 				<_3B v="" />
 			</_38>
 			<_37 v="" />
+			<_37 v="Proritizer" />
+			<_38 v="Prioritizer">
+				<_6 v="Max Events 1 Player" />
+				<_6 v="Max Events 2 Player" />
+				<_6 v="Max Events 3 Player" />
+				<_6 v="Max Events 4 Player" />
+				<_3B v="" />
+			</_38>
+			<_37 v="" />
 			<_3B v="" />
 		</_38>
 		<_37 v="" />
@@ -102,6 +120,15 @@
 				<_6 v="Acoustics Num Parallel Source Updates" />
 				<_14 v="Acoustics LOD Distance Multiplier" />
 				<_6 v="Max Listener Count To Enable Voxel Obstruction" />
+				<_3B v="" />
+			</_38>
+			<_37 v="" />
+			<_37 v="Proritizer" />
+			<_38 v="Prioritizer">
+				<_6 v="Max Events 1 Player" />
+				<_6 v="Max Events 2 Player" />
+				<_6 v="Max Events 3 Player" />
+				<_6 v="Max Events 4 Player" />
 				<_3B v="" />
 			</_38>
 			<_37 v="" />

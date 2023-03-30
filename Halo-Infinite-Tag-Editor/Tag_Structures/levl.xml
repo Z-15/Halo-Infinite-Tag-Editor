@@ -7027,10 +7027,6 @@
 				</_A>
 				<_34 v="generated_pad6e63" length="3" />
 				<_6 v="Value" />
-				<_F v="Flags">
-					<Flag v="Fire Team Leader" />
-				</_F>
-				<_34 v="generated_pad21ae" length="3" />
 				<_3B v="" />
 			</_40>
 			<_40 v="Beats">
@@ -10294,6 +10290,7 @@
 			<_E v="control flags">
 				<Flag v="walk down" />
 				<Flag v="bots can't use if slowed" />
+				<Flag v="cheap jump" />
 			</_E>
 			<_34 v="generated_pad04d0" length="2" />
 			<_38 v="geometry">
@@ -10318,6 +10315,7 @@
 			<_3B v="" />
 		</_40>
 		<_40 v="cookie cutters">
+			<_2 v="name" />
 			<_40 v="points">
 				<_17 v="point" />
 				<_6 v="_navMeshUIDOffaceref" />
@@ -10381,6 +10379,7 @@
 				<_6 v="_packedKeyOffaceref" />
 				<_3B v="" />
 			</_40>
+			<_2 v="name" />
 			<_14 v="z height" />
 			<_14 v="z sink" />
 			<_C v="type">
@@ -11697,12 +11696,11 @@
 			<_6 v="guid" />
 			<_17 v="position" />
 			<_1C v="facing" />
-			<_4 v="Version" />
 			<_A v="Active">
 				<Flag v="Off" />
 				<Flag v="On" />
 			</_A>
-			<_34 v="generated_pad2288" length="2" />
+			<_34 v="generated_pad2288" length="3" />
 			<_38 v="Midnight_Light_Parameters">
 				<_36 v="Dynamic/Static Shared Light Parameters" />
 				<_2 v="haloLightNode" />
@@ -11793,6 +11791,8 @@
 				<_14 v="Camera Near Distance Fade Start" />
 				<_14 v="Camera Distance Fade Start" />
 				<_14 v="Camera Distance Fade End" />
+				<_14 v="Light Screen Size Fade Start" />
+				<_14 v="Light Screen Size Fade End" />
 				<_14 v="Fog Intensity" />
 				<_14 v="Particle Intensity" />
 				<_14 v="Minimum Roughness" />
@@ -11877,11 +11877,6 @@
 				<_14 v="Shadow Bias Offset" />
 				<_14 v="Shadow Filter Width" />
 				<_14 v="Minimum Shadow Filter Width" />
-				<_A v="Enable PCSS">
-					<Flag v="Off" />
-					<Flag v="On" />
-				</_A>
-				<_34 v="generated_pad6328" length="3" />
 				<_14 v="PCSS Light Size" />
 				<_14 v="PCSS Min Filter Size" />
 				<_14 v="PCSS Max Filter Size" />
@@ -11890,18 +11885,6 @@
 					<Flag v="On" />
 				</_A>
 				<_A v="Ignore Dynamic Objects">
-					<Flag v="Off" />
-					<Flag v="On" />
-				</_A>
-				<_A v="Cinema Objects Only">
-					<Flag v="Off" />
-					<Flag v="On" />
-				</_A>
-				<_A v="Cinema Only">
-					<Flag v="Off" />
-					<Flag v="On" />
-				</_A>
-				<_A v="Cinema Exclude">
 					<Flag v="Off" />
 					<Flag v="On" />
 				</_A>
@@ -11917,8 +11900,8 @@
 					<Flag v="Off" />
 					<Flag v="On" />
 				</_A>
+				<_34 v="generated_pad6328" length="1" />
 				<_5 v="Minimum Gobo Resolution" />
-				<_34 v="generated_pad1673" length="2" />
 				<_36 v="Dynamic Gobo" />
 				<_41 v="Gobos" />
 				<_1F v="Target Color" />
@@ -11947,30 +11930,20 @@
 				<_D v="flags">
 					<Flag v="dont render splitscreen" />
 					<Flag v="render in multiplayer override" />
-					<Flag v="move to camera in first person" />
 					<Flag v="always on for weapon" />
 					<Flag v="induces translucency in subsurface scattering materials" />
 					<Flag v="ignore optimization and force update every frame" />
 					<Flag v="disable shadow on particles" />
 				</_D>
 				<_41 v="Lens Flare" />
-				<_41 v="Light Cone" />
 				<_6 v="Light Shadow Priority" />
 				<_4 v="needs update state" />
 				<_4 v="needs update bounding sphere" />
-				<_34 v="generated_padc9be" length="2" />
+				<_34 v="generated_pad1673" length="2" />
 				<_6 v="tick of last state update" />
 				<_6 v="tick of last bounding sphere update" />
 				<_3B v="" />
 			</_38>
-			<_14 v="indirect amplification factor" />
-			<_14 v="jitter angle" />
-			<_4 v="is a lightmapper-only light" />
-			<_A v="indirect only">
-				<Flag v="Off" />
-				<Flag v="On" />
-			</_A>
-			<_5 v="runtime index" />
 			<_40 v="EditorMetadata">
 				<_1 v="folder name" />
 				<_17 v="local space pivot point position" />
@@ -11980,97 +11953,8 @@
 			<_2 v="owner variant" />
 			<_5 v="runtime bsp index" />
 			<_5 v="runtime variant index" />
-			<_2 v="bone name" />
-			<_A v="should contribute to adjacent BSPs">
-				<Flag v="Off" />
-				<Flag v="On" />
-			</_A>
-			<_34 v="generated_pad3c69" length="3" />
 			<_30 v="editor folder" />
 			<_2 v="module id" />
-			<_3B v="" />
-		</_40>
-		<_40 v="Lightmap Priority Volumes">
-			<_2 v="Name" />
-			<_37 v="Volume settings" />
-			<_38 v="Volume">
-				<_40 v="Points">
-					<_17 v="position" />
-					<_3B v="" />
-				</_40>
-				<_14 v="height" />
-				<_14 v="sink" />
-				<_17 v="center point" />
-				<_14 v="trivial cull radius squared" />
-				<_17 v="aabbCenter" />
-				<_17 v="aabbExtents" />
-				<_40 v="nativePoints2D">
-					<_16 v="point" />
-					<_3B v="" />
-				</_40>
-				<_3B v="" />
-			</_38>
-			<_37 v="" />
-			<_14 v="Volume Priority" />
-			<_14 v="Lightmap Priority" />
-			<_B v="Exclude Shadow Geometry">
-				<Flag v="No" />
-				<Flag v="Yes" />
-			</_B>
-			<_B v="Exclude Per Pixel Lighting">
-				<Flag v="No" />
-				<Flag v="Yes" />
-			</_B>
-			<_B v="Exclude Analytic Sun Contribution">
-				<Flag v="No" />
-				<Flag v="Yes" />
-			</_B>
-			<_B v="Exclude Analytic Light Contribution">
-				<Flag v="No" />
-				<Flag v="Yes" />
-			</_B>
-			<_40 v="EditorMetadata">
-				<_1 v="folder name" />
-				<_17 v="local space pivot point position" />
-				<_3B v="" />
-			</_40>
-			<_41 v="owner bsp" />
-			<_2 v="owner variant" />
-			<_5 v="runtime bsp index" />
-			<_5 v="runtime variant index" />
-			<_3B v="" />
-		</_40>
-		<_40 v="Air Probe Density Volumes">
-			<_2 v="Name" />
-			<_37 v="Volume settings" />
-			<_38 v="Volume">
-				<_40 v="Points">
-					<_17 v="position" />
-					<_3B v="" />
-				</_40>
-				<_14 v="height" />
-				<_14 v="sink" />
-				<_17 v="center point" />
-				<_14 v="trivial cull radius squared" />
-				<_17 v="aabbCenter" />
-				<_17 v="aabbExtents" />
-				<_40 v="nativePoints2D">
-					<_16 v="point" />
-					<_3B v="" />
-				</_40>
-				<_3B v="" />
-			</_38>
-			<_37 v="" />
-			<_14 v="Air Probe Density" />
-			<_40 v="EditorMetadata">
-				<_1 v="folder name" />
-				<_17 v="local space pivot point position" />
-				<_3B v="" />
-			</_40>
-			<_41 v="owner bsp" />
-			<_2 v="owner variant" />
-			<_5 v="runtime bsp index" />
-			<_5 v="runtime variant index" />
 			<_3B v="" />
 		</_40>
 		<_40 v="Air Probe Region Volumes">
@@ -12119,6 +12003,7 @@
 		</_40>
 		<_40 v="Cubemap Volumes">
 			<_2 v="Name" />
+			<_6 v="Guid" />
 			<_D v="Flags">
 				<Flag v="Enable Intensity Correction" />
 				<Flag v="Capture With Effects" />
@@ -12185,270 +12070,11 @@
 				<Flag v="Off" />
 				<Flag v="On" />
 			</_B>
-			<_34 v="generated_pad93d5" length="2" />
+			<_B v="Runtime Force Add Inactive">
+				<Flag v="Off" />
+				<Flag v="On" />
+			</_B>
 			<_14 v="Relevancy Radius" />
-			<_3B v="" />
-		</_40>
-		<_40 v="Visual Environment Volumes">
-			<_2 v="Name" />
-			<_37 v="Dumpling settings" />
-			<_38 v="Dumpling">
-				<_40 v="inner points">
-					<_17 v="position" />
-					<_3B v="" />
-				</_40>
-				<_40 v="outer points">
-					<_17 v="position" />
-					<_3B v="" />
-				</_40>
-				<_14 v="height" />
-				<_14 v="sink" />
-				<_14 v="inner value" />
-				<_14 v="outer value" />
-				<_17 v="center point" />
-				<_14 v="trivial cull radius squared" />
-				<_14 v="bound volume" />
-				<_3B v="" />
-			</_38>
-			<_40 v="EditorMetadata">
-				<_1 v="folder name" />
-				<_17 v="local space pivot point position" />
-				<_3B v="" />
-			</_40>
-			<_37 v="" />
-			<_38 v="Visual Environment">
-				<_41 v="Camera Settings" />
-				<_41 v="Fog Settings" />
-				<_38 v="Custom Object Lighting">
-					<_36 v="Character Lighting" />
-					<_40 v="Authored Light Probes">
-						<_40 v="Lights">
-							<_37 v="Authored Light Probe" />
-							<_37 v="Direction 1" />
-							<_14 v="Direction 1" />
-							<_37 v="Front-Back 1" />
-							<_14 v="Front-Back 1" />
-							<_1F v="Direct color 1" />
-							<_37 v="Direct intensity 1" />
-							<_14 v="Direct intensity 1" />
-							<_37 v="Direction 2" />
-							<_14 v="Direction 2" />
-							<_37 v="Front-Back 2" />
-							<_14 v="Front-Back 2" />
-							<_1F v="Direct color 2" />
-							<_37 v="Direct intensity 2" />
-							<_14 v="Direct intensity 2" />
-							<_1F v="Ambient Color" />
-							<_37 v="Ambient intensity" />
-							<_14 v="Ambient intensity" />
-							<_1F v="Sun Color" />
-							<_37 v="Sun intensity" />
-							<_14 v="Sun intensity" />
-							<_1F v="Cubemap Scale Color" />
-							<_37 v="Cubemap Scale intensity" />
-							<_14 v="Cubemap Scale intensity" />
-							<_37 v="Authored Light Probe Intensity Scale" />
-							<_14 v="Authored Light Probe Intensity Scale" />
-							<_37 v="Generated Air Probe Intensity Scale" />
-							<_14 v="Generated Air Probe Intensity Scale" />
-							<_3B v="" />
-						</_40>
-						<_37 v="Generated Air Probe Intensity Scale" />
-						<_14 v="Generated Air Probe Intensity Scale" />
-						<_39 v="raw sh data">
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-						</_39>
-						<_39 v="per frame sh data">
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-							<_14 v="sh data" />
-							<_3B v="" />
-						</_39>
-						<_17 v="Sun Color" />
-						<_17 v="Cubemap Scale" />
-						<_36 v="" />
-						<_E v="Flags">
-							<Flag v="Characters" />
-							<Flag v="First Person Geometry" />
-							<Flag v="Vehicles" />
-						</_E>
-						<_34 v="generated_padb28a" length="2" />
-						<_3B v="" />
-					</_40>
-					<_A v="Is Camera-space">
-						<Flag v="Off" />
-						<Flag v="On" />
-					</_A>
-					<_F v="Flags">
-						<Flag v="Force Always Sun" />
-					</_F>
-					<_34 v="generated_pad79fe" length="2" />
-					<_41 v="cubemap override" />
-					<_3B v="" />
-				</_38>
-				<_41 v="Cubemap Bitmap DEPRECATED" />
-				<_3B v="" />
-			</_38>
-			<_41 v="owner bsp" />
-			<_2 v="owner variant" />
-			<_5 v="runtime bsp index" />
-			<_5 v="runtime variant index" />
-			<_3B v="" />
-		</_40>
-		<_40 v="Baked PVS Volumes">
-			<_2 v="Name" />
-			<_37 v="Volume settings" />
-			<_38 v="Volume">
-				<_40 v="Points">
-					<_17 v="position" />
-					<_3B v="" />
-				</_40>
-				<_14 v="height" />
-				<_14 v="sink" />
-				<_17 v="center point" />
-				<_14 v="trivial cull radius squared" />
-				<_17 v="aabbCenter" />
-				<_17 v="aabbExtents" />
-				<_40 v="nativePoints2D">
-					<_16 v="point" />
-					<_3B v="" />
-				</_40>
-				<_3B v="" />
-			</_38>
-			<_37 v="" />
-			<_B v="Use vertical beam count override">
-				<Flag v="No" />
-				<Flag v="Yes" />
-			</_B>
-			<_B v="Use beam height overrides">
-				<Flag v="No" />
-				<Flag v="Yes" />
-			</_B>
-			<_B v="Pin the beams to the top of the volume">
-				<Flag v="No" />
-				<Flag v="Yes" />
-			</_B>
-			<_B v="Add beams even if there is no collision">
-				<Flag v="No" />
-				<Flag v="Yes" />
-			</_B>
-			<_6 v="Vertical beam count override" />
-			<_14 v="Beam 1 height override" />
-			<_14 v="Beam 2 height override" />
-			<_14 v="Beam 3 height override" />
-			<_14 v="Beam 4 and above height override" />
-			<_6 v="Volume importance override value" />
-			<_40 v="EditorMetadata">
-				<_1 v="folder name" />
-				<_17 v="local space pivot point position" />
-				<_3B v="" />
-			</_40>
-			<_41 v="owner bsp" />
-			<_5 v="runtime bsp index" />
-			<_34 v="generated_pad4130" length="2" />
 			<_3B v="" />
 		</_40>
 		<_40 v="Terrains">
@@ -12564,6 +12190,8 @@
 		<Flag v="exclude from default map variant" />
 		<Flag v="generate navdata for crouching characters" />
 		<Flag v="generate navdata on smaller areas" />
+		<Flag v="limit forge editing" />
+		<Flag v="acoustics set occlusion to obstruction" />
 	</_D>
 	<_D v="runtime trigger volume flags">
 		<Flag v="has hard safe volume" />
@@ -12624,22 +12252,9 @@
 		<_14 v="custom gravity scale" />
 		<_40 v="structure lighting info variants">
 			<_2 v="variant name" />
-			<_41 v="structure lighting_info" />
 			<_41 v="structure lightmap" />
 			<_41 v="lighting settings" />
-			<_40 v="BSP Lighting Volume References">
-				<_41 v="Bsp Lighting Volumes" />
-				<_3B v="" />
-			</_40>
 			<_40 v="Light Indices">
-				<_5 v="index" />
-				<_3B v="" />
-			</_40>
-			<_40 v="Priority Volume Indices">
-				<_5 v="index" />
-				<_3B v="" />
-			</_40>
-			<_40 v="Density Volume Indices">
 				<_5 v="index" />
 				<_3B v="" />
 			</_40>
@@ -12651,17 +12266,8 @@
 				<_5 v="index" />
 				<_3B v="" />
 			</_40>
-			<_40 v="Visual Environment Volume Indices">
-				<_5 v="index" />
-				<_3B v="" />
-			</_40>
 			<_2E v="sky reference" />
 			<_34 v="generated_pad17c3" length="2" />
-			<_6 v="forge lightmap size" />
-			<_3B v="" />
-		</_40>
-		<_40 v="BSP Volume Indices">
-			<_5 v="index" />
 			<_3B v="" />
 		</_40>
 		<_41 v="Auto-Generated HLODs settings override" />
@@ -13336,12 +12942,7 @@
 		<_5 v="commit zone set" />
 		<_3B v="" />
 	</_40>
-	<_40 v="subtitle references">
-		<_41 v="Subtitles" />
-		<_3B v="" />
-	</_40>
 	<_41 v="level scripts" />
-	<_41 v="chapter title text" />
 	<_41 v="interpolators" />
 	<_41 v="global screen effect" />
 	<_41 v="atmosphere globals" />
@@ -13578,7 +13179,7 @@
 		</_40>
 		<_3B v="" />
 	</_40>
-	<_2 v="Audio level state value" />
+	<_2 v="Audio level state id" />
 	<_17 v="Broadphase Extents Override Min" />
 	<_17 v="Broadphase Extents Override Max" />
 	<_40 v="Preimported Animation Node Graphs">

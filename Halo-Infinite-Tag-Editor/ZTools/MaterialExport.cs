@@ -106,7 +106,7 @@ namespace ZTools
             Material mat = new();
             mat.materialID = tag.TagID;
             mat.materialName = tag.TagPath.Split(".").First().Replace("__chore\\", string.Empty).Replace("gen__\\", string.Empty);
-            GetMaterialData(TagLayouts.Tags(tagGroups[tag.TagPath.Split(".").Last()]), mf, 0, obj: mat);
+            GetMaterialData(TagLayouts.Tags(tag.TagGroup), mf, 0, obj: mat);
 
             // Return restult
             return JsonConvert.SerializeObject(mat, Formatting.Indented).ToString();
@@ -177,7 +177,7 @@ namespace ZTools
                                 {
                                     int temp = curDataBlockInd;
                                     curDataBlockInd = 1;
-                                    mat.materialStyles = (List<MaterialStyle>)GetMaterialData(TagLayouts.Tags(tagGroups[styleTag.TagPath.Split(".").Last()]), styleFile, 0);
+                                    mat.materialStyles = (List<MaterialStyle>)GetMaterialData(TagLayouts.Tags(styleTag.TagGroup), styleFile, 0);
                                     curDataBlockInd = temp;
                                 }
                                 break;
@@ -202,7 +202,7 @@ namespace ZTools
                                 {
                                     int temp = curDataBlockInd;
                                     curDataBlockInd = 1;
-                                    style.paletteSwatches = (List<MaterialPalette>)GetMaterialData(TagLayouts.Tags(tagGroups[palTag.TagPath.Split(".").Last()]), palFile, 0);
+                                    style.paletteSwatches = (List<MaterialPalette>)GetMaterialData(TagLayouts.Tags(palTag.TagGroup), palFile, 0);
                                     curDataBlockInd = temp;
                                 }
                                 break;
@@ -266,7 +266,7 @@ namespace ZTools
                                         MaterialSwatch ms = new();
                                         int temp = curDataBlockInd;
                                         curDataBlockInd = 1;
-                                        variants = (Dictionary<string, ColorVariant>)GetMaterialData(TagLayouts.Tags(tagGroups[swaTag.TagPath.Split(".").Last()]), swaFile, 0, obj: ms);
+                                        variants = (Dictionary<string, ColorVariant>)GetMaterialData(TagLayouts.Tags(swaTag.TagGroup), swaFile, 0, obj: ms);
                                         pal.swatchData = ms;
                                         curDataBlockInd = temp;
                                     }

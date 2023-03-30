@@ -70,12 +70,74 @@
 			<Flag v="use custom replacement blend-out time" />
 			<Flag v="override player input" />
 		</_E>
-		<_37 v="" />
 		<_34 v="generated_pad5ed4" length="2" />
+		<_40 v="First person overlay channel slider weight function map">
+			<_36 v="FIRST PERSON OVERLAY CHANNEL WEIGHT SCALING" />
+			<_2 v="Overlay animation name" />
+			<_37 v="" />
+			<_2 v="Channel weight scale source" />
+			<_3B v="" />
+		</_40>
+		<_30 v="Replacement interpolator" />
+		<_14 v="Override blend in time" />
+		<_2 v="Replacement blend in weight function" />
+		<_14 v="Override blend out time" />
+		<_2 v="Replacement blend out weight function" />
+		<_37 v="" />
 		<_3B v="" />
 	</_40>
 	<_41 v="Reference to generated anim pool tag" />
 	<_37 v="Legacy AnimSet fields" />
+	<_40 v="Functions">
+		<_2 v="Name" />
+		<_38 v="Function">
+			<_37 v="function" />
+			<_38 v="function">
+				<_37 v="" />
+				<_42 v="data" />
+				<_37 v="" />
+				<_3B v="" />
+			</_38>
+			<_3B v="" />
+		</_38>
+		<_3B v="" />
+	</_40>
+	<_37 v="Interpolators" />
+	<_40 v="Interpolators">
+		<_2 v="Name" />
+		<_2 v="Joint Mask" />
+		<_38 v="Function">
+			<_37 v="function" />
+			<_38 v="function">
+				<_37 v="" />
+				<_42 v="data" />
+				<_37 v="" />
+				<_3B v="" />
+			</_38>
+			<_3B v="" />
+		</_38>
+		<_3B v="" />
+	</_40>
+	<_40 v="Interpolation Sets">
+		<_2 v="Name" />
+		<_14 v="Seconds" />
+		<_40 v="Interpolators">
+			<_2E v="Interpolator" />
+			<_3B v="" />
+		</_40>
+		<_38 v="Function">
+			<_37 v="function" />
+			<_38 v="function">
+				<_37 v="" />
+				<_42 v="data" />
+				<_37 v="" />
+				<_3B v="" />
+			</_38>
+			<_3B v="" />
+		</_38>
+		<_3B v="" />
+	</_40>
+	<_37 v="Interpolators" />
 	<_40 v="composites">
 		<_2 v="Name" />
 		<_44 v="Source XML" />
@@ -87,6 +149,5 @@
 		<_3B v="" />
 	</_40>
 	<_37 v="" />
-	<_34 v="generated_pad5195" length="4" />
 	<_3B v="" />
 </root>

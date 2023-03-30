@@ -9,6 +9,7 @@
 		</_38>
 		<_3B v="" />
 	</_38>
+	<_41 v="Per View Globals" />
 	<_38 v="Resources">
 		<_38 v="Suns Resources">
 			<_38 v="Primary Sun Resource">
@@ -1764,6 +1765,7 @@
 				<Flag v="Override Cloud Shape Settings" />
 				<Flag v="Override Cloud Lighting Settings" />
 				<Flag v="Override Cloud Shadow Settings" />
+				<Flag v="Override Clouds V2 Settings" />
 			</_D>
 			<_41 v="Coverage Texture" />
 			<_14 v="Coverage Scale" />
@@ -2508,24 +2510,80 @@
 				<_14 v="Panning Clouds Shadows Tilt" />
 				<_3B v="" />
 			</_38>
+			<_38 v="Clouds V2">
+				<_D v="Flags">
+					<Flag v="Override Density Scale" />
+					<Flag v="Override Scattering Factor" />
+					<Flag v="Override Extinction Factor" />
+					<Flag v="Override Phase Constant" />
+					<Flag v="Override Powder Strength" />
+					<Flag v="Override Direct Sun Intensity" />
+					<Flag v="Override Ambient Intensity Sun Angle" />
+					<Flag v="Override Ambient Intensity Sky" />
+					<Flag v="Override Ambient Color Sky" />
+					<Flag v="Override Ambient Intensity Ground" />
+					<Flag v="Override Ambient Color Ground" />
+					<Flag v="Override Ray March Step Scale" />
+					<Flag v="Override Max Step Count" />
+					<Flag v="Override Sun March Dist Scale" />
+					<Flag v="Override Sun Marching Steps" />
+					<Flag v="Override Horizon Fade Start" />
+					<Flag v="Override Fog Intensity" />
+					<Flag v="Override Dither Amount" />
+					<Flag v="Override Volume Start" />
+					<Flag v="Override Volume Height" />
+					<Flag v="Override Base Noise Scale" />
+					<Flag v="Override Base Noise Dilation" />
+					<Flag v="Override Detail Noise Scale" />
+					<Flag v="Override Detail Strength" />
+					<Flag v="Override Coverage Strength" />
+					<Flag v="Override Curl Noise Scale" />
+					<Flag v="Override Curl Noise Strength" />
+				</_D>
+				<_14 v="Density Scale" />
+				<_14 v="Scattering Factor" />
+				<_14 v="Extinction Factor" />
+				<_14 v="Phase Constant" />
+				<_14 v="Powder Strength" />
+				<_14 v="Direct Sun Intensity" />
+				<_14 v="Ambient Intensity Sun Angle" />
+				<_14 v="Ambient Intensity Sky" />
+				<_1F v="Ambient Color Sky" />
+				<_14 v="Ambient Intensity Ground" />
+				<_1F v="Ambient Color Ground" />
+				<_14 v="Ray March Step Scale" />
+				<_6 v="Max Step Count" />
+				<_14 v="Sun March Dist Scale" />
+				<_6 v="Sun Marching Steps" />
+				<_14 v="Horizon Fade Start" />
+				<_14 v="Fog Intensity" />
+				<_14 v="Dither Amount" />
+				<_14 v="Volume Start" />
+				<_14 v="Volume Height" />
+				<_14 v="Base Noise Scale" />
+				<_14 v="Base Noise Dilation" />
+				<_14 v="Detail Noise Scale" />
+				<_14 v="Detail Strength" />
+				<_14 v="Coverage Strength" />
+				<_14 v="Curl Noise Scale" />
+				<_14 v="Curl Noise Strength" />
+				<_3B v="" />
+			</_38>
 			<_3B v="" />
 		</_38>
 		<_38 v="Dynamic Sun Shadow">
 			<_D v="Flags">
-				<Flag v="Override Max Shadow Count Scale" />
 				<Flag v="Override Floating Shadow Quality" />
-				<Flag v="Override First Person Floating Shadow Mode" />
 				<Flag v="Override Cascade Overlap" />
 				<Flag v="Override Min Shadow Caster Pixel Radius" />
 				<Flag v="Override PCSS Light Size" />
 				<Flag v="Override PCSS Maximum Filter Width" />
-				<Flag v="Override Number of Cascades" />
 				<Flag v="Override Frustums" />
 				<Flag v="Override Number of Parallax Sampling Steps" />
 				<Flag v="Override Parallax Sampling Sun Direction Weight" />
 				<Flag v="Override Panning Cloud Settings" />
+				<Flag v="Override RT Shadow Sun Cone Angle" />
 			</_D>
-			<_14 v="Max Shadow Count Scale" />
 			<_37 v="Floating Shadows Settings" />
 			<_38 v="Floating Shadow Quality">
 				<_A v="Low">
@@ -2562,16 +2620,12 @@
 				</_A>
 				<_3B v="" />
 			</_38>
-			<_A v="First Person Floating Shadow Mode">
-				<Flag v="No Shadow" />
-				<Flag v="Apply Everywhere" />
-			</_A>
-			<_34 v="generated_pad1856" length="3" />
 			<_14 v="Cascade Overlap" />
 			<_14 v="Min Shadow Caster Pixel Radius" />
 			<_37 v="PCSS Settings" />
 			<_14 v="PCSS Light Size" />
 			<_14 v="PCSS Maximum Filter Width" />
+			<_14 v="Ray Tracing Shadow Sun Cone Angle" />
 			<_37 v="" />
 			<_38 v="number of cascades">
 				<_A v="Type">
@@ -2631,7 +2685,7 @@
 				</_38>
 				<_3B v="" />
 			</_38>
-			<_34 v="generated_pad650b" length="3" />
+			<_34 v="generated_pad1856" length="3" />
 			<_38 v="Frustum 1">
 				<_37 v="CASCADE" />
 				<_38 v="cascade half-width">
@@ -2791,6 +2845,11 @@
 					<_14 v="4 Player Splitscreen" />
 					<_3B v="" />
 				</_38>
+				<_C v="resolution scalar for raytracing">
+					<Flag v="FullSize" />
+					<Flag v="HalfSize" />
+					<Flag v="QuarterSize" />
+				</_C>
 				<_E v="flags">
 					<Flag v="Enable parallax corrected interpolation" />
 					<Flag v="Center cascade around camera" />
@@ -3440,6 +3499,11 @@
 					<_14 v="4 Player Splitscreen" />
 					<_3B v="" />
 				</_38>
+				<_C v="resolution scalar for raytracing">
+					<Flag v="FullSize" />
+					<Flag v="HalfSize" />
+					<Flag v="QuarterSize" />
+				</_C>
 				<_E v="flags">
 					<Flag v="Enable parallax corrected interpolation" />
 					<Flag v="Center cascade around camera" />
@@ -4089,6 +4153,11 @@
 					<_14 v="4 Player Splitscreen" />
 					<_3B v="" />
 				</_38>
+				<_C v="resolution scalar for raytracing">
+					<Flag v="FullSize" />
+					<Flag v="HalfSize" />
+					<Flag v="QuarterSize" />
+				</_C>
 				<_E v="flags">
 					<Flag v="Enable parallax corrected interpolation" />
 					<Flag v="Center cascade around camera" />
@@ -4738,6 +4807,11 @@
 					<_14 v="4 Player Splitscreen" />
 					<_3B v="" />
 				</_38>
+				<_C v="resolution scalar for raytracing">
+					<Flag v="FullSize" />
+					<Flag v="HalfSize" />
+					<Flag v="QuarterSize" />
+				</_C>
 				<_E v="flags">
 					<Flag v="Enable parallax corrected interpolation" />
 					<Flag v="Center cascade around camera" />
@@ -5387,6 +5461,11 @@
 					<_14 v="4 Player Splitscreen" />
 					<_3B v="" />
 				</_38>
+				<_C v="resolution scalar for raytracing">
+					<Flag v="FullSize" />
+					<Flag v="HalfSize" />
+					<Flag v="QuarterSize" />
+				</_C>
 				<_E v="flags">
 					<Flag v="Enable parallax corrected interpolation" />
 					<Flag v="Center cascade around camera" />
@@ -6036,6 +6115,11 @@
 					<_14 v="4 Player Splitscreen" />
 					<_3B v="" />
 				</_38>
+				<_C v="resolution scalar for raytracing">
+					<Flag v="FullSize" />
+					<Flag v="HalfSize" />
+					<Flag v="QuarterSize" />
+				</_C>
 				<_E v="flags">
 					<Flag v="Enable parallax corrected interpolation" />
 					<Flag v="Center cascade around camera" />
@@ -8397,6 +8481,7 @@
 						<Flag v="Override Cloud Shape Settings" />
 						<Flag v="Override Cloud Lighting Settings" />
 						<Flag v="Override Cloud Shadow Settings" />
+						<Flag v="Override Clouds V2 Settings" />
 					</_D>
 					<_41 v="Coverage Texture" />
 					<_14 v="Coverage Scale" />
@@ -9141,24 +9226,80 @@
 						<_14 v="Panning Clouds Shadows Tilt" />
 						<_3B v="" />
 					</_38>
+					<_38 v="Clouds V2">
+						<_D v="Flags">
+							<Flag v="Override Density Scale" />
+							<Flag v="Override Scattering Factor" />
+							<Flag v="Override Extinction Factor" />
+							<Flag v="Override Phase Constant" />
+							<Flag v="Override Powder Strength" />
+							<Flag v="Override Direct Sun Intensity" />
+							<Flag v="Override Ambient Intensity Sun Angle" />
+							<Flag v="Override Ambient Intensity Sky" />
+							<Flag v="Override Ambient Color Sky" />
+							<Flag v="Override Ambient Intensity Ground" />
+							<Flag v="Override Ambient Color Ground" />
+							<Flag v="Override Ray March Step Scale" />
+							<Flag v="Override Max Step Count" />
+							<Flag v="Override Sun March Dist Scale" />
+							<Flag v="Override Sun Marching Steps" />
+							<Flag v="Override Horizon Fade Start" />
+							<Flag v="Override Fog Intensity" />
+							<Flag v="Override Dither Amount" />
+							<Flag v="Override Volume Start" />
+							<Flag v="Override Volume Height" />
+							<Flag v="Override Base Noise Scale" />
+							<Flag v="Override Base Noise Dilation" />
+							<Flag v="Override Detail Noise Scale" />
+							<Flag v="Override Detail Strength" />
+							<Flag v="Override Coverage Strength" />
+							<Flag v="Override Curl Noise Scale" />
+							<Flag v="Override Curl Noise Strength" />
+						</_D>
+						<_14 v="Density Scale" />
+						<_14 v="Scattering Factor" />
+						<_14 v="Extinction Factor" />
+						<_14 v="Phase Constant" />
+						<_14 v="Powder Strength" />
+						<_14 v="Direct Sun Intensity" />
+						<_14 v="Ambient Intensity Sun Angle" />
+						<_14 v="Ambient Intensity Sky" />
+						<_1F v="Ambient Color Sky" />
+						<_14 v="Ambient Intensity Ground" />
+						<_1F v="Ambient Color Ground" />
+						<_14 v="Ray March Step Scale" />
+						<_6 v="Max Step Count" />
+						<_14 v="Sun March Dist Scale" />
+						<_6 v="Sun Marching Steps" />
+						<_14 v="Horizon Fade Start" />
+						<_14 v="Fog Intensity" />
+						<_14 v="Dither Amount" />
+						<_14 v="Volume Start" />
+						<_14 v="Volume Height" />
+						<_14 v="Base Noise Scale" />
+						<_14 v="Base Noise Dilation" />
+						<_14 v="Detail Noise Scale" />
+						<_14 v="Detail Strength" />
+						<_14 v="Coverage Strength" />
+						<_14 v="Curl Noise Scale" />
+						<_14 v="Curl Noise Strength" />
+						<_3B v="" />
+					</_38>
 					<_3B v="" />
 				</_38>
 				<_38 v="Dynamic Sun Shadow">
 					<_D v="Flags">
-						<Flag v="Override Max Shadow Count Scale" />
 						<Flag v="Override Floating Shadow Quality" />
-						<Flag v="Override First Person Floating Shadow Mode" />
 						<Flag v="Override Cascade Overlap" />
 						<Flag v="Override Min Shadow Caster Pixel Radius" />
 						<Flag v="Override PCSS Light Size" />
 						<Flag v="Override PCSS Maximum Filter Width" />
-						<Flag v="Override Number of Cascades" />
 						<Flag v="Override Frustums" />
 						<Flag v="Override Number of Parallax Sampling Steps" />
 						<Flag v="Override Parallax Sampling Sun Direction Weight" />
 						<Flag v="Override Panning Cloud Settings" />
+						<Flag v="Override RT Shadow Sun Cone Angle" />
 					</_D>
-					<_14 v="Max Shadow Count Scale" />
 					<_37 v="Floating Shadows Settings" />
 					<_38 v="Floating Shadow Quality">
 						<_A v="Low">
@@ -9195,16 +9336,12 @@
 						</_A>
 						<_3B v="" />
 					</_38>
-					<_A v="First Person Floating Shadow Mode">
-						<Flag v="No Shadow" />
-						<Flag v="Apply Everywhere" />
-					</_A>
-					<_34 v="generated_pad1856" length="3" />
 					<_14 v="Cascade Overlap" />
 					<_14 v="Min Shadow Caster Pixel Radius" />
 					<_37 v="PCSS Settings" />
 					<_14 v="PCSS Light Size" />
 					<_14 v="PCSS Maximum Filter Width" />
+					<_14 v="Ray Tracing Shadow Sun Cone Angle" />
 					<_37 v="" />
 					<_38 v="number of cascades">
 						<_A v="Type">
@@ -9264,7 +9401,7 @@
 						</_38>
 						<_3B v="" />
 					</_38>
-					<_34 v="generated_pad650b" length="3" />
+					<_34 v="generated_pad1856" length="3" />
 					<_38 v="Frustum 1">
 						<_37 v="CASCADE" />
 						<_38 v="cascade half-width">
@@ -9424,6 +9561,11 @@
 							<_14 v="4 Player Splitscreen" />
 							<_3B v="" />
 						</_38>
+						<_C v="resolution scalar for raytracing">
+							<Flag v="FullSize" />
+							<Flag v="HalfSize" />
+							<Flag v="QuarterSize" />
+						</_C>
 						<_E v="flags">
 							<Flag v="Enable parallax corrected interpolation" />
 							<Flag v="Center cascade around camera" />
@@ -10073,6 +10215,11 @@
 							<_14 v="4 Player Splitscreen" />
 							<_3B v="" />
 						</_38>
+						<_C v="resolution scalar for raytracing">
+							<Flag v="FullSize" />
+							<Flag v="HalfSize" />
+							<Flag v="QuarterSize" />
+						</_C>
 						<_E v="flags">
 							<Flag v="Enable parallax corrected interpolation" />
 							<Flag v="Center cascade around camera" />
@@ -10722,6 +10869,11 @@
 							<_14 v="4 Player Splitscreen" />
 							<_3B v="" />
 						</_38>
+						<_C v="resolution scalar for raytracing">
+							<Flag v="FullSize" />
+							<Flag v="HalfSize" />
+							<Flag v="QuarterSize" />
+						</_C>
 						<_E v="flags">
 							<Flag v="Enable parallax corrected interpolation" />
 							<Flag v="Center cascade around camera" />
@@ -11371,6 +11523,11 @@
 							<_14 v="4 Player Splitscreen" />
 							<_3B v="" />
 						</_38>
+						<_C v="resolution scalar for raytracing">
+							<Flag v="FullSize" />
+							<Flag v="HalfSize" />
+							<Flag v="QuarterSize" />
+						</_C>
 						<_E v="flags">
 							<Flag v="Enable parallax corrected interpolation" />
 							<Flag v="Center cascade around camera" />
@@ -12020,6 +12177,11 @@
 							<_14 v="4 Player Splitscreen" />
 							<_3B v="" />
 						</_38>
+						<_C v="resolution scalar for raytracing">
+							<Flag v="FullSize" />
+							<Flag v="HalfSize" />
+							<Flag v="QuarterSize" />
+						</_C>
 						<_E v="flags">
 							<Flag v="Enable parallax corrected interpolation" />
 							<Flag v="Center cascade around camera" />
@@ -12669,6 +12831,11 @@
 							<_14 v="4 Player Splitscreen" />
 							<_3B v="" />
 						</_38>
+						<_C v="resolution scalar for raytracing">
+							<Flag v="FullSize" />
+							<Flag v="HalfSize" />
+							<Flag v="QuarterSize" />
+						</_C>
 						<_E v="flags">
 							<Flag v="Enable parallax corrected interpolation" />
 							<Flag v="Center cascade around camera" />
@@ -13281,6 +13448,7 @@
 		<_F v="Flags">
 			<Flag v="Pop When Done" />
 			<Flag v="Jump When Looping" />
+			<Flag v="Push on New Player Join" />
 		</_F>
 		<_F v="Disable Sun Angle Estimation">
 			<Flag v="True" />

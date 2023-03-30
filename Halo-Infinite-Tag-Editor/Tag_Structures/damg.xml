@@ -11,6 +11,12 @@
 	</_38>
 	<_38 v="Damage Info">
 		<_14 v="Body vitality TEMP" />
+		<_37 v="Max overshield scalar" />
+		<_38 v="Max overshield scalar">
+			<_14 v="Base Value" />
+			<_25 v="Value Bounds" />
+			<_3B v="" />
+		</_38>
 		<_E v="Flags">
 			<Flag v="Takes damage for children" />
 			<Flag v="Parent never takes damage for us" />
@@ -313,6 +319,5 @@
 		<_2 v="Tracking type" />
 		<_3B v="" />
 	</_40>
-	<_34 v="generated_pada5a5" length="4" />
 	<_3B v="" />
 </root>

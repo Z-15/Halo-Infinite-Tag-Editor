@@ -31,6 +31,8 @@
 	<_7 v="vertexBuffer" />
 	<_7 v="indexBuffer" />
 	<_14 v="aspectRatio" />
+	<_6 v="m_validDrawIndexCount" />
+	<_6 v="m_validDrawInformationCount" />
 	<_34 v="generated_pad0d5b" length="4" />
 	<_3B v="" />
 </root>

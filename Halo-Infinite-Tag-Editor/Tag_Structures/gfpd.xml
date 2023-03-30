@@ -1604,6 +1604,35 @@
 		<_37 v="" />
 		<_3B v="" />
 	</_40>
+	<_40 v="Raytraced Sun Shadows Presets">
+		<_0 v="Preset" />
+		<_14 v="Shadow Ray Push Off" />
+		<_6 v="Min Tile Rate" />
+		<_6 v="Max Tile Rate" />
+		<_F v="Trace Outside Cascade">
+			<Flag v="Enabled" />
+		</_F>
+		<_F v="Reject Lit Pixels">
+			<Flag v="Enabled" />
+		</_F>
+		<_34 v="generated_pad68be" length="2" />
+		<_6 v="Max Alpha Geo Iterations" />
+		<_6 v="Hybrid Shadows Quality Mode" />
+		<_14 v="Hybrid Shadows Lit Sigma" />
+		<_14 v="Hybrid Shadows Shadow Sigma" />
+		<_14 v="Hybrid Shadows 2X2 Tile Sigma" />
+		<_14 v="Hybrid Shadows 4X4 Tile Sigma" />
+		<_14 v="Shadow History Damper Weight" />
+		<_37 v="VRAM" />
+		<_38 v="vram">
+			<_6 v="Initial VRAM usage" />
+			<_6 v="VRAM per 1 million pixels" />
+			<_3B v="" />
+		</_38>
+		<_37 v="" />
+		<_3B v="" />
+	</_40>
 	<_37 v="" />
+	<_34 v="generated_pad3e85" length="4" />
 	<_3B v="" />
 </root>

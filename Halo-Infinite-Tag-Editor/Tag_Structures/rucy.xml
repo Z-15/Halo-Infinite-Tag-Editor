@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<_38 v="">
+		<_7 v="vtable space" />
+		<_38 v="internal struct">
+			<_6 v="global tag ID" />
+			<_34 v="local tag handle" length="4" />
+			<_3B v="" />
+		</_38>
+		<_3B v="" />
+	</_38>
+	<_38 v="info">
+		<_38 v="globalDamageSwatch">
+			<_3F v="elementID" />
+			<_2 v="Description" />
+			<_41 v="Swatch" />
+			<_A v="gradientColorFlag">
+				<Flag v="Override Colors" />
+				<Flag v="Use Default Colors From Swatch" />
+			</_A>
+			<_34 v="generated_pad9b5a" length="3" />
+			<_1F v="gradientTopColor" />
+			<_1F v="gradientMidColor" />
+			<_1F v="gradientBottomColor" />
+			<_14 v="roughnessOffset" />
+			<_37 v="Scratch Overrides" />
+			<_A v="scratchColorFlag">
+				<Flag v="Override Colors" />
+				<Flag v="Use Default Colors From Swatch" />
+			</_A>
+			<_34 v="generated_pade80f" length="3" />
+			<_1F v="scratchColor" />
+			<_14 v="scratchRoughnessOffset" />
+			<_37 v="" />
+			<_37 v="Emissive Overrides" />
+			<_14 v="emissiveIntensity" />
+			<_14 v="emissiveAmount" />
+			<_37 v="" />
+			<_37 v="Blends" />
+			<_A v="Hero Reveal">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Color Blend">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Normal Blend">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Ignore Texel Density Scalar">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_37 v="" />
+			<_34 v="generated_pad34c4" length="4" />
+			<_3B v="" />
+		</_38>
+		<_38 v="heroDamageSwatch">
+			<_3F v="elementID" />
+			<_2 v="Description" />
+			<_41 v="Swatch" />
+			<_A v="gradientColorFlag">
+				<Flag v="Override Colors" />
+				<Flag v="Use Default Colors From Swatch" />
+			</_A>
+			<_34 v="generated_pad9b5a" length="3" />
+			<_1F v="gradientTopColor" />
+			<_1F v="gradientMidColor" />
+			<_1F v="gradientBottomColor" />
+			<_14 v="roughnessOffset" />
+			<_37 v="Scratch Overrides" />
+			<_A v="scratchColorFlag">
+				<Flag v="Override Colors" />
+				<Flag v="Use Default Colors From Swatch" />
+			</_A>
+			<_34 v="generated_pade80f" length="3" />
+			<_1F v="scratchColor" />
+			<_14 v="scratchRoughnessOffset" />
+			<_37 v="" />
+			<_37 v="Emissive Overrides" />
+			<_14 v="emissiveIntensity" />
+			<_14 v="emissiveAmount" />
+			<_37 v="" />
+			<_37 v="Blends" />
+			<_A v="Hero Reveal">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Color Blend">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Normal Blend">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Ignore Texel Density Scalar">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_37 v="" />
+			<_34 v="generated_pad34c4" length="4" />
+			<_3B v="" />
+		</_38>
+		<_38 v="globalEmissiveSwatch">
+			<_3F v="elementID" />
+			<_2 v="Description" />
+			<_41 v="Swatch" />
+			<_A v="gradientColorFlag">
+				<Flag v="Override Colors" />
+				<Flag v="Use Default Colors From Swatch" />
+			</_A>
+			<_34 v="generated_pad9b5a" length="3" />
+			<_1F v="gradientTopColor" />
+			<_1F v="gradientMidColor" />
+			<_1F v="gradientBottomColor" />
+			<_14 v="roughnessOffset" />
+			<_37 v="Scratch Overrides" />
+			<_A v="scratchColorFlag">
+				<Flag v="Override Colors" />
+				<Flag v="Use Default Colors From Swatch" />
+			</_A>
+			<_34 v="generated_pade80f" length="3" />
+			<_1F v="scratchColor" />
+			<_14 v="scratchRoughnessOffset" />
+			<_37 v="" />
+			<_37 v="Emissive Overrides" />
+			<_14 v="emissiveIntensity" />
+			<_14 v="emissiveAmount" />
+			<_37 v="" />
+			<_37 v="Blends" />
+			<_A v="Hero Reveal">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Color Blend">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Normal Blend">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Ignore Texel Density Scalar">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_37 v="" />
+			<_34 v="generated_pad34c4" length="4" />
+			<_3B v="" />
+		</_38>
+		<_14 v="emissiveAmount" />
+		<_14 v="emissiveIntensity" />
+		<_14 v="scratchAmount" />
+		<_34 v="generated_padee36" length="4" />
+		<_38 v="grimeSwatch">
+			<_3F v="elementID" />
+			<_2 v="Description" />
+			<_41 v="Swatch" />
+			<_A v="gradientColorFlag">
+				<Flag v="Override Colors" />
+				<Flag v="Use Default Colors From Swatch" />
+			</_A>
+			<_34 v="generated_pad9b5a" length="3" />
+			<_1F v="gradientTopColor" />
+			<_1F v="gradientMidColor" />
+			<_1F v="gradientBottomColor" />
+			<_14 v="roughnessOffset" />
+			<_37 v="Scratch Overrides" />
+			<_A v="scratchColorFlag">
+				<Flag v="Override Colors" />
+				<Flag v="Use Default Colors From Swatch" />
+			</_A>
+			<_34 v="generated_pade80f" length="3" />
+			<_1F v="scratchColor" />
+			<_14 v="scratchRoughnessOffset" />
+			<_37 v="" />
+			<_37 v="Emissive Overrides" />
+			<_14 v="emissiveIntensity" />
+			<_14 v="emissiveAmount" />
+			<_37 v="" />
+			<_37 v="Blends" />
+			<_A v="Hero Reveal">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Color Blend">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Normal Blend">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_A v="Ignore Texel Density Scalar">
+				<Flag v="disabled" />
+				<Flag v="enabled" />
+			</_A>
+			<_37 v="" />
+			<_34 v="generated_pad34c4" length="4" />
+			<_3B v="" />
+		</_38>
+		<_14 v="grimeAmount" />
+		<_34 v="generated_pad3aeb" length="4" />
+		<_3B v="" />
+	</_38>
+	<_40 v="regions">
+		<_2 v="name" />
+		<_41 v="coatingMaterialOverride" />
+		<_40 v="intentions">
+			<_2 v="name" />
+			<_34 v="generated_pad7d15" length="4" />
+			<_38 v="info">
+				<_3F v="elementID" />
+				<_2 v="Description" />
+				<_41 v="Swatch" />
+				<_A v="gradientColorFlag">
+					<Flag v="Override Colors" />
+					<Flag v="Use Default Colors From Swatch" />
+				</_A>
+				<_34 v="generated_pad9b5a" length="3" />
+				<_1F v="gradientTopColor" />
+				<_1F v="gradientMidColor" />
+				<_1F v="gradientBottomColor" />
+				<_14 v="roughnessOffset" />
+				<_37 v="Scratch Overrides" />
+				<_A v="scratchColorFlag">
+					<Flag v="Override Colors" />
+					<Flag v="Use Default Colors From Swatch" />
+				</_A>
+				<_34 v="generated_pade80f" length="3" />
+				<_1F v="scratchColor" />
+				<_14 v="scratchRoughnessOffset" />
+				<_37 v="" />
+				<_37 v="Emissive Overrides" />
+				<_14 v="emissiveIntensity" />
+				<_14 v="emissiveAmount" />
+				<_37 v="" />
+				<_37 v="Blends" />
+				<_A v="Hero Reveal">
+					<Flag v="disabled" />
+					<Flag v="enabled" />
+				</_A>
+				<_A v="Color Blend">
+					<Flag v="disabled" />
+					<Flag v="enabled" />
+				</_A>
+				<_A v="Normal Blend">
+					<Flag v="disabled" />
+					<Flag v="enabled" />
+				</_A>
+				<_A v="Ignore Texel Density Scalar">
+					<Flag v="disabled" />
+					<Flag v="enabled" />
+				</_A>
+				<_37 v="" />
+				<_34 v="generated_pad34c4" length="4" />
+				<_3B v="" />
+			</_38>
+			<_3B v="" />
+		</_40>
+		<_3B v="" />
+	</_40>
+	<_34 v="generated_paddb44" length="4" />
+	<_3B v="" />
+</root>

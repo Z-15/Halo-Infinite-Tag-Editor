@@ -49,6 +49,10 @@
 		<_3B v="" />
 	</_38>
 	<_40 v="Camera Data">
+		<_F v="Flags">
+			<Flag v="Adjust FOV with Aspect Ratio" />
+		</_F>
+		<_34 v="generated_padf2a3" length="3" />
 		<_14 v="Sensor Size" />
 		<_14 v="Focal Length" />
 		<_14 v="Focus Distance" />
@@ -83,7 +87,7 @@
 			<Flag v="EaseInOutLight" />
 			<Flag v="EaseInOutHeavy" />
 		</_A>
-		<_34 v="generated_padf2a3" length="3" />
+		<_34 v="generated_pada5ee" length="3" />
 		<_2 v="Blend Curve Name" />
 		<_41 v="Blend Curve Tag" />
 		<_14 v="Blend Time" />

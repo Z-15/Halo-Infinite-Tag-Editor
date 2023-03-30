@@ -71,12 +71,9 @@ namespace ZTools
                             string curTagGroup = mf.Key.Replace("\0", String.Empty).Split(".").Last();
                             string tagID = Convert.ToHexString(BitConverter.GetBytes(mf.Value.FileEntry.GlobalTagId));
 
-                            if (tagGroups.ContainsKey(curTagGroup.Trim()))
-                            {
-                                Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(tagGroups[curTagGroup]);
-                                data = mf.Value.Tag.TagData;
-                                ReadTagStructure(tagDefinitions, mf.Value);
-                            }
+                            Dictionary<long, TagLayouts.C> tagDefinitions = TagLayouts.Tags(inhaledTags[tagID].TagGroup);
+                            data = mf.Value.Tag.TagData;
+                            ReadTagStructure(tagDefinitions, mf.Value);
 
                             tStream.Close();
                             curDataBlockInd = 1;

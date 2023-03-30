@@ -36,6 +36,8 @@
 			<_14 v="Static IO Shadow Casting Maximum Distance" />
 			<_14 v="Dynamic Object Shadow Casting Maximum Distance" />
 			<_14 v="Dynamic Object Cast Shadow Outside of Camera Frustum Distance" />
+			<_14 v="Dynamic Object BLAS Update Area Multiplier" />
+			<_14 v="Dynamic Object BLAS Update Outside of Camera Frustum Distance Multiplier" />
 			<_3B v="" />
 		</_38>
 		<_37 v="" />
@@ -62,6 +64,8 @@
 			<_14 v="Static IO Shadow Casting Maximum Distance" />
 			<_14 v="Dynamic Object Shadow Casting Maximum Distance" />
 			<_14 v="Dynamic Object Cast Shadow Outside of Camera Frustum Distance" />
+			<_14 v="Dynamic Object BLAS Update Area Multiplier" />
+			<_14 v="Dynamic Object BLAS Update Outside of Camera Frustum Distance Multiplier" />
 			<_3B v="" />
 		</_38>
 		<_37 v="" />
@@ -88,6 +92,8 @@
 			<_14 v="Static IO Shadow Casting Maximum Distance" />
 			<_14 v="Dynamic Object Shadow Casting Maximum Distance" />
 			<_14 v="Dynamic Object Cast Shadow Outside of Camera Frustum Distance" />
+			<_14 v="Dynamic Object BLAS Update Area Multiplier" />
+			<_14 v="Dynamic Object BLAS Update Outside of Camera Frustum Distance Multiplier" />
 			<_3B v="" />
 		</_38>
 		<_37 v="" />
@@ -114,6 +120,8 @@
 			<_14 v="Static IO Shadow Casting Maximum Distance" />
 			<_14 v="Dynamic Object Shadow Casting Maximum Distance" />
 			<_14 v="Dynamic Object Cast Shadow Outside of Camera Frustum Distance" />
+			<_14 v="Dynamic Object BLAS Update Area Multiplier" />
+			<_14 v="Dynamic Object BLAS Update Outside of Camera Frustum Distance Multiplier" />
 			<_3B v="" />
 		</_38>
 		<_37 v="" />

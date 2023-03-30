@@ -48,7 +48,6 @@
 	<_41 v="Control Globals" />
 	<_41 v="Player Globals" />
 	<_41 v="Damage Globals" />
-	<_41 v="LOC Globals" />
 	<_41 v="Material Globals" />
 	<_41 v="Camera Globals" />
 	<_41 v="Difficulty Globals" />
@@ -89,6 +88,7 @@
 	<_41 v="Chroma Animations Defintion" />
 	<_41 v="Narrative Globals" />
 	<_41 v="Subtitle Globals" />
+	<_41 v="Intentions Globals" />
 	<_34 v="generated_pad10ab" length="4" />
 	<_3B v="" />
 </root>

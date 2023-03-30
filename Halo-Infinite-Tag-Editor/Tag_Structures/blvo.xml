@@ -9,89 +9,6 @@
 		</_38>
 		<_3B v="" />
 	</_38>
-	<_40 v="Lightmap Priority Volumes">
-		<_2 v="Name" />
-		<_37 v="Volume settings" />
-		<_38 v="Volume">
-			<_40 v="Points">
-				<_17 v="position" />
-				<_3B v="" />
-			</_40>
-			<_14 v="height" />
-			<_14 v="sink" />
-			<_17 v="center point" />
-			<_14 v="trivial cull radius squared" />
-			<_17 v="aabbCenter" />
-			<_17 v="aabbExtents" />
-			<_40 v="nativePoints2D">
-				<_16 v="point" />
-				<_3B v="" />
-			</_40>
-			<_3B v="" />
-		</_38>
-		<_37 v="" />
-		<_14 v="Volume Priority" />
-		<_14 v="Lightmap Priority" />
-		<_B v="Exclude Shadow Geometry">
-			<Flag v="No" />
-			<Flag v="Yes" />
-		</_B>
-		<_B v="Exclude Per Pixel Lighting">
-			<Flag v="No" />
-			<Flag v="Yes" />
-		</_B>
-		<_B v="Exclude Analytic Sun Contribution">
-			<Flag v="No" />
-			<Flag v="Yes" />
-		</_B>
-		<_B v="Exclude Analytic Light Contribution">
-			<Flag v="No" />
-			<Flag v="Yes" />
-		</_B>
-		<_40 v="EditorMetadata">
-			<_1 v="folder name" />
-			<_17 v="local space pivot point position" />
-			<_3B v="" />
-		</_40>
-		<_41 v="owner bsp" />
-		<_2 v="owner variant" />
-		<_5 v="runtime bsp index" />
-		<_5 v="runtime variant index" />
-		<_3B v="" />
-	</_40>
-	<_40 v="Air Probe Density Volumes">
-		<_2 v="Name" />
-		<_37 v="Volume settings" />
-		<_38 v="Volume">
-			<_40 v="Points">
-				<_17 v="position" />
-				<_3B v="" />
-			</_40>
-			<_14 v="height" />
-			<_14 v="sink" />
-			<_17 v="center point" />
-			<_14 v="trivial cull radius squared" />
-			<_17 v="aabbCenter" />
-			<_17 v="aabbExtents" />
-			<_40 v="nativePoints2D">
-				<_16 v="point" />
-				<_3B v="" />
-			</_40>
-			<_3B v="" />
-		</_38>
-		<_37 v="" />
-		<_14 v="Air Probe Density" />
-		<_40 v="EditorMetadata">
-			<_1 v="folder name" />
-			<_17 v="local space pivot point position" />
-			<_3B v="" />
-		</_40>
-		<_41 v="owner bsp" />
-		<_2 v="owner variant" />
-		<_5 v="runtime bsp index" />
-		<_5 v="runtime variant index" />
-		<_3B v="" />
-	</_40>
 	<_40 v="Air Probe Region Volumes">
 		<_2 v="Name" />
 		<_37 v="Volume settings" />
@@ -138,6 +55,7 @@
 	</_40>
 	<_40 v="Cubemap Volumes">
 		<_2 v="Name" />
+		<_6 v="Guid" />
 		<_D v="Flags">
 			<Flag v="Enable Intensity Correction" />
 			<Flag v="Capture With Effects" />
@@ -204,7 +122,10 @@
 			<Flag v="Off" />
 			<Flag v="On" />
 		</_B>
-		<_34 v="generated_pad93d5" length="2" />
+		<_B v="Runtime Force Add Inactive">
+			<Flag v="Off" />
+			<Flag v="On" />
+		</_B>
 		<_14 v="Relevancy Radius" />
 		<_3B v="" />
 	</_40>

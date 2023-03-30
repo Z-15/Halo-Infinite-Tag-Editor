@@ -28,6 +28,7 @@
 			<Flag v="does not block callout raycasts" />
 			<Flag v="blocks grapple aim assist" />
 			<Flag v="non-physical melee pass through" />
+			<Flag v="does not block seat entry" />
 		</_E>
 		<_34 v="generated_pad3ced" length="2" />
 		<_2 v="general armor" />
@@ -147,6 +148,7 @@
 			<Flag v="does not block callout raycasts" />
 			<Flag v="blocks grapple aim assist" />
 			<Flag v="non-physical melee pass through" />
+			<Flag v="does not block seat entry" />
 		</_E>
 		<_34 v="generated_pad3ced" length="2" />
 		<_2 v="general armor" />

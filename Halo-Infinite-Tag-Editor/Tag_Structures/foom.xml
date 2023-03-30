@@ -10,17 +10,22 @@
 		<_3B v="" />
 	</_38>
 	<_40 v="Forge Object Entries">
+		<_3F v="elementID" />
 		<_41 v="Forge Object" />
 		<_2 v="Name" />
 		<_2 v="Description" />
 		<_41 v="Thumbnail" />
 		<_40 v="Object Metadata">
+			<_3F v="elementID" />
 			<_2 v="Keyword" />
+			<_34 v="generated_pad6bd0" length="4" />
 			<_3B v="" />
 		</_40>
+		<_34 v="generated_pad71da" length="4" />
 		<_3B v="" />
 	</_40>
 	<_40 v="Category Entries">
+		<_3F v="elementID" />
 		<_2 v="Title" />
 		<_2 v="Description" />
 		<_2 v="Category ID" />

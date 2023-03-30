@@ -10,11 +10,6 @@
 		<_3B v="" />
 	</_38>
 	<_36 v="Cheap Lights" />
-	<_A v="function input">
-		<Flag v="time/age" />
-		<Flag v="scale A" />
-		<Flag v="scale B" />
-	</_A>
 	<_4 v="version" />
 	<_F v="flags">
 		<Flag v="use color override as tint" />
@@ -27,15 +22,21 @@
 		<Flag v="Team Color" />
 		<Flag v="DWS Sun Color" />
 	</_A>
+	<_34 v="generated_padb984" length="1" />
 	<_38 v="color">
-		<_2 v="Input Variable" />
+		<_A v="Input Variable">
+			<Flag v="Time/Age" />
+			<Flag v="Effect Scale A" />
+			<Flag v="Effect Scale B" />
+		</_A>
+		<_34 v="generated_pad09bd" length="3" />
 		<_2 v="Range Variable" />
 		<_B v="Output Modifier">
 			<Flag v=" " />
 			<Flag v="Plus" />
 			<Flag v="Times" />
 		</_B>
-		<_34 v="generated_pad8f6d" length="2" />
+		<_34 v="generated_padefdc" length="2" />
 		<_2 v="Output Modifier Input" />
 		<_37 v="Mapping" />
 		<_38 v="Mapping">
@@ -47,14 +48,19 @@
 		<_3B v="" />
 	</_38>
 	<_38 v="intensity">
-		<_2 v="Input Variable" />
+		<_A v="Input Variable">
+			<Flag v="Time/Age" />
+			<Flag v="Effect Scale A" />
+			<Flag v="Effect Scale B" />
+		</_A>
+		<_34 v="generated_pad2660" length="3" />
 		<_2 v="Range Variable" />
 		<_B v="Output Modifier">
 			<Flag v=" " />
 			<Flag v="Plus" />
 			<Flag v="Times" />
 		</_B>
-		<_34 v="generated_padc7e0" length="2" />
+		<_34 v="generated_pad4041" length="2" />
 		<_2 v="Output Modifier Input" />
 		<_37 v="Mapping" />
 		<_38 v="Mapping">
@@ -67,14 +73,19 @@
 	</_38>
 	<_36 v="SIZE" />
 	<_38 v="Far Attenuation">
-		<_2 v="Input Variable" />
+		<_A v="Input Variable">
+			<Flag v="Time/Age" />
+			<Flag v="Effect Scale A" />
+			<Flag v="Effect Scale B" />
+		</_A>
+		<_34 v="generated_pad2660" length="3" />
 		<_2 v="Range Variable" />
 		<_B v="Output Modifier">
 			<Flag v=" " />
 			<Flag v="Plus" />
 			<Flag v="Times" />
 		</_B>
-		<_34 v="generated_padc7e0" length="2" />
+		<_34 v="generated_pad4041" length="2" />
 		<_2 v="Output Modifier Input" />
 		<_37 v="Mapping" />
 		<_38 v="Mapping">
@@ -97,6 +108,6 @@
 	<_14 v="Intensity Balancing" />
 	<_14 v="Area Light Radius" />
 	<_41 v="Light Group" />
-	<_34 v="generated_padb984" length="4" />
+	<_34 v="generated_padd365" length="4" />
 	<_3B v="" />
 </root>

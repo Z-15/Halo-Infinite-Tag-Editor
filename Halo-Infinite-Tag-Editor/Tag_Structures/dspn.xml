@@ -330,6 +330,7 @@
 				<Flag v="Blocks grapple aim assist" />
 				<Flag v="Send Damage Aftermath to Parent" />
 				<Flag v="Pre size attachments for customization" />
+				<Flag v="invisible to melee" />
 			</_D>
 			<_37 v="Customization" />
 			<_2 v="customization set" />
@@ -397,6 +398,7 @@
 				<_41 v="Object Lightmap" />
 				<_40 v="Object Cubemap set">
 					<_2 v="Name" />
+					<_6 v="Guid" />
 					<_D v="Flags">
 						<Flag v="Enable Intensity Correction" />
 						<Flag v="Capture With Effects" />
@@ -463,7 +465,10 @@
 						<Flag v="Off" />
 						<Flag v="On" />
 					</_B>
-					<_34 v="generated_pad93d5" length="2" />
+					<_B v="Runtime Force Add Inactive">
+						<Flag v="Off" />
+						<Flag v="On" />
+					</_B>
 					<_14 v="Relevancy Radius" />
 					<_3B v="" />
 				</_40>
@@ -697,10 +702,10 @@
 				<_3C v="Default Secondary Glossiness" />
 				<_3C v="Default Tertiary Glossiness" />
 				<_34 v="generated_padb7d9" length="1" />
-				<_2 v="Default Label [1]" />
-				<_2 v="Default Label [2]" />
-				<_2 v="Default Label [3]" />
-				<_2 v="Default Label [4]" />
+				<_2 v="Default Label 1" />
+				<_2 v="Default Label 2" />
+				<_2 v="Default Label 3" />
+				<_2 v="Default Label 4" />
 				<_7 v="m_defaultBoundaryPipelineState" />
 				<_7 v="m_sphereBoundaryPipelineStates" />
 				<_7 v="m_cylinderBoundaryPipelineStates" />
@@ -1142,6 +1147,11 @@
 				<_2 v="animation on parent" />
 				<_2 v="animation to play on object" />
 				<_2 v="animation set to use with the child object's animation" />
+				<_A v="matching type">
+					<Flag v="match percentage" />
+					<Flag v="match frame" />
+				</_A>
+				<_34 v="generated_pad97f6" length="3" />
 				<_3B v="" />
 			</_40>
 			<_37 v="model variant switching" />
@@ -1149,6 +1159,7 @@
 			<_2 v="model variant switching function" />
 			<_40 v="model variant switching table">
 				<_25 v="function result range" />
+				<_2 v="required parent marker" />
 				<_2 v="model variant name" />
 				<_3B v="" />
 			</_40>
@@ -1166,6 +1177,9 @@
 					<Flag v="don't reveal targets to the motion tracker" />
 					<Flag v="only play radius effect for owner" />
 					<Flag v="show player name instead of health" />
+					<Flag v="only play effect on first ping" />
+					<Flag v="activate on first bounce" />
+					<Flag v="check line of sight" />
 				</_D>
 				<_14 v="ping frequency" />
 				<_14 v="ping radius" />
@@ -1173,6 +1187,8 @@
 				<_14 v="scanning duration" />
 				<_14 v="minimum delay between marks" />
 				<_14 v="delay per distance" />
+				<_14 v="activation delay" />
+				<_14 v="line of sight offset length" />
 				<_37 v="" />
 				<_37 v="Sensor Visuals" />
 				<_41 v="sensor radius effect" />

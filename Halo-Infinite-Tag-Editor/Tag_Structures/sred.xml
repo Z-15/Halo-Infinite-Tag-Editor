@@ -18,6 +18,7 @@
 		<Flag v="Decouple DWS / Sky Atm. Scattering" />
 		<Flag v="Decouple DWS / Sky Vol. Clouds" />
 		<Flag v="Disable Sun" />
+		<Flag v="Disallow User to Enable Ray Tracing through UI" />
 	</_E>
 	<_5 v="Volumetric Clouds DWS Sun Index" />
 	<_5 v="Atmospheric Scattering DWS Sun Index" />

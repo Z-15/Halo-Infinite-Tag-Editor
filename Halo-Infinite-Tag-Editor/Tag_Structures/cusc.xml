@@ -576,6 +576,16 @@
 			<_34 v="generated_padbf89" length="4" />
 			<_3B v="" />
 		</_40>
+		<_40 v="pinned animations">
+			<_2 v="animation name" />
+			<_34 v="generated_pad44ca" length="4" />
+			<_3F v="visual state group id" />
+			<_3F v="visual state id" />
+			<_3F v="component id" />
+			<_14 v="pin time" />
+			<_34 v="generated_pad917f" length="4" />
+			<_3B v="" />
+		</_40>
 		<_40 v="visual state component lookup">
 			<_3F v="component id" />
 			<_3B v="" />
@@ -605,6 +615,6 @@
 		<Flag v="Force FullCanvas UI for SLAMS" />
 		<Flag v="Force Fixed Size UI" />
 	</_F>
-	<_34 v="generated_padbb46" length="7" />
+	<_34 v="generated_padbb46" length="3" />
 	<_3B v="" />
 </root>

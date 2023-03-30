@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<_38 v="">
+		<_7 v="vtable space" />
+		<_38 v="internal struct">
+			<_6 v="global tag ID" />
+			<_34 v="local tag handle" length="4" />
+			<_3B v="" />
+		</_38>
+		<_3B v="" />
+	</_38>
+	<_41 v="Parent" />
+	<_37 v="Base" />
+	<_18 v="colorAndRoughnessTextureTransform" />
+	<_18 v="normalTextureTransform" />
+	<_41 v="colorGradientMap" />
+	<_1F v="gradientTopColor" />
+	<_1F v="gradientMidColor" />
+	<_1F v="gradientBottomColor" />
+	<_14 v="roughnessWhite" />
+	<_14 v="roughnessBlack" />
+	<_41 v="normalDetailMap" />
+	<_14 v="metallic" />
+	<_14 v="ior" />
+	<_14 v="albedoTintSpec" />
+	<_37 v="" />
+	<_37 v="Scratches" />
+	<_1F v="scratchColor" />
+	<_14 v="scratchBrightness" />
+	<_14 v="scratchRoughness" />
+	<_14 v="scratchMetallic" />
+	<_14 v="scratchIOR" />
+	<_14 v="scratchAlbedoTintSpec" />
+	<_37 v="" />
+	<_37 v="Subsurface" />
+	<_14 v="sssIntensity" />
+	<_37 v="" />
+	<_37 v="Emissive" />
+	<_14 v="emissiveIntensity" />
+	<_14 v="emissiveAmount" />
+	<_37 v="" />
+	<_3B v="" />
+</root>

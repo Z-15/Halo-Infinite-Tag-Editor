@@ -312,6 +312,8 @@
 					<_E v="lod render flags">
 						<Flag v="LOD has shadow proxies" />
 					</_E>
+					<_3D v="raytracing metadata index" />
+					<_34 v="generated_paddaed" length="2" />
 					<_3B v="" />
 				</_40>
 				<_E v="mesh flags">
@@ -473,6 +475,8 @@
 				</_B>
 				<_3D v="total index buffer count" />
 				<_3D v="total vertex buffer count" />
+				<_3D v="total raytracing metadata count" />
+				<_34 v="generated_pad4c35" length="2" />
 				<_40 v="mesh resource groups">
 					<_43 v="mesh resource" />
 					<_3B v="" />
@@ -483,6 +487,11 @@
 					<_3B v="" />
 				</_40>
 				<_40 v="vertex resource look up">
+					<_5 v="resource group index" />
+					<_5 v="group item index" />
+					<_3B v="" />
+				</_40>
+				<_40 v="raytracing resource look up">
 					<_5 v="resource group index" />
 					<_5 v="group item index" />
 					<_3B v="" />
@@ -525,6 +534,8 @@
 			</_40>
 			<_34 v="generated_paddf2d" length="4" />
 			<_7 v="perMeshPartConstantBuffer" />
+			<_4 v="target platformization" />
+			<_34 v="generated_padc54c" length="7" />
 			<_3B v="" />
 		</_38>
 		<_40 v="marker groups">

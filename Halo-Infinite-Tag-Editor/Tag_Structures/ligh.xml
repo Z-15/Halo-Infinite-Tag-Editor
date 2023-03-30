@@ -99,6 +99,8 @@
 		<_14 v="Camera Near Distance Fade Start" />
 		<_14 v="Camera Distance Fade Start" />
 		<_14 v="Camera Distance Fade End" />
+		<_14 v="Light Screen Size Fade Start" />
+		<_14 v="Light Screen Size Fade End" />
 		<_14 v="Fog Intensity" />
 		<_14 v="Particle Intensity" />
 		<_14 v="Minimum Roughness" />
@@ -183,11 +185,6 @@
 		<_14 v="Shadow Bias Offset" />
 		<_14 v="Shadow Filter Width" />
 		<_14 v="Minimum Shadow Filter Width" />
-		<_A v="Enable PCSS">
-			<Flag v="Off" />
-			<Flag v="On" />
-		</_A>
-		<_34 v="generated_pad6328" length="3" />
 		<_14 v="PCSS Light Size" />
 		<_14 v="PCSS Min Filter Size" />
 		<_14 v="PCSS Max Filter Size" />
@@ -196,18 +193,6 @@
 			<Flag v="On" />
 		</_A>
 		<_A v="Ignore Dynamic Objects">
-			<Flag v="Off" />
-			<Flag v="On" />
-		</_A>
-		<_A v="Cinema Objects Only">
-			<Flag v="Off" />
-			<Flag v="On" />
-		</_A>
-		<_A v="Cinema Only">
-			<Flag v="Off" />
-			<Flag v="On" />
-		</_A>
-		<_A v="Cinema Exclude">
 			<Flag v="Off" />
 			<Flag v="On" />
 		</_A>
@@ -223,8 +208,8 @@
 			<Flag v="Off" />
 			<Flag v="On" />
 		</_A>
+		<_34 v="generated_pad6328" length="1" />
 		<_5 v="Minimum Gobo Resolution" />
-		<_34 v="generated_pad1673" length="2" />
 		<_36 v="Dynamic Gobo" />
 		<_41 v="Gobos" />
 		<_1F v="Target Color" />
@@ -253,22 +238,19 @@
 		<_D v="flags">
 			<Flag v="dont render splitscreen" />
 			<Flag v="render in multiplayer override" />
-			<Flag v="move to camera in first person" />
 			<Flag v="always on for weapon" />
 			<Flag v="induces translucency in subsurface scattering materials" />
 			<Flag v="ignore optimization and force update every frame" />
 			<Flag v="disable shadow on particles" />
 		</_D>
 		<_41 v="Lens Flare" />
-		<_41 v="Light Cone" />
 		<_6 v="Light Shadow Priority" />
 		<_4 v="needs update state" />
 		<_4 v="needs update bounding sphere" />
-		<_34 v="generated_padc9be" length="2" />
+		<_34 v="generated_pad1673" length="2" />
 		<_6 v="tick of last state update" />
 		<_6 v="tick of last bounding sphere update" />
 		<_3B v="" />
 	</_38>
-	<_34 v="generated_pad8a13" length="4" />
 	<_3B v="" />
 </root>

@@ -90,14 +90,14 @@
 		<Flag v="does not hurt boarders" />
 		<Flag v="does not cause biped aoe effect" />
 		<Flag v="hurt only friends" />
-		<Flag v="causes incineration dissolve" />
-		<Flag v="causes incineration dissolve on headshot" />
+		<Flag v="causes incineration dissolve (deprecated)" />
+		<Flag v="causes incineration dissolve on headshot (deprecated)" />
 		<Flag v="does not hurt damage source" />
 		<Flag v="damage vehicles only" />
 		<Flag v="triggers interact logic" />
 	</_D>
 	<_D v="secondary flags">
-		<Flag v="causes incineration dissolve to dead units" />
+		<Flag v="causes incineration dissolve to dead units (deprecated)" />
 		<Flag v="force hard ping as attachment feedback" />
 		<Flag v="detaches object dispenser items" />
 		<Flag v="hard pings from this damage stun AI" />
@@ -113,6 +113,18 @@
 		<Flag v="suppress grapple hook" />
 		<Flag v="Use different impulse for props" />
 	</_D>
+	<_40 v="dissolve data">
+		<_A v="dissolve type">
+			<Flag v="incineration" />
+			<Flag v="telefrag" />
+		</_A>
+		<_F v="dissolve flags">
+			<Flag v="causes dissolve effect" />
+			<Flag v="causes dissolve effect on headshot" />
+			<Flag v="causes dissolve effect to dead units" />
+		</_F>
+		<_3B v="" />
+	</_40>
 	<_36 v="NOTE" />
 	<_41 v="modifiers" />
 	<_14 v="headshot damage multiplier" />
@@ -249,6 +261,5 @@
 	<_41 v="damage effect sounds" />
 	<_14 v="visual damage radius" />
 	<_14 v="visual damage intensity" />
-	<_34 v="generated_pad4b2e" length="4" />
 	<_3B v="" />
 </root>

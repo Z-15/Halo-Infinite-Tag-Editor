@@ -14,7 +14,10 @@
 		<_41 v="default bitmaps" />
 		<_3B v="" />
 	</_40>
-	<_41 v="explicit shader table" />
+	<_40 v="explicit shaders">
+		<_41 v="explicit shader reference" />
+		<_3B v="" />
+	</_40>
 	<_36 v="global materials" />
 	<_40 v="global materials">
 		<_2 v="name" />

@@ -298,10 +298,10 @@
 		</_39>
 		<_41 v="structure lighting_info" />
 		<_41 v="lighting volumes" />
-		<_41 v="scenario lighting volumes" />
 		<_41 v="Object Lightmap" />
 		<_40 v="Object Cubemap set">
 			<_2 v="Name" />
+			<_6 v="Guid" />
 			<_D v="Flags">
 				<Flag v="Enable Intensity Correction" />
 				<Flag v="Capture With Effects" />
@@ -368,7 +368,10 @@
 				<Flag v="Off" />
 				<Flag v="On" />
 			</_B>
-			<_34 v="generated_pad93d5" length="2" />
+			<_B v="Runtime Force Add Inactive">
+				<Flag v="Off" />
+				<Flag v="On" />
+			</_B>
 			<_14 v="Relevancy Radius" />
 			<_3B v="" />
 		</_40>

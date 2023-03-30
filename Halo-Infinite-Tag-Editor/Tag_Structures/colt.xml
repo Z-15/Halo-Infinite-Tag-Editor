@@ -172,13 +172,8 @@
 			<Flag v="Off" />
 			<Flag v="On" />
 		</_A>
-		<_F v="Flags">
-			<Flag v="Force Always Sun" />
-		</_F>
-		<_34 v="generated_pad79fe" length="2" />
-		<_41 v="cubemap override" />
+		<_34 v="generated_pad79fe" length="3" />
 		<_3B v="" />
 	</_38>
-	<_34 v="generated_pad8a18" length="4" />
 	<_3B v="" />
 </root>

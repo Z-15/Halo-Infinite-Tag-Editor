@@ -1342,6 +1342,8 @@
 				<_E v="lod render flags">
 					<Flag v="LOD has shadow proxies" />
 				</_E>
+				<_3D v="raytracing metadata index" />
+				<_34 v="generated_paddaed" length="2" />
 				<_3B v="" />
 			</_40>
 			<_E v="mesh flags">
@@ -1503,6 +1505,8 @@
 			</_B>
 			<_3D v="total index buffer count" />
 			<_3D v="total vertex buffer count" />
+			<_3D v="total raytracing metadata count" />
+			<_34 v="generated_pad4c35" length="2" />
 			<_40 v="mesh resource groups">
 				<_43 v="mesh resource" />
 				<_3B v="" />
@@ -1513,6 +1517,11 @@
 				<_3B v="" />
 			</_40>
 			<_40 v="vertex resource look up">
+				<_5 v="resource group index" />
+				<_5 v="group item index" />
+				<_3B v="" />
+			</_40>
+			<_40 v="raytracing resource look up">
 				<_5 v="resource group index" />
 				<_5 v="group item index" />
 				<_3B v="" />
@@ -1555,6 +1564,8 @@
 		</_40>
 		<_34 v="generated_paddf2d" length="4" />
 		<_7 v="perMeshPartConstantBuffer" />
+		<_4 v="target platformization" />
+		<_34 v="generated_padc54c" length="7" />
 		<_3B v="" />
 	</_38>
 	<_40 v="widget references">
@@ -1907,21 +1918,6 @@
 		<_3E v="type" />
 		<_3B v="" />
 	</_40>
-	<_40 v="visibility cluster node counts">
-		<_40 v="clusterMask Block">
-			<_3E v="chunk" />
-			<_3B v="" />
-		</_40>
-		<_6 v="clusterMask Flags" />
-		<_6 v="clusterMask Vector1" />
-		<_6 v="clusterMask Vector2" />
-		<_3D v="startingNodeIndex" />
-		<_3D v="nodeCount" />
-		<_3B v="" />
-	</_40>
-	<_6 v="visibility cluster node counts Flags" />
-	<_6 v="visibility cluster node counts Vector1" />
-	<_6 v="visibility cluster node counts Vector2" />
 	<_7 v="m_instanceGroupPipelineStateCache" />
 	<_42 v="growable dataof" />
 	<_7 v="heap array pointer" />
@@ -3995,144 +3991,7 @@
 	<_34 v="generated_pad0ad3" length="4" />
 	<_7 v="gpuFloatingShadowSubmissionData" />
 	<_7 v="BSPRuntimeData" />
-	<_39 v="GPU Submission Sources">
-		<_D v="flags">
-			<Flag v="Dirty Flag" />
-		</_D>
-		<_34 v="generated_padc013" length="4" />
-		<_7 v="Batch checksum" />
-		<_7 v="Command Packets Buffer" />
-		<_7 v="submesh Buffer" />
-		<_7 v="Hw Instance Group Buffer" />
-		<_7 v="instance Data Buffer" />
-		<_7 v="instance Buffer Constants" />
-		<_7 v="Resource collection state" />
-		<_39 v="GPU Submission batches">
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-		</_39>
-		<_6 v="Extern Textures In Use" />
-		<_6 v="submeshPassThreadCount" />
-		<_6 v="paddedSubmeshCount" />
-		<_6 v="hwInstanceThreadCount" />
-		<_6 v="m_paddedHwInstanceCount" />
-		<_34 v="generated_pad735e" length="4" />
-		<_3B v="" />
-		<_D v="flags">
-			<Flag v="Dirty Flag" />
-		</_D>
-		<_34 v="generated_padc013" length="4" />
-		<_7 v="Batch checksum" />
-		<_7 v="Command Packets Buffer" />
-		<_7 v="submesh Buffer" />
-		<_7 v="Hw Instance Group Buffer" />
-		<_7 v="instance Data Buffer" />
-		<_7 v="instance Buffer Constants" />
-		<_7 v="Resource collection state" />
-		<_39 v="GPU Submission batches">
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-			<_3C v="Byte Value" />
-			<_3B v="" />
-		</_39>
-		<_6 v="Extern Textures In Use" />
-		<_6 v="submeshPassThreadCount" />
-		<_6 v="paddedSubmeshCount" />
-		<_6 v="hwInstanceThreadCount" />
-		<_6 v="m_paddedHwInstanceCount" />
-		<_34 v="generated_pad735e" length="4" />
-		<_3B v="" />
-	</_39>
+	<_7 v="View GPU Submission Data" />
 	<_39 v="Instances with non-Gpu submission parts">
 		<_3E v="chunk" />
 		<_3B v="" />
@@ -6183,17 +6042,7 @@
 		<_3E v="chunk" />
 		<_3B v="" />
 	</_39>
-	<_40 v="foliage runtime">
-		<_40 v="foliage types">
-			<_41 v="runtime geo" />
-			<_41 v="material palette" />
-			<_3B v="" />
-		</_40>
-		<_34 v="generated_pad1383" length="4" />
-		<_7 v="foliage runtime gpu" />
-		<_7 v="foliage runtime cpu" />
-		<_3B v="" />
-	</_40>
+	<_7 v="Raytracing Submission Data" />
 	<_40 v="bitmaps">
 		<_41 v="bitmap" />
 		<_3B v="" />
@@ -6300,6 +6149,6 @@
 		<Flag v="Coatings Are Finalized" />
 		<Flag v="Disable Gpu Submission" />
 	</_F>
-	<_34 v="generated_pad8b4a" length="3" />
+	<_34 v="generated_pad8b4a" length="7" />
 	<_3B v="" />
 </root>

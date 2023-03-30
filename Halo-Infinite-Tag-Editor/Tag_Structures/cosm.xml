@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<_38 v="">
+		<_7 v="vtable space" />
+		<_38 v="internal struct">
+			<_6 v="global tag ID" />
+			<_34 v="local tag handle" length="4" />
+			<_3B v="" />
+		</_38>
+		<_3B v="" />
+	</_38>
+	<_40 v="Regions">
+		<_2 v="Name" />
+		<_3B v="" />
+	</_40>
+	<_40 v="Styles">
+		<_2 v="Name" />
+		<_41 v="Style" />
+		<_41 v="Generated Runtime Style" />
+		<_3B v="" />
+	</_40>
+	<_41 v="Visor Swatch" />
+	<_A v="Preload Swatch Options">
+		<Flag v="Do Not Preload Styles" />
+		<Flag v="Force Preload All Styles" />
+	</_A>
+	<_34 v="generated_paddbdd" length="3" />
+	<_41 v="Generated Runtime Styles" />
+	<_34 v="generated_padc1fc" length="4" />
+	<_3B v="" />
+</root>

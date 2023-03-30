@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<_38 v="">
+		<_7 v="vtable space" />
+		<_38 v="internal struct">
+			<_6 v="global tag ID" />
+			<_34 v="local tag handle" length="4" />
+			<_3B v="" />
+		</_38>
+		<_3B v="" />
+	</_38>
+	<_40 v="Video Source Paths">
+		<_44 v="Path" />
+		<_3B v="" />
+	</_40>
+	<_40 v="Videos">
+		<_B v="Resolution Type">
+			<Flag v="SD" />
+			<Flag v="HD" />
+			<Flag v="Full HD" />
+			<Flag v="2K" />
+			<Flag v="4K" />
+			<Flag v="8K" />
+		</_B>
+		<_34 v="generated_pada568" length="2" />
+		<_6 v="Frame Width" />
+		<_6 v="Frame Height" />
+		<_B v="Video Codec">
+			<Flag v="Unsupported" />
+			<Flag v="H264" />
+			<Flag v="H265" />
+		</_B>
+		<_34 v="generated_padbf49" length="2" />
+		<_14 v="FPS" />
+		<_14 v="Duration" />
+		<_A v="Resolution Level">
+			<Flag v="Low Resolution" />
+			<Flag v="High Resolution" />
+		</_A>
+		<_34 v="generated_pad0bfe" length="3" />
+		<_43 v="Video Resource" />
+		<_3B v="" />
+	</_40>
+	<_3B v="" />
+</root>

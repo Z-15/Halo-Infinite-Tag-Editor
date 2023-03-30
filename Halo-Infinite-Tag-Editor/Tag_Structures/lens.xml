@@ -88,6 +88,7 @@
 			<Flag v="override fade distances" />
 			<Flag v="use separate X and Y falloff angles" />
 			<Flag v="do not render" />
+			<Flag v="rotate from center of screen using screen Y" />
 		</_D>
 		<_41 v="bitmap override" />
 		<_38 v="bitmap frame index">
@@ -126,8 +127,16 @@
 		<_14 v="y offset" />
 		<_25 v="offset bounds" />
 		<_38 v="radius curve">
-			<_37 v="function" />
-			<_38 v="function">
+			<_A v="Input Variable">
+				<Flag v="Legacy" />
+				<Flag v="Time/Age" />
+				<Flag v="Effect Scale A" />
+				<Flag v="Effect Scale B" />
+				<Flag v="Proximity to Screen Center" />
+			</_A>
+			<_34 v="generated_pad8838" length="3" />
+			<_37 v="Mapping" />
+			<_38 v="Mapping">
 				<_37 v="" />
 				<_42 v="data" />
 				<_37 v="" />
@@ -136,8 +145,16 @@
 			<_3B v="" />
 		</_38>
 		<_38 v="scale curve X">
-			<_37 v="function" />
-			<_38 v="function">
+			<_A v="Input Variable">
+				<Flag v="Legacy" />
+				<Flag v="Time/Age" />
+				<Flag v="Effect Scale A" />
+				<Flag v="Effect Scale B" />
+				<Flag v="Proximity to Screen Center" />
+			</_A>
+			<_34 v="generated_pad8838" length="3" />
+			<_37 v="Mapping" />
+			<_38 v="Mapping">
 				<_37 v="" />
 				<_42 v="data" />
 				<_37 v="" />
@@ -146,8 +163,16 @@
 			<_3B v="" />
 		</_38>
 		<_38 v="scale curve Y">
-			<_37 v="function" />
-			<_38 v="function">
+			<_A v="Input Variable">
+				<Flag v="Legacy" />
+				<Flag v="Time/Age" />
+				<Flag v="Effect Scale A" />
+				<Flag v="Effect Scale B" />
+				<Flag v="Proximity to Screen Center" />
+			</_A>
+			<_34 v="generated_pad8838" length="3" />
+			<_37 v="Mapping" />
+			<_38 v="Mapping">
 				<_37 v="" />
 				<_42 v="data" />
 				<_37 v="" />
@@ -155,9 +180,17 @@
 			</_38>
 			<_3B v="" />
 		</_38>
-		<_38 v="brightness curve">
-			<_37 v="function" />
-			<_38 v="function">
+		<_38 v="intensity curve">
+			<_A v="Input Variable">
+				<Flag v="Legacy" />
+				<Flag v="Time/Age" />
+				<Flag v="Effect Scale A" />
+				<Flag v="Effect Scale B" />
+				<Flag v="Proximity to Screen Center" />
+			</_A>
+			<_34 v="generated_pad8838" length="3" />
+			<_37 v="Mapping" />
+			<_38 v="Mapping">
 				<_37 v="" />
 				<_42 v="data" />
 				<_37 v="" />
@@ -175,8 +208,16 @@
 		</_A>
 		<_34 v="generated_padebc7" length="3" />
 		<_38 v="color curve">
-			<_37 v="function" />
-			<_38 v="function">
+			<_A v="Input Variable">
+				<Flag v="Legacy" />
+				<Flag v="Time/Age" />
+				<Flag v="Effect Scale A" />
+				<Flag v="Effect Scale B" />
+				<Flag v="Proximity to Screen Center" />
+			</_A>
+			<_34 v="generated_pad8123" length="3" />
+			<_37 v="Mapping" />
+			<_38 v="Mapping">
 				<_37 v="" />
 				<_42 v="data" />
 				<_37 v="" />
@@ -306,5 +347,19 @@
 		</_38>
 		<_3B v="" />
 	</_40>
+	<_38 v="global radius scale">
+		<_14 v="near distance function start" />
+		<_14 v="far distance function end" />
+		<_37 v="Mapping" />
+		<_38 v="Mapping">
+			<_37 v="" />
+			<_42 v="data" />
+			<_37 v="" />
+			<_3B v="" />
+		</_38>
+		<_3B v="" />
+	</_38>
+	<_14 v="aim down sight radius multiplier" />
+	<_34 v="generated_pad85a7" length="4" />
 	<_3B v="" />
 </root>

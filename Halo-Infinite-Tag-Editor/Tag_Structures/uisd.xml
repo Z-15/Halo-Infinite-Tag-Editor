@@ -13,21 +13,94 @@
 		<_6 v="SeasonNumber" />
 		<_2 v="SeasonIntroCompositionIdPre" />
 		<_2 v="SeasonIntroCompositionIdPost" />
+		<_0 v="Game Recap Cinematic Name" />
+		<_B v="Game Recap Cinematic Type">
+			<Flag v="Narrative Sequence" />
+			<Flag v="Composition" />
+		</_B>
 		<_0 v="Seasonal Pre Cinematic Name" />
+		<_B v="Seasonal Pre Cinematic Type">
+			<Flag v="Narrative Sequence" />
+			<Flag v="Composition" />
+		</_B>
 		<_1 v="Seasonal Cinematic Map AssetId" />
 		<_1 v="Seasonal Cinematic Game AssetId" />
 		<_2 v="LoadingBarStringId" />
 		<_2 v="Prerendered Composition Name" />
+		<_2 v="LevelCompositionName" />
+		<_2 v="Default MP Composition Variant" />
+		<_40 v="NarrativeEventData">
+			<_1 v="TrackId" />
+			<_0 v="Seasonal Pre Event Cinematic Name" />
+			<_0 v="Seasonal Post Event Cinematic Name" />
+			<_2 v="Seasonal Post Event MP Composition Variant" />
+			<_2 v="Seasonal Post Event PGCR Composition Variant" />
+			<_1 v="Seasonal Cinematic Map AssetId" />
+			<_1 v="Seasonal Cinematic Game AssetId" />
+			<_2 v="LoadingBarStringIdPre" />
+			<_2 v="LoadingBarStringIdPost" />
+			<_40 v="IntroNarrativeData">
+				<_2 v="UICinematicName" />
+				<_2 v="UICinematicDescription" />
+				<_2 v="LevelCompositionName" />
+				<_1 v="Cinematic Name" />
+				<_B v="Game Recap Cinematic Type">
+					<Flag v="Narrative Sequence" />
+					<Flag v="Composition" />
+				</_B>
+				<_34 v="generated_padff7c" length="2" />
+				<_3B v="" />
+			</_40>
+			<_40 v="OutroNarrativeData">
+				<_2 v="UICinematicName" />
+				<_2 v="UICinematicDescription" />
+				<_2 v="LevelCompositionName" />
+				<_1 v="Cinematic Name" />
+				<_B v="Game Recap Cinematic Type">
+					<Flag v="Narrative Sequence" />
+					<Flag v="Composition" />
+				</_B>
+				<_34 v="generated_padff7c" length="2" />
+				<_3B v="" />
+			</_40>
+			<_3B v="" />
+		</_40>
 		<_3B v="" />
 	</_40>
 	<_40 v="Seasonal Event Cinematic Data">
-		<_0 v="TrackId" />
+		<_1 v="TrackId" />
 		<_0 v="Seasonal Pre Event Cinematic Name" />
 		<_0 v="Seasonal Post Event Cinematic Name" />
+		<_2 v="Seasonal Post Event MP Composition Variant" />
+		<_2 v="Seasonal Post Event PGCR Composition Variant" />
 		<_1 v="Seasonal Cinematic Map AssetId" />
 		<_1 v="Seasonal Cinematic Game AssetId" />
 		<_2 v="LoadingBarStringIdPre" />
 		<_2 v="LoadingBarStringIdPost" />
+		<_40 v="IntroNarrativeData">
+			<_2 v="UICinematicName" />
+			<_2 v="UICinematicDescription" />
+			<_2 v="LevelCompositionName" />
+			<_1 v="Cinematic Name" />
+			<_B v="Game Recap Cinematic Type">
+				<Flag v="Narrative Sequence" />
+				<Flag v="Composition" />
+			</_B>
+			<_34 v="generated_padff7c" length="2" />
+			<_3B v="" />
+		</_40>
+		<_40 v="OutroNarrativeData">
+			<_2 v="UICinematicName" />
+			<_2 v="UICinematicDescription" />
+			<_2 v="LevelCompositionName" />
+			<_1 v="Cinematic Name" />
+			<_B v="Game Recap Cinematic Type">
+				<Flag v="Narrative Sequence" />
+				<Flag v="Composition" />
+			</_B>
+			<_34 v="generated_padff7c" length="2" />
+			<_3B v="" />
+		</_40>
 		<_3B v="" />
 	</_40>
 	<_3B v="" />

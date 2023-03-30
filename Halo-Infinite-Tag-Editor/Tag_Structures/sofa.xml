@@ -138,7 +138,8 @@
 		<Flag v="not allowed to use dynamic input assignment" />
 		<Flag v="delete on reaching zero uses" />
 	</_F>
-	<_34 v="generated_pad3276" length="3" />
+	<_3C v="attachment priority" />
+	<_34 v="generated_pad3276" length="2" />
 	<_37 v="object dropping" />
 	<_41 v="object to spawn when removed" />
 	<_14 v="energy per spawned object" />

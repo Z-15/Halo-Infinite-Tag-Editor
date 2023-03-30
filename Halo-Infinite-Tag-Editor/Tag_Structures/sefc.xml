@@ -34,6 +34,7 @@
 			<Flag v="draw precisely one (ask Bill before you check this)" />
 			<Flag v="use player travel direction" />
 			<Flag v="use color override as tint" />
+			<Flag v="don't render for spectators" />
 		</_E>
 		<_E v="hidden flags">
 			<Flag v="update thread" />

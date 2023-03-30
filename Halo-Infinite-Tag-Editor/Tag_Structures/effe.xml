@@ -280,6 +280,7 @@
 					<Flag v="use gpu" />
 					<Flag v="override lod camera distance range" />
 					<Flag v="render with water" />
+					<Flag v="render after reflections and water (fixes 'see-through' issue on opaque particles)" />
 				</_D>
 				<_25 v="percent velocity to inherit" />
 				<_14 v="max bounding radius" />
@@ -291,91 +292,7 @@
 				<_14 v="far fade cutoff" />
 				<_25 v="Camera Distance Range Override" />
 				<_37 v="" />
-				<_40 v="Emitter References">
-					<_2 v="emitter reference name" />
-					<_41 v="emitter reference" />
-					<_38 v="emitter shared values">
-						<_F v="emitter debug flags">
-							<Flag v="disabled for debugging" />
-						</_F>
-						<_F v="flags" />
-						<_34 v="generated_paddf4f" length="2" />
-						<_14 v="bounding radius estimate" />
-						<_14 v="bounding radius override" />
-						<_38 v="runtime m_gpu_data">
-							<_40 v="runtime gpu_property_block">
-								<_39 v="runtime gpu_property_sub_array">
-									<_14 v="runtime gpu_property_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_property_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_property_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_property_real" />
-									<_3B v="" />
-								</_39>
-								<_3B v="" />
-							</_40>
-							<_40 v="runtime gpu_functions_block">
-								<_39 v="runtime gpu_function_sub_array">
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_function_real" />
-									<_3B v="" />
-								</_39>
-								<_3B v="" />
-							</_40>
-							<_40 v="runtime gpu_colors_block">
-								<_39 v="runtime gpu_color_sub_array">
-									<_14 v="runtime gpu_color_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_color_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_color_real" />
-									<_3B v="" />
-									<_14 v="runtime gpu_color_real" />
-									<_3B v="" />
-								</_39>
-								<_3B v="" />
-							</_40>
-							<_3B v="" />
-						</_38>
-						<_7 v="cachedConstants" />
-						<_7 v="updateDataStatic" />
-						<_3B v="" />
-					</_38>
-					<_3B v="" />
-				</_40>
 				<_40 v="emitters">
-					<_37 v="Export to Emitter Tag" />
 					<_2 v="emitter name" />
 					<_34 v="generated_pada31d" length="4" />
 					<_38 v="emitter shared values">
@@ -3255,7 +3172,9 @@
 		<_3B v="" />
 	</_40>
 	<_40 v="sounds">
-		<_41 v="sound" />
+		<_41 v="onEffectStartSound" />
+		<_41 v="onEffectStartLoop" />
+		<_41 v="onEffectEndSound" />
 		<_37 v="" />
 		<_2 v="marker name" />
 		<_40 v="events">

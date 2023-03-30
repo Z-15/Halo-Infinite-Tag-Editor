@@ -37,7 +37,7 @@
 		<Flag v="is_foliage" />
 		<Flag v="is_composited_card" />
 		<Flag v="is_low_res_lighting_eligible" />
-		<Flag v="is_fx_specular" />
+		<Flag v="is_high_res_lighting_eligible" />
 		<Flag v="is_two_sided_shader" />
 		<Flag v="decorator_requires_zpp" />
 		<Flag v="uses_terrain_sampling" />
@@ -47,6 +47,7 @@
 		<Flag v="validation" />
 		<Flag v="debug" />
 		<Flag v="deoptimize" />
+		<Flag v="generate_pdbs" />
 		<Flag v="iteration" />
 	</_D>
 	<_40 v="emitter property names">

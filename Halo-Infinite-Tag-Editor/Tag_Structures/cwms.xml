@@ -11,16 +11,17 @@
 	</_38>
 	<_40 v="defaultMaterial">
 		<_41 v="coatingMaterialTemplate" />
-		<_F v="Supported Coating Features Flags">
+		<_E v="Supported Coating Features Flags">
 			<Flag v="Supports 4 Layers" />
 			<Flag v="Supports 7 Layers" />
 			<Flag v="Supports Scratches" />
 			<Flag v="Supports Grime" />
 			<Flag v="Supports Damage" />
 			<Flag v="Supports Global Emissive" />
+			<Flag v="Supports Layer Emissive" />
 			<Flag v="Supports Forge" />
-		</_F>
-		<_34 v="generated_pad410b" length="3" />
+		</_E>
+		<_34 v="generated_pad410b" length="2" />
 		<_40 v="parameterRegisterInfo">
 			<_3D v="Register Offset" />
 			<_3D v="Register Size" />
@@ -30,16 +31,17 @@
 	</_40>
 	<_40 v="perLayerEmissiveMaterial">
 		<_41 v="coatingMaterialTemplate" />
-		<_F v="Supported Coating Features Flags">
+		<_E v="Supported Coating Features Flags">
 			<Flag v="Supports 4 Layers" />
 			<Flag v="Supports 7 Layers" />
 			<Flag v="Supports Scratches" />
 			<Flag v="Supports Grime" />
 			<Flag v="Supports Damage" />
 			<Flag v="Supports Global Emissive" />
+			<Flag v="Supports Layer Emissive" />
 			<Flag v="Supports Forge" />
-		</_F>
-		<_34 v="generated_pad410b" length="3" />
+		</_E>
+		<_34 v="generated_pad410b" length="2" />
 		<_40 v="parameterRegisterInfo">
 			<_3D v="Register Offset" />
 			<_3D v="Register Size" />

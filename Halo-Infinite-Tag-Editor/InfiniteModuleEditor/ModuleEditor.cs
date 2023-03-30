@@ -10,6 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.InteropServices;
 using OodleSharp;
 using System.Diagnostics;
+using static ZTools.ZCommon;
 
 namespace InfiniteModuleEditor
 {
@@ -85,19 +86,13 @@ namespace InfiniteModuleEditor
                 {
                     continue;
                 }
-                ModuleFileEntry moduleItemNext = new ModuleFileEntry();
-                string TagName;
-                if (i + 88 != FileEntriesSize)
-                {
-                    moduleItemNext.NameOffset = BitConverter.ToInt32(ModuleFileEntries, i + 88 + 64);
-                    TagName = Encoding.ASCII.GetString(ModuleStrings, moduleItem.NameOffset, moduleItemNext.NameOffset - moduleItem.NameOffset);
-                }
-                else
-                {
-                    TagName = Encoding.ASCII.GetString(ModuleStrings, moduleItem.NameOffset, module.StringsSize - moduleItem.NameOffset);
-                }
-                if (!StringList.ContainsKey((moduleItem.GlobalTagId)))
-                    StringList.Add(moduleItem.GlobalTagId, TagName);
+
+                string TagID = ReverseHexString(moduleItem.GlobalTagId.ToString("X8"));
+                string TagName = $"Object ID: {TagID}";
+
+                if (inhaledTags.ContainsKey(TagID))
+                    TagName = inhaledTags[TagID].TagPath;
+
                 module.ModuleFiles.Add(TagName, new ModuleFile { FileEntry = moduleItem });
             }
             return module;

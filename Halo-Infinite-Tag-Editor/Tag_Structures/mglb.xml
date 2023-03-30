@@ -14,6 +14,7 @@
 		<Flag v="enable predictable rebound" />
 		<Flag v="enable damage acceleration with predictable rebound" />
 		<Flag v="use predictable collision pill" />
+		<Flag v="enable legacy pvp lunge distance calculation" />
 	</_D>
 	<_A v="head position calculation method">
 		<Flag v="from head marker" />

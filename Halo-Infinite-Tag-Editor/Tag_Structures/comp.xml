@@ -37,7 +37,7 @@
 		<Flag v="Prefer Teleport To Spawn Points" />
 		<Flag v="Do Not Teleport Vehicles" />
 		<Flag v="Destroy Vehicle" />
-		<Flag v="Split-Screen Camera" />
+		<Flag v="Camera Only For Activating Player" />
 		<Flag v="Skip All Scenes" />
 		<Flag v="Disable Fade-In After Skip" />
 		<Flag v="Fade Vehicle Transition" />
@@ -400,6 +400,14 @@
 				<_6 v="End Frame" />
 				<_6 v="Repeat Count" />
 				<_14 v="Scale" />
+				<_37 v="Look Drift" />
+				<_8 v="Max Look Drift Angle" />
+				<_1B v="Look Drift Speed" />
+				<_3C v="Look Drift Dampen Percentage" />
+				<_34 v="generated_pad64fa" length="3" />
+				<_14 v="Look Drift Dampen Time" />
+				<_14 v="Look Drift No Input Delay" />
+				<_37 v="" />
 				<_3B v="" />
 			</_40>
 			<_40 v="Camera Cages">
@@ -1474,6 +1482,7 @@
 							<Flag v="Rumble" />
 							<Flag v="Camera Shake" />
 							<Flag v="Weapon Action" />
+							<Flag v="Cubemap Volume" />
 						</_C>
 						<_A v="Start Type">
 							<Flag v="Offset From Start" />
@@ -1715,6 +1724,7 @@
 							<Flag v="Kill" />
 							<Flag v="Attach" />
 							<Flag v="Attach To Camera" />
+							<Flag v="Pin Effect" />
 						</_F>
 						<_34 v="generated_pad6b33" length="3" />
 						<_41 v="Effect" />
@@ -1883,7 +1893,11 @@
 								<Flag v="Look At" />
 								<Flag v="Curve with Offset" />
 							</_A>
-							<_34 v="generated_paddcfb" length="2" />
+							<_A v="Scale Type">
+								<Flag v="Off" />
+								<Flag v="Curve" />
+							</_A>
+							<_34 v="generated_paddcfb" length="1" />
 							<_38 v="Translation Curve">
 								<_F v="Flags">
 									<Flag v="Enabled" />
@@ -2048,6 +2062,41 @@
 									</_40>
 									<_3B v="" />
 								</_38>
+								<_3B v="" />
+							</_38>
+							<_38 v="Scale Curve">
+								<_2 v="Name" />
+								<_F v="Flags">
+									<Flag v="Enabled" />
+									<Flag v="Visible" />
+								</_F>
+								<_34 v="generated_pad94fd" length="3" />
+								<_38 v="Value Curve">
+									<_40 v="control points">
+										<_14 v="value" />
+										<_14 v="tangent in" />
+										<_14 v="tangent out" />
+										<_14 v="curviness" />
+										<_A v="segment type">
+											<Flag v="Spline" />
+											<Flag v="Linear" />
+											<Flag v="Stepped" />
+											<Flag v="SteppedNext" />
+										</_A>
+										<_A v="tangent mode">
+											<Flag v="AutoStraight" />
+											<Flag v="UserStraight" />
+											<Flag v="UserBroken" />
+										</_A>
+										<_34 v="generated_pad7103" length="2" />
+										<_3B v="" />
+									</_40>
+									<_3B v="" />
+								</_38>
+								<_40 v="AnimatedCurveMetadata">
+									<_14 v="time" />
+									<_3B v="" />
+								</_40>
 								<_3B v="" />
 							</_38>
 							<_38 v="Blend Curve">
@@ -2637,7 +2686,11 @@
 								<Flag v="Look At" />
 								<Flag v="Curve with Offset" />
 							</_A>
-							<_34 v="generated_paddcfb" length="2" />
+							<_A v="Scale Type">
+								<Flag v="Off" />
+								<Flag v="Curve" />
+							</_A>
+							<_34 v="generated_paddcfb" length="1" />
 							<_38 v="Translation Curve">
 								<_F v="Flags">
 									<Flag v="Enabled" />
@@ -2804,6 +2857,41 @@
 								</_38>
 								<_3B v="" />
 							</_38>
+							<_38 v="Scale Curve">
+								<_2 v="Name" />
+								<_F v="Flags">
+									<Flag v="Enabled" />
+									<Flag v="Visible" />
+								</_F>
+								<_34 v="generated_pad94fd" length="3" />
+								<_38 v="Value Curve">
+									<_40 v="control points">
+										<_14 v="value" />
+										<_14 v="tangent in" />
+										<_14 v="tangent out" />
+										<_14 v="curviness" />
+										<_A v="segment type">
+											<Flag v="Spline" />
+											<Flag v="Linear" />
+											<Flag v="Stepped" />
+											<Flag v="SteppedNext" />
+										</_A>
+										<_A v="tangent mode">
+											<Flag v="AutoStraight" />
+											<Flag v="UserStraight" />
+											<Flag v="UserBroken" />
+										</_A>
+										<_34 v="generated_pad7103" length="2" />
+										<_3B v="" />
+									</_40>
+									<_3B v="" />
+								</_38>
+								<_40 v="AnimatedCurveMetadata">
+									<_14 v="time" />
+									<_3B v="" />
+								</_40>
+								<_3B v="" />
+							</_38>
 							<_38 v="Blend Curve">
 								<_2 v="Name" />
 								<_F v="Flags">
@@ -2946,6 +3034,7 @@
 						<_F v="Flags">
 							<Flag v="Create If Missing" />
 							<Flag v="Destroy When Finished" />
+							<Flag v="Pin Effects" />
 							<Flag v="Hide On End" />
 							<Flag v="Keep Enabled When Finished" />
 						</_F>
@@ -3472,6 +3561,7 @@
 						<_F v="Flags">
 							<Flag v="Position" />
 							<Flag v="Rotation" />
+							<Flag v="Scale" />
 						</_F>
 						<_34 v="generated_pad6ca2" length="3" />
 						<_37 v="Point 1" />
@@ -3601,7 +3691,11 @@
 								<Flag v="Look At" />
 								<Flag v="Curve with Offset" />
 							</_A>
-							<_34 v="generated_paddcfb" length="2" />
+							<_A v="Scale Type">
+								<Flag v="Off" />
+								<Flag v="Curve" />
+							</_A>
+							<_34 v="generated_paddcfb" length="1" />
 							<_38 v="Translation Curve">
 								<_F v="Flags">
 									<Flag v="Enabled" />
@@ -3766,6 +3860,41 @@
 									</_40>
 									<_3B v="" />
 								</_38>
+								<_3B v="" />
+							</_38>
+							<_38 v="Scale Curve">
+								<_2 v="Name" />
+								<_F v="Flags">
+									<Flag v="Enabled" />
+									<Flag v="Visible" />
+								</_F>
+								<_34 v="generated_pad94fd" length="3" />
+								<_38 v="Value Curve">
+									<_40 v="control points">
+										<_14 v="value" />
+										<_14 v="tangent in" />
+										<_14 v="tangent out" />
+										<_14 v="curviness" />
+										<_A v="segment type">
+											<Flag v="Spline" />
+											<Flag v="Linear" />
+											<Flag v="Stepped" />
+											<Flag v="SteppedNext" />
+										</_A>
+										<_A v="tangent mode">
+											<Flag v="AutoStraight" />
+											<Flag v="UserStraight" />
+											<Flag v="UserBroken" />
+										</_A>
+										<_34 v="generated_pad7103" length="2" />
+										<_3B v="" />
+									</_40>
+									<_3B v="" />
+								</_38>
+								<_40 v="AnimatedCurveMetadata">
+									<_14 v="time" />
+									<_3B v="" />
+								</_40>
 								<_3B v="" />
 							</_38>
 							<_38 v="Blend Curve">
@@ -4456,6 +4585,23 @@
 								<_14 v="time" />
 								<_3B v="" />
 							</_40>
+							<_3B v="" />
+						</_38>
+						<_3B v="" />
+					</_40>
+					<_40 v="Cubemap Volume SubActions">
+						<_A v="State">
+							<Flag v="On" />
+							<Flag v="Off" />
+						</_A>
+						<_34 v="generated_pad03b7" length="3" />
+						<_38 v="Cubemap Volume">
+							<_40 v="path">
+								<_6 v="guid" />
+								<_2 v="name" />
+								<_3B v="" />
+							</_40>
+							<_6 v="guid" />
 							<_3B v="" />
 						</_38>
 						<_3B v="" />

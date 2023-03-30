@@ -97,5 +97,33 @@
 		<_3B v="" />
 	</_38>
 	<_37 v="" />
+	<_40 v="Infected Colors">
+		<_2 v="name" />
+		<_36 v="sRGB Colors" />
+		<_20 v="in world color" />
+		<_20 v="outline color" />
+		<_20 v="fx color" />
+		<_36 v="Linear Colors" />
+		<_20 v="bitmap color" />
+		<_20 v="kill feed color" />
+		<_20 v="motion tracker color" />
+		<_20 v="text color" />
+		<_20 v="navpoint color" />
+		<_3B v="" />
+	</_40>
+	<_40 v="Survivor Colors">
+		<_2 v="name" />
+		<_36 v="sRGB Colors" />
+		<_20 v="in world color" />
+		<_20 v="outline color" />
+		<_20 v="fx color" />
+		<_36 v="Linear Colors" />
+		<_20 v="bitmap color" />
+		<_20 v="kill feed color" />
+		<_20 v="motion tracker color" />
+		<_20 v="text color" />
+		<_20 v="navpoint color" />
+		<_3B v="" />
+	</_40>
 	<_3B v="" />
 </root>

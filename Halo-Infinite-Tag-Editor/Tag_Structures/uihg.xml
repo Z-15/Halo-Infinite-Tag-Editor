@@ -9,6 +9,7 @@
 		</_38>
 		<_3B v="" />
 	</_38>
+	<_37 v="Motion Sensor" />
 	<_36 v="Motion sensor globals" />
 	<_F v="flags">
 		<Flag v="show scripted pings at any distance" />
@@ -36,16 +37,22 @@
 	<_14 v="medal score message lifetime " />
 	<_14 v="medal score message restart time " />
 	<_14 v="Event Feed life time (cui)" />
-	<_36 v="Remote motion sensor globals" />
-	<_14 v="remote sensor range" />
-	<_14 v="remote sensor weak distance" />
-	<_14 v="remote sensor failure distance" />
-	<_36 v="Navpoints globals" />
-	<_14 v="near player distance (metres)" />
-	<_16 v="defaultNavPointPosition2d (pixels)" />
+	<_37 v="" />
+	<_37 v="NavPoints" />
+	<_40 v="navpoint presentation tags">
+		<_41 v="reference" />
+		<_3B v="" />
+	</_40>
+	<_16 v="Docking Position (Default)" />
+	<_36 v="Named Docking Positions" />
+	<_40 v="Named Docking Positions">
+		<_2 v="Name" />
+		<_16 v="Position" />
+		<_3B v="" />
+	</_40>
+	<_14 v="Docked 2D Spacing" />
+	<_14 v="Docking Move Fraction" />
 	<_14 v="defaultNavPoint2dDelayTime (seconds)" />
-	<_14 v="defaultNavPointSpacing2d (pixels)" />
-	<_14 v="defaultDockingMoveFraction" />
 	<_14 v="Numeric Timer Expiry Threshold (seconds)" />
 	<_14 v="Normalized Timer Expiry Threshold" />
 	<_14 v="Camouflage Maximum Visible Intensity" />
@@ -54,10 +61,8 @@
 	<_14 v="Enemy Name Visibility Distance" />
 	<_14 v="Fireteam Name Visibility Distance" />
 	<_14 v="Friendly Name Visibility Distance" />
-	<_40 v="navpoint presentation tags">
-		<_41 v="reference" />
-		<_3B v="" />
-	</_40>
+	<_37 v="" />
+	<_37 v="Damage" />
 	<_36 v="Damage globals" />
 	<_14 v="shield bar recent damage duration" />
 	<_14 v="damage indicator response duration" />
@@ -70,59 +75,17 @@
 	<_14 v="taa mask strength" />
 	<_14 v="alpha multiplier" />
 	<_14 v="total intensity cap (0..1)" />
-	<_36 v="Screen blob globals" />
-	<_F v="screen blob flags">
-		<Flag v="enable effect" />
-	</_F>
-	<_34 v="generated_pade5d8" length="3" />
-	<_1F v="color of effect while shielded" />
-	<_1F v="color of effect with no shield" />
-	<_14 v="shield pattern scale X" />
-	<_14 v="shield pattern scale Y" />
-	<_14 v="effect overall intensity" />
-	<_14 v="effect lifetime (in seconds)" />
-	<_14 v="effect width on first frame (0-1)" />
-	<_14 v="effect width on last frame (0-1)" />
-	<_38 v="opacity-time function">
-		<_37 v="function" />
-		<_38 v="function">
-			<_37 v="" />
-			<_42 v="data" />
-			<_37 v="" />
-			<_3B v="" />
-		</_38>
-		<_3B v="" />
-	</_38>
-	<_38 v="size-time function">
-		<_37 v="function" />
-		<_38 v="function">
-			<_37 v="" />
-			<_42 v="data" />
-			<_37 v="" />
-			<_3B v="" />
-		</_38>
-		<_3B v="" />
-	</_38>
-	<_38 v="size-damage function">
-		<_37 v="function" />
-		<_38 v="function">
-			<_37 v="" />
-			<_42 v="data" />
-			<_37 v="" />
-			<_3B v="" />
-		</_38>
-		<_3B v="" />
-	</_38>
-	<_41 v="pattern shield texture" />
-	<_41 v="mask 0 texture" />
-	<_41 v="mask 1 texture" />
-	<_41 v="mask 2 texture" />
-	<_41 v="mask 3 texture" />
+	<_37 v="" />
+	<_37 v="Reticule" />
 	<_36 v="Reticule globals" />
 	<_14 v="Reticule maximum spread angle" />
 	<_14 v="Hit tick persist time" />
+	<_37 v="" />
+	<_37 v="Sound" />
 	<_36 v="Sounds" />
 	<_41 v="banned vehicle entrance sound" />
+	<_37 v="" />
+	<_37 v="Text" />
 	<_36 v="Text" />
 	<_40 v="string references">
 		<_41 v="new string list" />
@@ -149,9 +112,13 @@
 		<_2 v="string id override" />
 		<_3B v="" />
 	</_40>
+	<_37 v="" />
+	<_37 v="Grenade Indicator" />
 	<_36 v="Grenade Indicator Globals" />
 	<_14 v="grenade indicator danger radius " />
 	<_14 v="grenade indicator lifetime dampener " />
+	<_37 v="" />
+	<_37 v="Parallax" />
 	<_36 v="Parallax globals" />
 	<_14 v="vehicle transition time (seconds)" />
 	<_40 v="parallax params">
@@ -171,6 +138,8 @@
 		<_34 v="generated_pade2be" length="3" />
 		<_3B v="" />
 	</_40>
+	<_37 v="" />
+	<_37 v="Warp" />
 	<_36 v="Warp params" />
 	<_40 v="warp params">
 		<_2 v="name" />
@@ -186,6 +155,8 @@
 		<_34 v="generated_pad390e" length="3" />
 		<_3B v="" />
 	</_40>
+	<_37 v="" />
+	<_37 v="Chromatic Aberration" />
 	<_36 v="Chromatic aberration params" />
 	<_40 v="chromatic aberration params">
 		<_2 v="name" />
@@ -199,7 +170,11 @@
 		<_34 v="generated_pad4665" length="3" />
 		<_3B v="" />
 	</_40>
+	<_37 v="" />
+	<_37 v="Threat Tracker" />
 	<_36 v="Threat tracker globals" />
 	<_14 v="threat tracker range" />
+	<_37 v="" />
+	<_34 v="generated_pad28bd" length="4" />
 	<_3B v="" />
 </root>

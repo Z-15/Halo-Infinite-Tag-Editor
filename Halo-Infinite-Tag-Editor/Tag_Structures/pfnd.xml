@@ -102,6 +102,7 @@
 			<_E v="control flags">
 				<Flag v="walk down" />
 				<Flag v="bots can't use if slowed" />
+				<Flag v="cheap jump" />
 			</_E>
 			<_34 v="generated_pad04d0" length="2" />
 			<_38 v="geometry">
@@ -126,6 +127,7 @@
 			<_3B v="" />
 		</_40>
 		<_40 v="cookie cutters">
+			<_2 v="name" />
 			<_40 v="points">
 				<_17 v="point" />
 				<_6 v="_navMeshUIDOffaceref" />
@@ -189,6 +191,7 @@
 				<_6 v="_packedKeyOffaceref" />
 				<_3B v="" />
 			</_40>
+			<_2 v="name" />
 			<_14 v="z height" />
 			<_14 v="z sink" />
 			<_C v="type">

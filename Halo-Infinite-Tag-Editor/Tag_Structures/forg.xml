@@ -181,7 +181,11 @@
 		<_F v="side effects of label">
 			<Flag v="Only spawn if game mode requires" />
 		</_F>
-		<_34 v="generated_pad20ec" length="2" />
+		<_A v="visibility in Forge">
+			<Flag v="ShowInForge" />
+			<Flag v="HiddenInForge" />
+		</_A>
+		<_34 v="generated_pad20ec" length="1" />
 		<_3B v="" />
 	</_40>
 	<_40 v="outline type definitions">

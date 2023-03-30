@@ -9,12 +9,13 @@ namespace ZTools
 {
     public class ZCommon
     {
-        public static Dictionary<string, string> tagGroups = new Dictionary<string, string>();
-        public static Dictionary<string, TagInfo> inhaledTags = new Dictionary<string, TagInfo>();
+        public static Dictionary<string, TagInfo> inhaledTags = new();
+        public static Dictionary<string, string> groupNames = new();
 
         public class TagInfo
         {
             public string TagID = "";
+            public string TagGroup = "";
             public string AssetID = "";
             public string TagPath = "";
             public string ModulePath = "";

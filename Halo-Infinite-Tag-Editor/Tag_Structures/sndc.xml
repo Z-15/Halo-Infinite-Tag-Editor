@@ -27,6 +27,8 @@
 		<Flag v="Force First Person Propagation For All Listeners (Deprecated)" />
 		<Flag v="Disable Source portal occlusion" />
 		<Flag v="Disable Virtual Positioning" />
+		<Flag v="Use First Listener Position in Splitscreen." />
+		<Flag v="Enable height above listener rtpc" />
 	</_D>
 	<_14 v="Don't Play Time (seconds)" />
 	<_38 v="Audio Impulse Timer Settings">
@@ -41,8 +43,6 @@
 		<_3B v="" />
 	</_38>
 	<_14 v="Sound Transmissivity" />
-	<_14 v="ObstructionOcclusionBias" />
-	<_14 v="ObstructionOcclusionScaling" />
 	<_38 v="Focus Settings">
 		<_14 v="Focus Inner Radius" />
 		<_14 v="Focus Outer Radius" />
@@ -59,6 +59,8 @@
 	</_38>
 	<_14 v="Sphere Radius" />
 	<_14 v="Sphere Stretch value" />
-	<_6 v="Max placement looping sounds" />
+	<_6 v="Max looping sounds" />
+	<_14 v="Priority at listener" />
+	<_14 v="Priority at max distance" />
 	<_3B v="" />
 </root>

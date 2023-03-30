@@ -13,19 +13,7 @@
 		<Flag v="double-sided" />
 		<Flag v="disable depth test" />
 	</_D>
-	<_B v="particle billboard style">
-		<Flag v="screen facing" />
-		<Flag v="camera facing" />
-		<Flag v="parallel to direction" />
-		<Flag v="perpendicular to direction" />
-		<Flag v="vertical" />
-		<Flag v="horizontal" />
-		<Flag v="local vertical" />
-		<Flag v="local horizontal" />
-		<Flag v="world (particle models)" />
-		<Flag v="velocity horizontal (particle models)" />
-		<Flag v="local" />
-	</_B>
+	<_5 v="particle billboard style" />
 	<_5 v="pad" />
 	<_16 v="center offset" />
 	<_37 v="material" />
@@ -194,7 +182,7 @@
 				<Flag v="alpha_blend_max" />
 				<Flag v="opaque_alpha_blend" />
 				<Flag v="alpha_blend_additive_transparent" />
-				<Flag v="floating_shadow" />
+				<Flag v="unused0" />
 				<Flag v="decal_alpha_blend" />
 				<Flag v="decal_add_src_times_src_alpha" />
 				<Flag v="decal_multiply_add" />
@@ -262,6 +250,7 @@
 				<Flag v="is alpha clip" />
 				<Flag v="enable_taa_mask" />
 				<Flag v="has damage map" />
+				<Flag v="has per placement material constant functions" />
 			</_E>
 			<_40 v="material constants">
 				<_1A v="register" />
@@ -284,6 +273,13 @@
 				<_3C v="index" />
 				<_3B v="" />
 			</_39>
+			<_38 v="alpha clip descriptor">
+				<_3C v="textureIndex" />
+				<_3C v="textureChannel" />
+				<_34 v="generated_pad14ce" length="2" />
+				<_6 v="thresholdIndex" />
+				<_3B v="" />
+			</_38>
 			<_3B v="" />
 		</_40>
 		<_2 v="physics material name" />
@@ -310,7 +306,7 @@
 			<Flag v="alpha_blend_max" />
 			<Flag v="opaque_alpha_blend" />
 			<Flag v="alpha_blend_additive_transparent" />
-			<Flag v="floating_shadow" />
+			<Flag v="unused0" />
 			<Flag v="decal_alpha_blend" />
 			<Flag v="decal_add_src_times_src_alpha" />
 			<Flag v="decal_multiply_add" />

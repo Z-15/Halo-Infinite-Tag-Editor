@@ -13,6 +13,7 @@
 		<Flag v="validation" />
 		<Flag v="debug" />
 		<Flag v="deoptimize" />
+		<Flag v="generate_pdbs" />
 		<Flag v="iteration" />
 	</_D>
 	<_34 v="generated_padec67" length="4" />

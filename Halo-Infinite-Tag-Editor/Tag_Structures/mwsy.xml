@@ -11,6 +11,10 @@
 	</_38>
 	<_40 v="regions">
 		<_2 v="name" />
+		<_40 v="intentionConversionList">
+			<_2 v="intentionName" />
+			<_3B v="" />
+		</_40>
 		<_3B v="" />
 	</_40>
 	<_6 v="regions Flags" />
