@@ -369,38 +369,48 @@ namespace Halo_Infinite_Tag_Editor
 
         private void SearchTagClick(object sender, RoutedEventArgs e)
         {
-            int foundCount = 0;
-            foreach (TagFolder folder in tagFolders.Values)
+            string searchTerm = SearchBox.Text;
+            int foundCount = 0; // Total matches found
+            
+            foreach (TagFolder folder in tagFolders.Values) // Iterate through folders
             {
-                bool foundInFolder = false;
-
-                foreach (TreeViewItem tag in folder.folder.Items)
+                TreeViewItem? tvFolder = folder.folder; // Set variable for the folder
+                if (tvFolder != null) // If its not null, continue
                 {
-                    if (SearchBox.Text == "" || SearchBox.Text == " ")
+                    if (folder.folderName.Contains(searchTerm)) // If the foldername contains the search term, make everything in that folder visible.
                     {
-                        foundCount++;
-                        foundInFolder = true;
-                        tag.Visibility = Visibility.Visible;
+                        tvFolder.Visibility = Visibility.Visible; // Set visible
+
+                        foreach (TreeViewItem tvTag in tvFolder.Items) // Set all children visible
+                        {
+                            tvTag.Visibility = Visibility.Visible;
+                            foundCount++;
+                        }
                     }
                     else
                     {
-                        if (((string)tag.Header).Contains(SearchBox.Text))
+                        bool foundInFolder = false; // Check to see if the folder needs to be set invisible
+
+                        foreach (TreeViewItem tvTag in tvFolder.Items) // Go through every child in the folder
                         {
-                            foundCount++;
-                            foundInFolder = true;
-                            tag.Visibility = Visibility.Visible;
-                        }
-                        else
-                        {
-                            tag.Visibility = Visibility.Collapsed;
+                            if (((string)tvTag.Header).Contains(searchTerm)) // If found
+                            {
+                                tvTag.Visibility = Visibility.Visible; // Set visible
+                                foundInFolder = true; // Set found in folder
+                                foundCount++; // Increase count
+                            }
+                            else
+                            {
+                                tvTag.Visibility = Visibility.Collapsed; // Collapse Visibility
+                            }
+
+                            if (!foundInFolder)
+                                tvFolder.Visibility = Visibility.Collapsed;
+                            else
+                                tvFolder.Visibility = Visibility.Visible;
                         }
                     }
                 }
-
-                if (!foundInFolder)
-                    folder.folder.Visibility = Visibility.Collapsed;
-                else
-                    folder.folder.Visibility = Visibility.Visible;
             }
             StatusOut("Found " + foundCount + " matches for: \"" + SearchBox.Text + "\"");
         }
