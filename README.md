@@ -7,8 +7,7 @@ Halo Infinite Tag Editor allows you to modify the tag files located within modul
   - [Soupstream's Havok-Script-Tools](https://github.com/soupstream/havok-script-tools)
 
 # Download
-  - All build downloads will be in the release section.
-  - The build will be updated whenever there are significant changes to the repostitory.
+[![Download latest build](https://github.com/Z-15/Halo-Infinite-Tag-Editor/actions/workflows/dotnet.yml/badge.svg)](https://nightly.link/Z-15/Halo-Infinite-Tag-Editor/workflows/dotnet-desktop/master/HITE.zip)
   
 # Instructions
 **Module Editing Steps:**
