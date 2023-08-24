@@ -40,3 +40,4 @@ Halo Infinite Tag Editor allows you to modify the tag files located within modul
   - Tag Blocks themselves can't be edited, only the values inside can. More research is needed.
   - I need to add in input validation so incorrect values can't be entered.
   - If you find any issues, please submit a ticket or message me on Discord: xxZxx#0001
+
